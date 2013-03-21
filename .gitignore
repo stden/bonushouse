@@ -5,3 +5,5 @@ search_index.db/
 bonushouse.zip
 webstat/
 bonushouse.iml
+env/
+bonushouse/settings.py

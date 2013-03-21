@@ -1,8 +1,8 @@
 PIL
 South
 pytz
-sorl.thumbnail
+sorl-thumbnail
 python-openid
-python-oauth2
+oauth2
 django
 reportlab

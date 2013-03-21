@@ -222,7 +222,8 @@
                 <form action="{% url login %}" method="post">{% csrf_token %}
                     <p>{{ register_form.email }}</p>
                     <p>{{ register_form.password }}</p>
-                    <p>{{ register_form.agreement }} С правилами <a href="/oferta/" target="_blank">оферты</a> согласен</p>
+{#                    Временни убрать agreement#}
+{#                    <p>{{ register_form.agreement }} С правилами <a href="/oferta/" target="_blank">оферты</a> согласен</p>#}
                     <p>
                         <input type="hidden" name="action" value="register" />
                         <input type="image" src="{{ STATIC_URL }}images/overlay_register.png" alt="Зарегистрироваться" />
