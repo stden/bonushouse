@@ -1,0 +1,10 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <form action="" method="post">{% csrf_token %}
+{% block report %}
+{% endblock %}
+<div class="btns-holder">
+    <input type="submit" class="button save" name="export_csv" value="Выгрузить в CSV" />
+</div>
+    </form>
+{% endblock %}

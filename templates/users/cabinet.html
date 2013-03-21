@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load rupluralize %}
+{% block content %}
+    <div class="twocolumns var">
+        <div class="twocolumns-holder">
+            <div class="twocolumns-frame">
+                {% block content_cabinet %}
+                <div class="content">
+                    <h2>Мои купоны</h2>
+                    <ul class="cabinet-coupons-filter autowrap">
+                        <li>Показать</li>
+                        <li><a href="{% url cabinet %}?filter=all"{% if coupons_filter == 'all' %} class="active"{% endif %}>Все</a></li>
+                        <li><a href="{% url cabinet %}?filter=active"{% if coupons_filter == 'active' %} class="active"{% endif %}>Действующие</a></li>
+                        <li><a href="{% url cabinet_gifts %}"{% if coupons_filter == 'gift' %} class="active"{% endif %}>Подарочные</a></li>
+                        <li><a href="{% url cabinet %}?filter=used"{% if coupons_filter == 'used' %} class="active"{% endif %}>Использованные</a></li>
+                        <li><a href="{% url cabinet %}?filter=expired"{% if coupons_filter == 'expired' %} class="active"{% endif %}>Истекшие</a></li>
+                    </ul>
+                    <table class="info-table">
+                        <tr>
+                            <th><span><em>дата<br/>покупки</em></span></th>
+                            <th><span><em>дата<br/>окончания</em></span></th>
+                            <th><span><em>{% if coupons_filter == 'gift' %}код{% else %}номер{% endif %}<br/>купона</em></span></th>
+                        </tr>
+                        {% for coupon in my_coupons %}
+                                {% if coupons_filter == 'gift' %}
+                                    <tr>
+                                        <td>{{ coupon.transaction_object.add_date.date }}</td>
+                                        <td>{{ coupon.offer.end_date.date }}</td>
+                                        <td>{{ coupon.gift_code }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="underline" colspan="3">
+                                            {% thumbnail coupon.offer.get_photos_list.0.file '215x147' crop='center' as im %}
+                                                <img class="alignleft" src="{{ im.url }}" width="215" height="147">
+                                            {% endthumbnail %}
+                                            <div class="text-holder">
+                                                <p>{{ coupon.offer.title }}</p>
+                                                <div class="link-holder">
+                                                    <a href="{% url cabinet_gift_coupons_print coupon.pk %}" target="_blank" class="link-button04">Распечатать купон</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                <tr>
+                                    <td>{{ coupon.get_order.transaction_object.add_date.date }}</td>
+                                    <td>{{ coupon.get_order.offer.end_date.date }}</td>
+                                    <td>{{ coupon.code }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="underline" colspan="3">
+                                        {% thumbnail coupon.get_order.offer.get_photos_list.0.file '215x147' crop='center' as im %}
+                                        <img class="alignleft" src="{{ im.url }}" width="215" height="147">
+                                        {% endthumbnail %}
+                                        <div class="text-holder">
+                                            <p>{{ coupon.get_order.offer.title }}</p>
+                                            <div class="link-holder">
+                                                <a href="{% url cabinet_coupons_print coupon.pk %}" target="_blank" class="link-button04">Распечатать купон</a>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tr>
+                    </table>
+                </div>
+                {% endblock %}
+                <div class="sidebar">
+                    <div class="box-sector">
+                        <h2>Личный кабинет</h2>
+                        <ul class="list">
+                            <li><a href="{% url cabinet %}">Мои купоны</a></li>
+                            <li><a href="{% url cabinet_abonements %}">Абонементы в фитнес клуб</a></li>
+                            <li><a href="{% url cabinet_additional_services %}">Услуги от Fitness House</a></li>
+                            <li><a href="{% url cabinet_auctions %}">Аукционы</a></li>
+                            <li><a href="{% url edit_profile %}">Мой профиль</a></li>
+                            {% comment %}
+                            <li><a href="#">Мои ссылки</a></li>
+                            {% endcomment %}
+                            <li><a href="{% url refer_friend %}">Пригласить друга</a></li>
+                        </ul>
+                    </div>
+                    {% if user.is_authenticated %}
+                    <div class="box-sector">
+                        <h2>Баланс:</h2>
+                        <div class="row-balance">
+                            <span class="number-balance"><span>{{ user.get_profile.get_money_ballance }}</span> руб.</span>
+                            <a href="{% url users_deposit_account_log %}">История платежей</a>
+                            <span class="bonuses-balance"><span>{{ user.get_profile.get_bonuses_ballance }}</span> {{ user.get_profile.get_bonuses_ballance|rupluralize:'бонус,бонуса,бонусов' }}</span>
+                        </div>
+                        <a href="{% url deposit_account %}" class="link-button05">Пополнить счет</a>
+                    </div>
+                    {% endif %}
+                    <div class="box-sector">
+                        <h2>У вас есть подарочный купон? Введите его код</h2>
+                        <a href="{% url cabinet_gift_code_form %}" class="link-button05">Здесь</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

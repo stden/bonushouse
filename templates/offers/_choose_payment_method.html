@@ -1,0 +1,43 @@
+<h3 class="choose_title">Выберите способ оплаты:</h3>
+<ul class="list payment_switch">
+    {% if offer.can_buy_for_money %}
+    <li>
+        <a href="#payment_deposit">Депозит Бонус-Хаус</a>
+    </li>
+    {% endif %}
+    {% if offer.can_buy_for_bonuses %}
+    <li>
+        <a href="#payment_bonuses">Бонусы</a>
+    </li>
+    {% endif %}
+    {% if offer.can_buy_for_money %}
+    <li>
+        <a href="#payment_others">Другие способы</a>
+    </li>
+    {% endif %}
+</ul>
+<div class="tab autowrap" id="payment_deposit">
+    <h3>Депозит Бонус-Хаус</h3>
+    <p>На вашем счету: <strong>{{ user.get_profile.get_money_ballance }} руб.</strong></p>
+    <p class="not_enough"></p>
+    <p>
+        <a href="{% url deposit_account %}" class="button">Пополнить счет</a>
+    </p>
+    <p>
+        <a href="#" class="button pay">Оплатить</a>
+    </p>
+</div>
+<div class="tab autowrap hidden" id="payment_bonuses">
+    <h3>Оплата бонусами</h3>
+    <p>На вашем счету: <strong>{{ user.get_profile.get_bonuses_ballance }} бонусов.</strong></p>
+    <p class="not_enough"></p>
+    <p><a href="/fakty-o-bonusah/" class="button " target="_blank">Как получить бонусы</a></p>
+    <p><a href="#" class="button pay">Оплатить</a></p>
+</div>
+<div class="tab autowrap hidden" id="payment_others">
+    <h3>Другие способы оплаты</h3>
+    <p>Множество разных способов оплаты. В том числе, Webmoney, {% comment %}Яндекс.Деньги,{% endcomment %} VISA/Mastercard, QIWI и другие</p>
+    <p>
+        <a href="#" class="button pay">Оплатить</a>
+    </p>
+</div>

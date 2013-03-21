@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <meta name="SKYPE_TOOLBAR" content="SKYPE_TOOLBAR_PARSER_COMPATIBLE">
+    <title>Бонус-Хаус</title>
+    <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}administration/css/smoothness/jquery-ui.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.css" />
+    <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}administration/css/all.css" />
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/jquery-1.7.2.min.js" ></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/jquery.placeholder.min.js" ></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/input-type-file.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/jquery.ui.datepicker-ru.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/ui.js"></script>
+
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/jquery.custom-radio-checkbox.min.js"></script>
+    <script type="text/javascript">
+        $(function() {
+            $("input[placeholder], textarea[placeholder]").placeholder();
+        });
+    </script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/plupload/plupload.full.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/plupload/i18n/ru.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/plupload/jquery.plupload.queue/jquery.plupload.queue.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-timepicker-addon.js" ></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui-timepicker-ru.js" ></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/translit.js"></script>
+    <script type="text/javascript" src="{{ STATIC_URL }}administration/js/script.js"></script>
+    <script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU"></script>
+</head>
+<body>
+<div class="w1">
+    <div class="w2">
+        <div class="wrapper">
+            <div id="header">
+                <div class="header-holder">
+                    <h1 class="logo"><a href="{% url partner_menu %}">Бонус-Хаус Накопи и купи</a></h1>
+                    <div class="header-area">
+                        <span class="admin-text">Партнерский раздел</span>
+                        <div class="header-block">
+                            <div class="header-row">
+                                <span class="hello-text">Добрый день,</span> <span class="name">{{ user.username }}</span>
+                            </div>
+                            <span class="enter"><a href="{% url logout %}">Выход</a></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="main">
+                <ul class="nav">
+                    {% for link in ADMIN_MENU %}
+                        {% if link.title == ADMIN_MENU_ACTIVE %}
+                            <li class="active">
+                                <span>{{ link.title }}</span>
+                            </li>
+                        {% else %}
+                        <li>
+                            <a href="{{ link.url }}">{{ link.title }}</a>
+                        </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                {% if messages %}
+                    <ul>
+                        {% for message in messages %}
+                            <li class="{{ message.classes }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% block content %}
+            {% endblock %}
+            </div>
+        </div>
+    </div>
+</div>
+<div id="footer">
+    <div class="footer-holder">
+        <p class="design"><a href="http://disaers.ru/" target="_blank">Disaers.ru</a><span> - Создание и продвижение</span></p>
+        <p class="copy">{{ cur_date|date:'Y' }} &copy; Бонус Хаус Все права защищены</p>
+        <ul class="social-footer">
+            <li class="facebook"><a href="#">Facebook</a></li>
+            <li class="twitter"><a href="#">Twitter</a></li>
+            <li class="vkontakte"><a href="https://vk.com/fitnesshouse_spb" target="_blank">Вконтакте</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <span class="container-title">{{ form.cleaned_data.title }}</span>
+        <div class="carousel-holder">
+            <div class="carousel">
+                <div class="gallery">
+                    <a id="prev" href="#">Prev</a>
+                    <a id="next" href="#">Next</a>
+                    <div id="slideshow">
+                        {% for photo in form.cleaned_data.photos %}
+                            {% thumbnail photo.file '609x369' crop='center' format='PNG' as im %}
+                                <img src="{{ im.url }}" alt="">
+                            {% endthumbnail %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="sale-info">
+                {% block bid_area %}
+                {% endblock %}
+                <ul class="add-info">
+                    <li class="counter-info">
+                        <span class="sale-counter">
+                            Осталось
+                            <div><span class="days">1</span> дней и <strong><span class="hours">01</span>:<span class="minutes">01</span>:<span class="seconds">01</span> час.</strong></div>
+                        </span>
+                        <div class="progress-bar"><div style="width:12%"></div></div>
+                    </li>
+                    <li class="social-info">
+                        <dl>
+                            <dt>Поделиться ссылкой:</dt>
+                            <dd>
+                                <a href="#" class="facebook">Facebook</a>
+                                <a href="#" class="vkontakte">Вконтакте</a>
+                                <a href="#" class="twitter">Twitter</a>
+                                <a href="#" class="email">Email</a>
+                            </dd>
+                        </dl>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="info-section">
+            <div class="wide-column">
+                <h2>Об акции</h2>
+                {{ form.cleaned_data.description|safe }}
+                <div>
+                    <a href="#" onclick="window.close()" class="orange_button">Вернуться</a>
+                </div>
+            </div>
+            <div class="column">
+                {% if form.cleaned_data.partner %}
+                    <h2>{{ form.cleaned_data.partner.title }}</h2>
+                    <ul class="item-info">
+                        {% if form.cleaned_data.partner.site %}
+                            <li class="site"><a href="{{ form.cleaned_data.partner.site }}" target="_blank">Посмотреть сайт</a></li>
+                        {% endif %}
+                        {% if form.cleaned_data.partner.schedule %}
+                            <li class="schedule">
+                                <dl>
+                                    <dt>Время работы:</dt>
+                                    <dd>{{ form.cleaned_data.partner.schedule|safe }}</dd>
+                                </dl>
+                            </li>
+                        {% endif %}
+                        {% if form.cleaned_data.partner.phone %}
+                            <li class="phone-number">
+                                <dl>
+                                    <dt>Телефон:</dt>
+                                    <dd>{{ form.cleaned_data.partner.phone }}</dd>
+                                </dl>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

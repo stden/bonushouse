@@ -1,0 +1,12 @@
+{% load thumbnail %}
+<li>
+    <p><a href="{{ category.get_url }}">{{ category.title }}</a></p>
+    <div class="img-holder">
+        {% thumbnail category.get_photo_object.photo '215x145' crop='center' format='PNG' as im %}
+            <a href="{{ category.get_url }}"><img src="{{ im.url }}" alt=""></a>
+        {% endthumbnail %}
+    </div>
+    <div class="price-area">
+        <a href="{{ category.get_url }}"><span class="coupon" style="width: 190px;"><span class="number">{{ category.offers_set.count }}</span> предложений</span></a>
+    </div>
+</li>

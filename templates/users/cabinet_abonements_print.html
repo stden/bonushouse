@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <title>Бонус-Хаус</title>
+    <link rel="shortcut icon" href="http://bonus-house.ru/static/images/favicon.ico" />
+    <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/abonement-print.css" />
+</head>
+<body>
+<div id="bodywrap">
+    <img src="{{ STATIC_URL }}images/abonement_print_header.png" alt="Бонус-Хаус" />
+    <div class="barcode_wrap autowrap">
+        <div class="left">
+            <h2>Номер договора</h2>
+            {{ agreement_id }}
+        </div>
+        <div class="right">
+            <img src="{{ barcode.url }}" alt="{{ agreement_id }}" />
+        </div>
+    </div>
+    <h2 class="user_info">Сведения о посетителе</h2>
+    <dl class="autowrap">
+        <dt>Фамилия:</dt>
+        <dd>{{ additional_info.last_name }}</dd>
+
+        <dt>Имя:</dt>
+        <dd>{{ additional_info.first_name }}</dd>
+
+        {% if additional_info.father_name %}
+        <dt>Отчество:</dt>
+        <dd>{{ additional_info.father_name }}</dd>
+        {% endif %}
+
+        <dt>Пол:</dt>
+        <dd>{{ additional_info.get_gender_display }}</dd>
+
+        <dt>Паспортные данные:</dt>
+        <dd>{{ additional_info.passport_code }} {{ additional_info.passport_number }}</dd>
+
+        <dt>Дата рождения</dt>
+        <dd>{{ additional_info.birth_date|date:'d.m.Y' }}</dd>
+
+        <dt>Контактный телефон</dt>
+        <dd>{{ additional_info.phone }}</dd>
+
+        <dt>Электронный адрес</dt>
+        <dd>{{ additional_info.email }}</dd>
+    </dl>
+    <h2 class="terms">Условия</h2>
+    <div>
+        {{ terms|safe }}
+    </div>
+    <p><strong>Уважаемый Клиент сети спортивных клубов {{ partner.title }}!</strong></p>
+
+    <p>Ваша оплата клубной карты {{ partner.title }} прошла успешно, и мы рады, что Вы присоединились к нашей команде!<br />
+        Для того чтобы начать занятия в выбранном Вами клубе, Вам необходимо:</p>
+    <ul><li>распечатать Договор (см. вложение к письму);</li>
+        <li>приехать в выбранный Вами клуб;</li>
+        <li>получить клубную карту на стойке рецепции, предъявив свой паспорт и распечатанный договор;</li>
+        <li>допуск к посещению занятий производится только при наличии медицинской справки.
+            Вы можете воспользоваться услугами врача в клубе, если у Вас нет справки на руках.</li>
+    </ul>
+
+    <p>
+        Желаем Вам успешных тренировок!</p>
+        <div>
+            <table>
+                <tr>
+                    <td>Вид абонемента (Пакет услуг):</td>
+                    <td>
+                        {{ offer_title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Срок действия:</td>
+                    <td>с {{ add_date|date:'d.m.y' }} по {{ end_date|date:'d.m.y' }}</td>
+                </tr>
+                <tr>
+                    <td>Стоимость:</td>
+                    <td>{{ price }}</td>
+                </tr>
+                <tr>
+                    <td>Вы выбрали абонемент в клуб:</td>
+                    <td>{{ additional_info.address.title }}</td>
+                </tr>
+            </table>
+        </div>
+    <div style="text-align: center; padding-bottom: 20px;"><input type="submit" style="font-size: 28px;font-weight: bold;" value="Распечатать договор" onclick="javascript:(print())"></div>
+<div id="footer" class="autowrap">
+
+    <img src="{{ STATIC_URL }}images/abonement_print_footer.png" alt="Бонус-Хаус" />
+    <div class="left">
+        www.bonus-house.ru
+    </div>
+    <div class="right">
+        Телефон службы поддержкки - (812) 610-06-06
+    </div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    {% if not category %}
+        <script type="text/javascript">
+            $(function() {
+                function updatePermalink() {
+                    title = $('input#id_title').val();
+                    title_translit = toTranslit(title);
+                    friendly_url = ('/categories/'+title_translit+'/').toLowerCase();
+                    $('input#id_friendly_url').val(friendly_url);
+                }
+                $('input#id_title').keyup(updatePermalink);
+            });
+        </script>
+    {% endif %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_categories_index %}">Категории</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="container">
+            {% include "_form_errors.html" with form=categories_form %}
+            {% include "_form_errors.html" with form=seo_meta_form %}
+            {% include "_form_errors.html" with form=seo_url_form %}
+            {% include "_form_errors.html" with form=photo_form %}
+            <table class="info-table">
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ categories_form.title.label_tag }}:</span></td>
+                    <td>{{ categories_form.title }}</td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ photo_form.photo.label_tag }}:</span></td>
+                    <td>
+                        {{ photo_form.photo }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ categories_form.description.label_tag }}:</span></td>
+                    <td>
+                        {{ categories_form.description }}
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="check-post">
+                            {{ categories_form.is_published }} {{ categories_form.is_published.label_tag }}
+                        </div>
+                    </td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
+            </table>
+            <div class="btns-holder">
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </div>
+    </form>
+{% endblock %}

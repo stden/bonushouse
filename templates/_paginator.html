@@ -1,0 +1,21 @@
+<div class="paging">
+    <ul>
+        {% if page.has_previous %}
+            <li class="prev"><a href="?page={{ page.previous_page_number }}">Предыдущая</a></li><li>
+        {% endif %}
+        {% for pagenum in paginator.page_range %}
+            {% if pagenum == page.number %}
+                <li class="active">
+                    <span>{{ pagenum }}</span>
+                </li>
+            {% else %}
+            <li>
+                <a href="?page={{ pagenum }}">{{ pagenum }}</a>
+            </li>
+            {% endif %}
+        {% endfor %}
+        {% if page.has_next %}
+        <li><a href="?page={{ page.next_page_number }}">Следующая</a></li>
+        {% endif %}
+    </ul>
+</div>

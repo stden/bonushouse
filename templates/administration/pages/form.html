@@ -1,0 +1,68 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    {{ page_form.media }}
+    {% if not page %}
+        <script type="text/javascript">
+            $(function() {
+                function updatePermalink() {
+                    title = $('input#id_title').val();
+                    title_translit = toTranslit(title);
+                    friendly_url = ('/'+title_translit+'/').toLowerCase();
+                    $('input#id_friendly_url').val(friendly_url);
+                }
+                $('input#id_title').keyup(updatePermalink);
+            });
+        </script>
+    {% endif %}
+    <ul class="breadcrumbs" xmlns="http://www.w3.org/1999/html">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_pages_index %}">Страницы</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        {% include "_form_errors.html" with form=page_form %}
+        {% include "_form_errors.html" with form=seo_meta_form %}
+        {% include "_form_errors.html" with form=seo_url_form %}
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ page_form.title.label_tag }}:</span></td>
+                    <td>{{ page_form.title }}</td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="underline">
+                    <td></td>
+                    <td>
+                        {{ page_form.content }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ page_form.template_name.label_tag }}</span></td>
+                    <td>
+                        {{ page_form.template_name }}
+                    </td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+                {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="check-post">
+                            {{ page_form.is_published }} {{ page_form.is_published.label_tag }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-holder">
+                <input class="button save" type="submit" value="Сохранить" />
+                <input class="button preview" onclick="$(this).parents('form:first').attr('action','{% url administration_pages_preview %}').attr('target','_blank').submit().removeAttr('target').attr('action','');return false" type="submit" value="Предварительный просмотр" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

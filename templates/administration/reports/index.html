@@ -1,0 +1,23 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Отчетность </span></li>
+    </ul>
+    <div class="container">
+        <div class="twocolumns">
+            <div class="column">
+                <h2>Отчеты по акциям</h2>
+                <a href="{% url administration_reports_view 'offers-sales-users' %}" class="link-report">Продажи по пользователям</a>
+                <a href="{% url administration_reports_view 'offers-sales-general' %}" class="link-report">Продажи по акциям</a>
+                <a href="{% url administration_reports_view 'fitnesshouse-report' %}" class="link-report">Просмотр заявок</a>
+            </div>
+            <div class="column">
+                <h2>Отчеты по бонусам</h2>
+                <a href="{% url administration_reports_view 'bonuses-got' %}" class="link-report">Бонусов получено</a>
+                <a href="{% url administration_reports_view 'bonuses-spent' %}" class="link-report">Бонусов потрачено</a>
+                <a href="{% url administration_reports_view 'bonuses-users' %}" class="link-report">Бонусы по пользователям</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <h2 class="underline">Наши партнеры</h2>
+        <div class="info-box">
+            <ul id="partners_page_list">
+                {% for object in object_list %}
+                    <li class="autowrap">
+                        <div class="logo_img">
+                            {% thumbnail object.logo '250x150' crop='center' as im %}
+                                <img src="{{ im.url }}" alt="{{ object.title }}" />
+                            {% endthumbnail %}
+                        </div>
+                        <h3>{{ object.title }}</h3>
+                        <div class="description">
+                            {{ object.description }}
+                        </div>
+                        {% if object.site_url %}
+                            <div class="site_url">
+                                <a href="{{ object.site_url }}" target="_blank">{{ object.site_url }}</a>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

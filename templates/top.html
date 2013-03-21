@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load rupluralize %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <h2>Топ 10 участников</h2>
+        <table class="info-table">
+            <tr>
+                <th class="user-cell"><span><em>пользователь</em></span></th>
+                <th class="number-cell"><span><em>кол-во бонусов</em></span></th>
+                <th class="number-cell"><span><em>кол-во купонов</em></span></th>
+                {% comment %}<th><span><em>кол-во отзывов</em></span></th>{% endcomment %}
+            </tr>
+            {% for user in top %}
+                {% if forloop.counter == 4 %}
+                    </table>
+                    <table class="info-table table-var">
+                    <tr class="underline-row">
+                        <th><span><em>пользователь</em></span></th>
+                        <th><span><em>кол-во купонов</em></span></th>
+                        {% comment %}<th><span><em>кол-во отзывов</em></span></th>{% endcomment %}
+                        <th><span><em>рейтинг</em></span></th>
+                    </tr>
+                {% endif %}
+                {% if forloop.counter < 4 %}
+                    <tr class="underline-row">
+                        <td style="width: 100px;">
+                            <div class="user-info">
+                                <div class="photo">
+                                    {% if user.user.get_profile.avatar %}
+                                        {% thumbnail user.user.get_profile.avatar '90x74' crop='center' as im %}
+                                        <img src="{{ im.url }}" alt=""  />
+                                        {% endthumbnail %}
+                                    {% endif %}
+                                </div>
+                                <div class="text">
+                                    <span class="name">{{ user.user.get_profile.get_name }}</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="coupon-cell">
+                            <span class="number-info">
+                                <span class="number">
+                                {{ user.bonuses_acquired }}
+                                </span>
+                                {{ user.bonuses_acquired|rupluralize:'бонус,бонуса,бонусов' }}
+                            </span>
+                        </td>
+                        <td class="coupon-cell">
+                            <span class="number-info"><span class="number">{{ user.user.get_profile.coupons_bought }}</span> {{ user.user.get_profile.coupons_bought|rupluralize:'купон,купона,купонов' }}</span>
+                        </td>
+                        {% comment %}<td class="reviews-cell"><span class="reviews-info number-info">
+                            <span class="number">{{ user.user.userfeedbacks_set.count }}</span> {{ user.user.userfeedbacks_set.count|rupluralize:'отзыв,отзыва,отзывов' }}</span></td>{% endcomment %}
+                    </tr>
+                {% else %}
+                    <tr class="underline-row">
+                        <td><span class="name">{{ user.user.get_profile.get_name }}</span></td>
+                        <td><span class="number-info">
+                        <span class="number">{{ user.user.get_profile.coupons_bought }}</span> {{ user.user.get_profile.coupons_bought|rupluralize:'купон,купона,купонов' }}</span>
+                        </td>
+                        {% comment %}<td><span class="reviews-info number-info"><span class="number">{{ user.user.userfeedbacks_set.count }}</span> {{ user.user.userfeedbacks_set.count|rupluralize:'отзыв,отзыва,отзывов' }}</span></td>{% endcomment %}
+                        <td><strong class="rating"><span class="number-info"><span class="number">{{ user.bonuses_acquired }}</span></span></strong></td>
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            </table>
+    </div>
+{% endblock %}

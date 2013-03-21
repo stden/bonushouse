@@ -1,0 +1,136 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load rupluralize %}
+{% load star_rating %}
+{% block content %}
+    <div class="twocolumns var" xmlns="http://www.w3.org/1999/html">
+        <div class="twocolumns-holder">
+            <div class="twocolumns-frame">
+                <div class="content">
+                    <span class="container-title">{{ partner.title }}</span>
+                    <div class="img-frame">
+                        {% thumbnail partner.get_photos_list.0.file '578x299' crop='center' as im %}
+                            <img src="{{ im.url }}" width="578" height="299" alt="">
+                        {% endthumbnail %}
+                    </div>
+                    <div class="partner_description">
+                        {{ partner.description|safe }}
+                    </div>
+                    {% comment %}
+        <div class="container-review">
+            <h2 class="underline">Отзывы</h2>
+            <span class="container-title">{{ partner.title }}</span>
+            <div class="rating-container">
+                {% star_rating name='partner-rating' initial=partner.get_rating %}
+            </div>
+            <div class="img-frame">
+                {% thumbnail partner.get_photos_list.0.file '578x299' crop='center' as im %}
+                    <img src="{{ im.url }}" width="578" height="299" alt="">
+                {% endthumbnail %}
+            </div>
+            <div class="your-review">
+                <form action="" method="post">{% csrf_token %}
+                    {% include "_form_errors.html" with form=feedback_form %}
+                    <fieldset>
+                        {{ feedback_form.text }}
+                        <div class="rating-holder">
+                            <span class="rating-title">Ваша оценка:</span>
+                            <div class="rating-container">
+                                {% star_rating name='rating' initial=3 read_only=False %}
+                            </div>
+                            <input class="btn-review" type="submit" value="Отправить" />
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+        <div class="reviews-list">
+            <h2>Отзывы посетителей</h2>
+            <ul>
+                {% for feedback in partner.feedbacks.all %}
+                    <li class="autowrap">
+                        <div class="heading">
+                            <div class="user-block">
+                                <div class="photo">
+                                    {% if feedback.user.get_profile.avatar %}
+                                        {% thumbnail feedback.user.get_profile.avatar '90x74' crop='center' as im %}
+                                            <img src="{{ im.url }}" alt=""  />
+                                        {% endthumbnail %}
+                                    {% endif %}
+                                </div>
+                                <div class="text">
+                                    <span class="name">{{ feedback.user.get_profile.get_name }}</span>
+                                    <span class="info">написал {{ user.userfeedbacks_set.all.count }} {{ user.userfeedbacks_set.count|rupluralize:'отзыв,отзыва,отзывов' }}</span>
+                                </div>
+                            </div>
+                            <div class="user-rating">
+                                {% with str_pk=feedback.pk|stringformat:'s' %}
+                                    {% star_rating name='feedback-rating'|add:str_pk initial=feedback.get_author_rating %}
+                                {% endwith %}
+                                <span class="row">Отзыв добавлен: <em class="date">{{ feedback.add_date|date:'d.m.Y' }}</em></span>
+                            </div>
+                        </div>
+                        <div class="text-frame">
+                            <p>{{ feedback.text }}</p>
+                        </div>
+                        {% if user.is_staff or can_write_replies %}
+                            <form action="" method="post">{% csrf_token %}
+                                <div class="answer-frame">
+                                    <strong class="answer-text">Ответ администрации:</strong>
+                                    <div class="row autowrap">
+                                        <textarea name="admin_reply" cols="30" rows="5" class="textarea">{{ feedback.admin_reply }}</textarea>
+                                        <input type="hidden" name="feedback_id" value="{{ feedback.pk }}" />
+                                    </div>
+                                    <div class="row autowrap" style="padding-top: 10px;">
+                                        <input class="btn-review" type="submit" name="admin-reply" value="Сохранить" />
+                                    </div>
+                                </div>
+                            </form>
+                        {% elif feedback.admin_reply %}
+                            <div class="answer-frame">
+                                <strong class="answer-text">Ответ администрации:</strong>
+                                <div class="answer-holder">
+                                    <p>{{ feedback.admin_reply }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endcomment %}
+                    <h2>Комментарии</h2>
+                    <div id="vk_comments"></div>
+                    <script type="text/javascript">
+                        VK.Widgets.Comments("vk_comments", {limit: 10, width: "556", attach: "*"});
+                    </script>
+                </div>
+                <div class="sidebar">
+                    <span class="container-title">{{ partner.title }}</span>
+                    <div class="box-sector">
+                        <ul class="item-info">
+                            {% if partner.site %}
+                                <li class="site"><a href="{{ partner.site }}" target="_blank">Посмотреть сайт</a></li>
+                            {% endif %}
+                        </ul>
+                        <div class="box-sector box01">
+                            <h2 style="padding-top: 10px">Заведения партнера</h2>
+                            <ul>
+                                {% for address in partner.get_address_list %}
+                                    <li class="partner_addresses_item">
+                                        <div class="text-holder">
+                                            <span class="title"><strong>{{ address.title }}</strong></span><br/>
+                                            <span class="text"><strong>Адрес:</strong> {{ address.address }}<br /></span>
+                                            <span class="text"><strong>Метро:</strong> {{ address.metro.name }}<br /></span>
+                                            <span class="text"><strong>Телефон:</strong> {{ address.phone }}<br /></span>
+                                            <span class="text"><strong>График:</strong> {{ address.schedule }}<br /></span>
+                                        </div>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}

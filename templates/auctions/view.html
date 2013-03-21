@@ -1,0 +1,40 @@
+{% extends "auctions/view_base.html" %}
+{% block bid_area %}
+    {% if auction.can_bid %}
+        {% if not auction.is_additional_service or user_card_number %}
+            {% if user_card_number %}
+                <h2>Номер вашей карты или договора: {{ user_card_number }}</h2>
+            {% endif %}
+            <div class="price-info">
+                <a href="{{ auction.get_add_bid_url }}" class="link-button03" style="font-size: 28px; font-weight: normal; line-height: 0.8;padding-top: 7px;height: 58px;">
+                    Сделать ставку
+                </a>
+                <span class="old-price">{{ auction.initial_price }}<br/></span>
+                <span class="new-price">{{ auction.get_actual_price }} р.</span>
+            </div>
+        {% elif card_number_form %}
+            <form action="" method="post">{% csrf_token %}
+                <div style="text-align: center">
+                    <h3 style="font-size: 18px;">Участвовать в этом аукционе могут только действующие клиенты клубов. Для продолжения введите номер вашей клубной карты или договора:</h3>
+                    <br/>
+                    {% include "_form_errors.html" with form=card_number_form %}
+                    <p class="form_row">{{ card_number_form.card_number }}</p>
+                    <p class="form_row"><input type="submit" value="Продолжить" class="orange_button" /></p>
+                </div>
+            </form>
+        {% endif %}
+    {% else %}
+        <ul class="add-info">
+            <li class="number-info">
+                Вы не можете делать ставки на этот аукцион.
+            </li>
+        </ul>
+    {% endif %}
+    <div class="bid_log">
+        <ul>
+            {% for bid in auction.get_bids_list %}
+                <li><span class="name">{{ bid.user.get_profile.get_name }}</span> - <span class="amount">{{ bid.amount }} руб.</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

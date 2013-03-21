@@ -1,0 +1,5 @@
+<ul>
+{% for object in object_list %}
+    <li class="autowrap" style="padding-bottom: 5px;"><label for="id_addresses_{{ forloop.counter0 }}"><input type="checkbox" name="addresses" value="{{ object.pk }}" id="id_addresses_{{ forloop.counter0 }}" /> {{ object }}</label></li>
+{% endfor %}
+</ul>

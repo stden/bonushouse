@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <span class="container-title">Предложить бизнес-идею</span>
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <div class="form">
+            {% if idea_form.errors %}
+                {% include "_form_errors.html" with form=idea_form %}
+            {% endif %}
+            {% for field in idea_form %}
+            <div class="row">
+                {{ field.label_tag }}
+                {{ field }}
+            </div>
+            {% endfor %}
+                <div class="btn-row">
+                    <input class="btn-feedback" type="submit" value="Отправить" />
+                </div>
+            </div>
+        </form>
+    </div>
+{% endblock %}

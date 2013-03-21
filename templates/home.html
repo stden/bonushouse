@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% load banners %}
+{% load categories %}
+{% load thumbnail %}
+{% block content %}
+    {% if shortest_offer %}
+
+        <div class="counter-block" xmlns="http://www.w3.org/1999/html">
+            <script type="text/javascript">
+                $(function() {
+                    var myCounterHours = new flipCounter('flip-counter-hours', {value:{{ shortest_offer_hours_left }}, inc:-1, pace:1000, auto:false});
+                    var myCounterMins = new flipCounter('flip-counter-minutes', {value:{{ shortest_offer_minutes_left }}, inc:-1, pace:1000, auto:false});
+                    var myCounterSecs = new flipCounter('flip-counter-seconds', {value:{{ shortest_offer_seconds_left }}, inc:-1, pace:1000, auto:false});
+                    function doCount() {
+                        hours = myCounterHours.getValue();
+                        mins = myCounterMins.getValue();
+                        secs = myCounterSecs.getValue();
+                        if(secs==0) {
+                            if(mins==0) {
+                                if(hours == 0) {
+                                    return;
+                                }
+                                else {
+                                    myCounterHours.setValue(hours-1);
+                                    myCounterMins.setValue(59);
+                                    myCounterSecs.setValue(59);
+                                }
+                            }
+                            else {
+                                myCounterMins.setValue(mins-1);
+                                myCounterSecs.setValue(59);
+                            }
+                        }
+                        else {
+                            secs = secs - 1;
+                            myCounterSecs.setValue(secs);
+                        }
+                        setTimeout(doCount, 1000);
+                    }
+                    doCount();
+                    $('#shortest_offer_countdown').countdown({
+                        stepTime: 60,
+                        format: 'hh:mm:ss',
+                        startTime: "{{ shortest_offer_hours_left }}:{{ shortest_offer_minutes_left }}:{{ shortest_offer_seconds_left }}",
+                        digitImages: 6,
+                        digitWidth: 53,
+                        digitHeight: 77,
+                        timerEnd: function() {},
+                        image: "{{ STATIC_URL }}images/digits.png"
+                    });
+                });
+            </script>
+            <div id="shortest_offer_countdown_wrap">
+                <div id="flip-counter-hours" class="flip-counter"></div><div style="float: left;color: white;font-size: 30px;padding-top: 25px">:</div>
+                <div id="flip-counter-minutes" class="flip-counter"></div><div style="float: left;color: white;font-size: 30px;padding-top: 25px">:</div>
+                <div id="flip-counter-seconds" class="flip-counter"></div>
+                <div class="text_wrap">
+                    <span class="text">Часов</span>
+                    <span class="text">Минут</span>
+                    <span class="text">Секунд</span>
+                </div>
+            </div>
+            <span class="text-sale">До конца ближайшей <span class="marked">акции осталось </span><a class="link-button01" href="{{ shortest_offer.get_url }}">Подробнее</a></span>
+        </div>
+    {% endif %}
+    <div class="home_page home_page_text">
+        {{ home_page.content|safe }}
+    </div>
+    {% getcategory 3 as category %}
+        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
+        <div class="blocks-holder">
+            <div class="blocks-frame">
+                <ul class="blocks">
+                    {% for offer in category.offers_set.all|slice:':4' %}
+                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    {% endgetcategory %}
+    {% getcategory 17 as category %}
+        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
+        <div class="blocks-holder">
+            <div class="blocks-frame">
+                <ul class="blocks">
+                    {% for offer in category.offers_set.all|slice:':4' %}
+                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    {% endgetcategory %}
+    {% getcategory 5 as category %}
+        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
+        <div class="blocks-holder">
+            <div class="blocks-frame">
+                <ul class="blocks">
+                    {% for offer in category.offers_set.all|slice:':4' %}
+                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    {% endgetcategory %}
+    <div class="orange-block">
+        <p>Пригласи друга и получи бонусы</p>
+        <a href="{% url refer_friend %}" class="link-button02">Пригласить друга</a>
+    </div>
+    <div class="orange-block">
+        <p>Пополнить счет</p>
+        <a href="{% url buy_bonuses %}" class="link-button02">Получить бонусы</a>
+    </div>
+    {% getcategory 4 as category %}
+        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
+        <div class="blocks-holder">
+            <div class="blocks-frame">
+                <ul class="blocks">
+                    {% for offer in category.offers_set.all|slice:':4' %}
+                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    {% endgetcategory %}
+
+    <div class="orange-block">
+        <p>Предложи идею бизнеса - заработай бонусы</p>
+        <a href="{% url suggest_idea %}" class="link-button02">Подробнее</a>
+    </div>
+
+    <div class="orange-block review-block">
+        <p>Как вам наш сервис?</p>
+        <a href="{% url contact_form %}" class="add-review">Добавить отзыв</a>
+    </div>
+
+    {% comment %}
+<div class="paging">
+    <ul>
+        <li class="prev"><a href="#">Предыдущая</a></li><li>
+        <a href="#">1</a></li><li>
+        <a href="#">2</a></li><li>
+        <a href="#">3</a></li><li class="empty"></li><li>
+        <a href="#">10</a></li><li>
+        <a href="#">11</a></li><li class="active"><span>12</span></li><li class="next">
+        <a href="#">Следующая</a></li>
+    </ul>
+</div>
+{% endcomment %}
+    {% comment %}
+    <h2><a href="{% url top %}">Топ участников</a></h2>
+    <div class="users-holder">
+        <ul class="users">
+            {% if top3 %}
+                {% for user in top3 %}
+                    <li>
+                        <div class="photo">
+                            {% if user.user.get_profile.avatar %}
+                                {% thumbnail user.user.get_profile.avatar '105x105' crop='center' as im %}
+                                    <img src="{{ im.url }}" alt="">
+                                {% endthumbnail %}
+                            {% endif %}
+                        </div>
+                        <span class="top-info">Топ {{ forloop.counter }}</span>
+                    </li>
+                {% endfor %}
+            {% endif %}
+            {% if top_week %}
+                {% for user in top_week %}
+                    <li>
+                        <div class="photo">
+                            {% if user.user.get_profile.avatar %}
+                                {% thumbnail user.user.get_profile.avatar '105x105' crop='center' as im %}
+                                    <img src="{{ im.url }}" alt="">
+                                {% endthumbnail %}
+                            {% endif %}
+                        </div>
+                        <span class="info">Лучший за неделю</span>
+                    </li>
+                {% endfor %}
+            {% endif %}
+            {% if top_yesterday %}
+                {% for user in top_yesterday %}
+                    <li>
+                        <div class="photo">
+                            {% if user.user.get_profile.avatar %}
+                                {% thumbnail user.user.get_profile.avatar '105x105' crop='center' as im %}
+                                    <img src="{{ im.url }}" alt="">
+                                {% endthumbnail %}
+                            {% endif %}
+                        </div>
+                        <span class="info">Лучший за вчера</span>
+                    </li>
+                {% endfor %}
+            {% endif %}
+        </ul>
+    </div>
+    {% endcomment %}
+{% endblock %}

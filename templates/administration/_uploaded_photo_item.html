@@ -1,0 +1,10 @@
+{% load thumbnail %}
+{% thumbnail photo.file '215x147' crop='center' as im %}
+    <li class="uploaded_photo"><div>
+        <input type="hidden" name="photos" value="{{ photo.pk }}" />
+        <div class="photo"><img src="{{ im.url }}" alt="" /></div>
+        <a href="#" class="delete">Удалить</a>
+        <input type="hidden" class="weight-input" name="weight-{{ photo.pk }}" value="{{ photo.weight }}" />
+    </div>
+    </li>
+{% endthumbnail %}

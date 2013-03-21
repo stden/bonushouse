@@ -1,0 +1,97 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Аукционы</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        <a href="{% url administration_auctions_add %}" class="add-button"><span>Добавить аукцион</span></a>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <form action="" method="post" id="bulk_action_form">{% csrf_token %}
+                <table class="list-table">
+                    <tr>
+                        <th class="check-cell">
+                            <span><em><input id="check-all" class="check" type="checkbox" /></em></span>
+                        </th>
+                        <th class="post-cell">
+                            <span><em><strong><b>опублик.</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>название</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>дата добавления</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>начальная ставка</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>шаг</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>завершен</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>победитель</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>код</b></strong></em></span>
+                        </th>
+                    </tr>
+                    {% for auction in auctions_list %}
+                        <tr class="{% if auction.is_published %}check-yes{% endif %}">
+                            <td>
+                                <input id="check-{{ auction.pk }}" class="check-bulk" type="checkbox" name="selected_items" value="{{ auction.pk }}" />
+                            </td>
+                            <td>
+                                <span class="checked-mark">&nbsp;</span>
+                            </td>
+                            <td>
+                                <span class="action-name"><a href="{{ auction.get_administration_edit_url }}">{{ auction.title }}</a></span>
+                            </td>
+                            <td>
+                                {{ auction.add_date }}
+                            </td>
+                            <td>
+                                {{ auction.initial_bid }} руб.
+                            </td>
+                            <td>
+                                {{ auction.bid_step }} руб.
+                            </td>
+                            <td>
+                                {% if auction.is_completed %}
+                                    да
+                                {% else %}
+                                    нет
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if auction.is_completed %}
+                                    {% if auction.winner %}
+                                        {{ auction.winner.get_profile.get_name }}
+                                        ({{ auction.get_latest_bid.amount }} руб.)
+                                    {% else %}
+                                        Нет ставок
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if auction.is_completed %}
+                                    {{ auction.get_coupon_code }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+                <input type="hidden" name="action" value="" />
+            </form>
+        </div>
+    </div>
+    <div class="footing-area">
+        {% include "_paginator.html" with page=auctions_list paginator=auctions_list.paginator %}
+        {% include "administration/_bulk_action_select.html" %}
+    </div>
+{% endblock %}

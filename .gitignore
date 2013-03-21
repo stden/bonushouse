@@ -1,4 +1,7 @@
 *.pyc
 .idea*
 media/
-
+search_index.db/
+bonushouse.zip
+webstat/
+bonushouse.iml

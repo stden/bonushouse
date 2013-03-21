@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <span class="container-title">{{ auction.title }}</span>
+        <div class="carousel-holder">
+            <div class="carousel">
+                <div class="gallery">
+                    <a id="prev" href="#">Prev</a>
+                    <a id="next" href="#">Next</a>
+                    <div id="slideshow">
+                        {% for photo in auction.get_photos_list %}
+                            {% thumbnail photo.file '609x369' crop='center' format='PNG' as im %}
+                                <img src="{{ im.url }}" alt="">
+                            {% endthumbnail %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="sale-info">
+                {% block bid_area %}
+                {% endblock %}
+                <ul class="add-info">
+                    <li class="counter-info">
+                        <span class="sale-counter">Осталось {{ auction.get_time_left_string }}</span>
+                        <div class="progress-bar"><div style="width:{{ auction.get_time_passed_percent }}%"></div></div>
+                    </li>
+                    {% include "_share_link_block.html" %}
+                </ul>
+            </div>
+        </div>
+        <div class="info-section">
+            <div class="wide-column">
+                <div class="autowrap">
+                    <h2 style="float: left;padding-right: 20px; ">
+                        Об акции
+                    </h2>
+                    <div id="vk_like" style="display: inline-block;padding-top: 5px;"></div>
+                    <script type="text/javascript">
+                        VK.Widgets.Like("vk_like", {type: "full"});
+                    </script>
+                </div>
+                {{ auction.description|safe }}
+            </div>
+            <div class="column">
+                {% if auction.partner %}
+                    <h2>{{ auction.partner.title }}</h2>
+                    <ul class="item-info">
+                        {% if auction.partner.site %}
+                            <li class="site"><a href="{{ auction.partner.site }}" target="_blank">Посмотреть сайт</a></li>
+                        {% endif %}
+                        {% if auction.partner.schedule %}
+                            <li class="schedule">
+                                <dl>
+                                    <dt>Время работы:</dt>
+                                    <dd>{{ auction.partner.schedule|safe }}</dd>
+                                </dl>
+                            </li>
+                        {% endif %}
+                        {% if auction.partner.phone %}
+                            <li class="phone-number">
+                                <dl>
+                                    <dt>Телефон:</dt>
+                                    <dd>{{ auction.partner.phone }}</dd>
+                                </dl>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

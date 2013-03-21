@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <h2>Новости</h2>
+        <ul class="news-list">
+            {% for post in object_list %}
+                <li>
+                    <div class="img-holder">
+                        {% thumbnail post.image '215x147' crop='center' as im %}
+                        <img src="{{ im.url }}" width="215" height="147" alt="">
+                        {% endthumbnail %}
+                    </div>
+                    <div class="text-holder">
+                        <span class="news-title"><a href="{{ post.get_url }}">{{ post.title }}</a></span>
+                        <em class="date">{{ post.add_date|date:'d.m.Y' }}</em>
+                        <div class="frame">
+                            {{ post.intro_text|safe }}
+                            <a href="{{ post.get_url }}" class="link-more">Подробнее</a>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% if page_obj %}
+        {% include "_paginator.html" with page=page_obj paginator=paginator %}
+    {% endif %}
+{% endblock %}

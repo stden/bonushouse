@@ -1,0 +1,68 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    {% if not partner %}
+        <script type="text/javascript">
+            $(function() {
+                function updatePermalink() {
+                    title = $('input#id_title').val();
+                    title_translit = toTranslit(title);
+                    friendly_url = ('/partners/'+title_translit+'/').toLowerCase();
+                    $('input#id_friendly_url').val(friendly_url);
+                }
+                $('input#id_title').keyup(updatePermalink);
+            });
+        </script>
+    {% endif %}
+    <ul class="breadcrumbs" xmlns="http://www.w3.org/1999/html">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_partners_index %}">Партнеры</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% include "_form_errors.html" with form=partner_form %}
+            {% include "_form_errors.html" with form=seo_meta_form %}
+            {% include "_form_errors.html" with form=seo_url_form %}
+            <table class="info-table">
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ partner_form.title.label_tag }}:</span></td>
+                    <td>{{ partner_form.title }}</td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">Фотографии:</span></td>
+                    <td>
+                        {% include "administration/_plupload_widget.html" with object=partner %}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ partner_form.description.label_tag }}:</span></td>
+                    <td>
+                        {{ partner_form.description }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ partner_form.site.label_tag }}:</span></td>
+                    <td>
+                        <div class="contacts-area">
+                            <div class="phone-holder">
+                                <span class="phone-text">{{ partner_form.phone.label_tag }}</span>
+                                {{ partner_form.phone }}
+                            </div>
+                            {{ partner_form.site }}
+                        </div>
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ partner_form.admin_user.label_tag }}:</span></td>
+                    <td>
+                        {{ partner_form.admin_user }}
+                    </td>
+                </tr>
+                {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
+            </table>
+            <div class="btns-holder">
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

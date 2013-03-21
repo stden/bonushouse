@@ -1,0 +1,32 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_settings %}">Настройки</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        {{ offers_form.media }}
+        {% include "_form_errors.html" with form=form %}
+        <form action="" method="post">{% csrf_token %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ form.title.label_tag }}:</span></td>
+                    <td>
+                        {{ form.title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ form.email.label_tag }}:</span></td>
+                    <td>
+                        {{ form.email }}
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-area">
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </form>
+    </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Рассылка</span></li>
+    </ul>
+    <div class="breadcrumbs">
+        Доступно кредитов для SMS: {{ sms_credits }}
+    </div>
+    <div class="link-btn-holder">
+        <a href="{% url administration_emails_campaigns_add %}" class="add-button"><span>Добавить кампанию</span></a>
+        <a href="{% url administration_emails_add %}" class="add-button"><span>Добавить письмо</span></a>
+        <a href="{% url administration_sms_add %}" class="add-button"><span>Добавить SMS</span></a>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <th class="check-cell">
+                        <span><em>
+
+                        </em></span>
+                    </th>
+                    <th class="title-cell">
+                        <span><em><strong><b>название</b></strong></em></span>
+                    </th>
+                    <th class="rec-cell last">
+                        <span><em><strong><b>кол-во.<br /> получателей</b></strong></em></span>
+                    </th>
+                </tr>
+                {% for campaign in campaigns %}
+                    <tr>
+                        <td>
+                            Кампания
+                        </td>
+                        <td>
+                            <span class="action-name"><a href="{{ campaign.get_administration_edit_url }}">{{ campaign.title }}</a></span>
+                        </td>
+                        <td>
+                            {{ campaign.get_subscribers_count }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td colspan="2">
+                            <table class="list-table">
+                                <tr>
+                                    <th class="check-cell">
+                                        <span><em>
+
+                                        </em></span>
+                                    </th>
+                                    <th class="title-cell">
+                                        <span><em><strong><b>тема</b></strong></em></span>
+                                    </th>
+                                    <th class="rec-cell last">
+                                        <span><em><strong><b>дата отправки</b></strong></em></span>
+                                    </th>
+                                    <th class="rec-cell last">
+                                        <span><em><strong><b>отправлено</b></strong></em></span>
+                                    </th>
+                                </tr>
+                                {% for email in campaign.newsletteremail_set.all %}
+                                    <tr>
+                                        <td>Письмо</td>
+                                        <td>
+                                            <span class="action-name">
+                                                <a href="{{ email.get_administration_edit_url }}">
+                                                    {{ email.subject }}
+                                                </a>
+                                            </span>
+                                        </td>
+                                        <td>{{ email.send_date|date:'d.m.Y' }}</td>
+                                        <td>
+                                            {% if email.is_sent %}
+                                                Да
+                                            {% else %}
+                                                Нет
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {% for sms in campaign.newslettersms_set.all %}
+                                    <tr>
+                                        <td>SMS</td>
+                                        <td>
+                                            <span class="action-name">
+                                                <a href="{{ sms.get_administration_edit_url }}">
+                                                    {{ sms.text }}
+                                                </a>
+                                            </span>
+                                        </td>
+                                        <td>{{ sms.send_date|date:'d.m.Y' }}</td>
+                                        <td>
+                                            {% if sms.is_sent %}
+                                                Да
+                                            {% else %}
+                                                Нет
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </table>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

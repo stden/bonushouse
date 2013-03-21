@@ -1,0 +1,47 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_ideas %}">Бизнес-идеи</a></li>
+        <li><span>{{ idea.title }}</span></li>
+    </ul>
+    <div class="container">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% if reward_form.errors %}
+                {% include "_form_errors.html" with form=reward_form %}
+            {% endif %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">Заголовок:</span></td>
+                    <td>{{ idea.title }}</td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">Описание:</span></td>
+                    <td>{{ idea.text }}</td>
+                </tr>
+                {% if idea.attachment %}
+                    <tr>
+                        <td><span class="title-text">Файл:</span></td>
+                        <td><a href="{{ idea.attachment.url }}">{{ idea.attachment.name }}</a></td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td><span class="title-text">Автор:</span></td>
+                    <td>{{ idea.user.get_profile.get_name }}</td>
+                </tr>
+            {% if not idea.is_reviewed %}
+                <tr>
+                    <td><span class="title-text">{{ reward_form.reward.label_tag }}:</span></td>
+                    <td>{{ reward_form.reward }} бонусов</td>
+                </tr>
+            {% endif %}
+            </table>
+            <div class="btns-banner">
+                <input class="button del" type="button" value="Удалить идею" onclick="if(confirm('Удалить эту идею? Вы уверены?')) {window.location='{{ idea.get_administration_delete_url }}';}" />
+                {% if not idea.is_reviewed %}
+                <input class="button save" type="submit" value="Наградить" />
+                {% endif %}
+            </div>
+        </form>
+    </div>
+{% endblock %}

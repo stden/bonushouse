@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container" id="buy_offer_page">
+        <h2 class="underline">Оплатить</h2>
+    {% include "_form_errors.html" with form=buy_form %}
+        <form action="" method="post" id="buy_offer_form">{% csrf_token %}
+            <div class="offer_info autowrap underline">
+                <div class="image">
+                    {% thumbnail offer.get_photos_list.0.file '215x145' crop='center' format='PNG' as im %}
+                        <img src="{{ im.url }}" alt="">
+                    {% endthumbnail %}
+                </div>
+                <div class="title">{{ offer.title }}</div>
+                <div class="quantity">
+                    <a href="#" class="minus">
+                        <img src="{{ STATIC_URL }}images/quantity_minus.png" alt="-"/>
+                    </a>
+                    {{ buy_form.quantity }}
+                    <a href="#" class="plus">
+                        <img src="{{ STATIC_URL }}images/quantity_plus.png" alt="+"/>
+                    </a>
+                </div>
+                <div class="price">
+                    <div class="money">
+                        {{ offer.coupon_price_money }} р.
+                    </div>
+                    <div class="bonuses">
+                        {{ offer.coupon_price_bonuses }} бонусов
+                    </div>
+                </div>
+            </div>
+            {% include "offers/_choose_payment_method.html" %}
+        <div>
+            <input type="hidden" name="price_money" value="{{ offer.coupon_price_money }}" />
+            <input type="hidden" name="price_bonuses" value="{{ offer.coupon_price_bonuses }}" />
+            <input type="hidden" name="temp_price_money" value="{{ offer.coupon_price_money }}" />
+            <input type="hidden" name="temp_price_bonuses" value="{{ offer.coupon_price_bonuses }}" />
+            <input type="hidden" name="money_ballance" value="{{ user.get_profile.get_money_ballance }}" />
+            <input type="hidden" name="bonuses_ballance" value="{{ user.get_profile.get_bonuses_ballance }}" />
+            {{ buy_form.payment_type }}
+        </div>
+        </form>
+        <div class="align-right" style="padding-top: 20px">
+            <a href="{% url cart %}" class="orange_button">Вернуться</a>
+        </div
+    </div>
+{% endblock %}

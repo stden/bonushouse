@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>При оформлении платежа произошла ошибка</h2>
+    {% if err_msg %}
+        <p>{{ err_msg }}</p>
+    {% endif %}
+{% endblock %}

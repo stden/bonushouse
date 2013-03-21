@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+
+{% if account %}
+
+<p>Акаунт успешно активирован</p>
+
+<p><a href="{% url auth_login %}">Войти</a></p>
+
+{% else %}
+
+<p>Ошибка при активации акаунта</p>
+
+{% endif %}
+
+{% endblock %}

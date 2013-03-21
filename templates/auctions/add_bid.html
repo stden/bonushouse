@@ -1,0 +1,40 @@
+{% extends "auctions/view_base.html" %}
+{% block bid_area %}
+    {% if user.get_profile.get_money_ballance >= auction.get_actual_price %}
+        <form action="" method="post" id="add_bid_form">{% csrf_token %}
+            {% if user_card_number %}
+                <h2>Номер вашей карты или договора: {{ user_card_number }}</h2>
+            {% endif %}
+            {% include "_form_errors.html" with form=bid_form %}
+            <p>На вашем счету будет заблокирована сумма:</p>
+            <div class="price-info">
+                <input type="hidden" name="amount" value="{{ auction.get_actual_price }}" />
+                <a href="javascript:$('#add_bid_form').submit();" class="link-button03" style="font-size: 28px; font-weight: normal; line-height: 0.8;padding-top: 7px;height: 58px;">
+                    Подтвер<br/>дить
+                </a>
+                <span class="old-price">{{ auction.initial_price }}<br/></span>
+                <span class="new-price">{{ auction.get_actual_price }} р.</span>
+            </div>
+        </form>
+    {% else %}
+        <p>
+            У вас недостаточно денег на счету<br/>
+            Требуется {{ auction.get_actual_price }} руб.<br/>
+            У вас на счету {{ user.get_profile.get_money_ballance }} руб.
+        </p>
+        <div class="price-info">
+            <a href="{% url deposit_account %}" class="link-button03" style="font-size: 28px; font-weight: normal; line-height: 0.8;padding-top: 7px;height: 58px;">
+                Пополнить счет
+            </a>
+            <span class="old-price">{{ auction.initial_price }}<br/></span>
+            <span class="new-price">{{ auction.get_actual_price }} р.</span>
+        </div>
+    {% endif %}
+    <div class="bid_log">
+        <ul>
+            {% for bid in auction.get_bids_list %}
+                <li><span class="name">{{ bid.user.get_profile.get_name }}</span> - <span class="amount">{{ bid.amount }} руб.</span></li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

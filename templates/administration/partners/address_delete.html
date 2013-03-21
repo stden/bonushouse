@@ -1,0 +1,24 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs" xmlns="http://www.w3.org/1999/html">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_partners_index %}">Партнеры</a></li>
+        <li><a href="{% url administration_partners_address_index partner.pk %}">{{ partner.title }}</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% include "_form_errors.html" with form=form %}
+            <table class="info-table">
+                <tr class="pre-underline">
+                    <td><span class="title-text">Вы уверены, что хотите удалить этот адрес?:</span></td>
+                    <td>{{ form.title }}</td>
+                </tr>
+            </table>
+            <div class="btns-holder">
+                <a href="{% url administration_partners_address_index partner.pk %}" class="button">Отмена</a>
+                <input class="button save" type="submit" value="Удалить" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

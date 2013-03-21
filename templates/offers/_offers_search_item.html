@@ -1,0 +1,23 @@
+{% load thumbnail %}
+<li>
+    <div class="img-holder">
+        {% thumbnail offer.get_photos_list.0.file '215x147' crop='center' as im %}
+        <a href="{{ offer.get_url }}"><img src="{{ im.url }}" width="215" height="147" alt=""></a>
+        {% endthumbnail %}
+    </div>
+    <div class="text-holder">
+        <span class="results-title"><a href="{{ offer.get_url }}">{{ offer.title }}</a></span>
+        <p>{{ offer.short_description }}</p>
+        <div class="add-row">
+            <a href="{{ offer.get_url }}" class="link-more">Подробнее</a>
+            <div class="info">
+											<span class="price-info">
+												Цена:
+												<span class="old-price">{{ offer.initial_price }} р.</span>
+												<span class="new-price">{{ offer.discount_price }}р.</span>
+											</span>
+                <span class="sale-info">Скидка: <span>{{ offer.get_discount_percent }}%</span></span>
+            </div>
+        </div>
+    </div>
+</li>

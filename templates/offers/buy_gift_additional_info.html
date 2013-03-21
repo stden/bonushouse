@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container" id="buy_offer_page">
+        <form action="" method="post" id="buy_offer_form">{% csrf_token %}
+            <div class="offer_info autowrap underline">
+                <div class="image">
+                    {% thumbnail offer.get_photos_list.0.file '215x145' crop='center' format='PNG' as im %}
+                        <img src="{{ im.url }}" alt="">
+                    {% endthumbnail %}
+                </div>
+                <div class="title">{{ offer.title }}</div>
+                <div class="price">
+                    <div class="money">
+                        {{ offer.coupon_price_money }} р.
+                    </div>
+                    <div class="bonuses">
+                        {{ offer.coupon_price_bonuses }} бонусов
+                    </div>
+                </div>
+            </div>
+            <h2 class="underline">Для отправки подарка вы должны указать дополнительную информацию</h2>
+            {% include "_form_errors.html" with form=additional_info_form %}
+            {% include "_form_errors.html" with form=buy_form %}
+            <div class="autowrap">
+            <div class="form_left_part">
+            {% for field in additional_info_form %}
+                {% if forloop.counter == 7 %}
+                    </div>
+                    <div class="form_right_part">
+                {% endif %}
+                {% if field.is_hidden %}
+                    {{ field }}
+                {% else %}
+                    <div class="form_row">
+                        {{ field.label_tag }}
+                        {{ field }}<br/>
+                        <i>{{ field.help_text }}</i>
+                    </div>
+                {% endif %}
+            {% endfor %}
+            </div>
+            </div>
+            {% include "offers/_choose_payment_method.html" %}
+        <div>
+            <input type="hidden" name="price_money" value="{{ offer.coupon_price_money }}" />
+            <input type="hidden" name="price_bonuses" value="{{ offer.coupon_price_bonuses }}" />
+            <input type="hidden" name="temp_price_money" value="{{ offer.coupon_price_money }}" />
+            <input type="hidden" name="temp_price_bonuses" value="{{ offer.coupon_price_bonuses }}" />
+            <input type="hidden" name="money_ballance" value="{{ user.get_profile.get_money_ballance }}" />
+            <input type="hidden" name="bonuses_ballance" value="{{ user.get_profile.get_bonuses_ballance }}" />
+            {{ buy_form.payment_type }}
+        </div>
+        <div class="quantity">
+        <input type="hidden" name="quantity" value="1" />
+        </div>
+        </form>
+    </div>
+{% endblock %}

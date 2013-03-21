@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container" id="buy_offer_page">
+        <form action="" method="post" id="buy_offer_form">{% csrf_token %}
+            <h2 class="underline">Для продолжения покупки вы должны указать дополнительную информацию о себе</h2>
+            {% include "_form_errors.html" with form=additional_info_form %}
+            <div class="autowrap">
+                <div class="form_left_part">
+                    {% for field in additional_info_form %}
+                        {% if forloop.counter == 7 %}
+                            </div>
+                            <div class="form_right_part">
+                        {% endif %}
+                        {% if field.is_hidden %}
+                            {{ field }}
+                        {% else %}
+                            <div class="form_row">
+                                {{ field.label_tag }}
+                                {{ field }}<br/>
+                                <i>{{ field.help_text }}</i>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                    </div>
+            </div>
+            <div class="align-center">
+                <input type="submit" value="Продолжить" class="orange_button" />
+                <a href="{{ offer.get_url }}" class="orange_button">Отмена</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}

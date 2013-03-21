@@ -1,0 +1,15 @@
+{% load thumbnail %}
+<li>
+    <p><a href="{{ auction.get_url }}">{{ auction.title }}</a></p>
+    <div class="img-holder">
+        {% thumbnail auction.get_photos_list.0.file '215x145' crop='center' format='PNG' as im %}
+            <a href="{{ auction.get_url }}"><img src="{{ im.url }}" alt=""></a>
+        {% endthumbnail %}
+    </div>
+    <div class="price-area">
+        <span class="coupon"><span class="number">{{ auction.get_bids_count }}</span> ставок</span>
+        <div class="price">
+            <span class="new-price">{{ auction.get_actual_price }}</span> руб.
+        </div>
+    </div>
+</li>

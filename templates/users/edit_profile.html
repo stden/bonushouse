@@ -1,0 +1,13 @@
+{% extends "users/cabinet.html" %}
+{% block bigtitle %}
+    <h2>Редактировать профиль</h2>
+{% endblock %}
+{% block content_cabinet %}
+    <div class="content">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% include "_form_errors.html" with form=profile_form %}
+            {% include "_form.html" with form=profile_form %}
+            <p><input type="submit" value="Сохранить" /></p>
+        </form>
+    </div>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="twocolumns">
+        <div class="twocolumns-holder">
+            <div class="twocolumns-frame">
+                <div class="content">
+                    <h2 class="underline">Обратная связь</h2>
+                    <div class="feedback-form">
+                        {% if form.errors %}
+                            {% include "_form_errors.html" with form=form %}
+                        {% endif %}
+                        <form action="" method="post">{% csrf_token %}
+                            <fieldset>
+                                <div class="row">
+                                    {{ form.name.label_tag }}
+                                    {{ form.name }}
+                                </div>
+                                <div class="row">
+                                    {{ form.email.label_tag }}
+                                    {{ form.email }}
+                                </div>
+                                <div class="row">
+                                    {{ form.message.label_tag }}
+                                    {{ form.message }}
+                                </div>
+                                <div class="btn-row">
+                                    <input class="btn-feedback" type="submit" value="Отправить" />
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+                <div class="sidebar">
+                    <h2 class="underline">Контакты</h2>
+                    <ul class="item-info">
+                        <li style="background: none; padding-left: 10px;padding-right: 0;width: auto;">
+                            {{ contacts_text|safe }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

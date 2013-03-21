@@ -1,0 +1,85 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: #292b2d;
+}
+#bodywrap {
+    width: 1000px;
+    margin: 0 auto;
+}
+.autowrap {
+    overflow: hidden;
+}
+.align_center {
+    text-align: center;
+}
+div.left {
+    float: left;
+}
+div.right {
+    float: right;
+}
+.barcode_wrap {
+    padding-top: 70px;
+}
+.barcode_wrap .left {
+    font-size: 71px;
+    text-transform: uppercase;
+}
+.barcode_wrap h2 {
+    font-size: 39px;
+    font-weight: normal;
+    padding: 0;
+    margin: 0;
+}
+#content {
+    min-height: 500px;
+}
+#footer {
+    color: #5f6a74;
+    font-weight: bold;
+}
+
+#footer .left, #footer .right {
+    padding-top: 35px;
+}
+.end_date {
+    padding-bottom: 30px;
+    font-size: 33px;
+}
+.end_date, .offer_title {
+    text-align: center;
+}
+.addresses li {
+    display: block;
+    padding: 0;
+    margin: 0;
+    padding-bottom: 30px;
+    position: relative;
+}
+.addresses dl {
+    width: 335px;
+    float: right;
+    font-size: 21px;
+    font-weight: bold;
+}
+.addresses dt, .addresses dd {
+    display: block;
+    padding: 0;
+    margin: 0;
+}
+.addresses dd {
+    padding-bottom: 25px;
+}
+.map {
+    width: 600px;
+    height: 250px;
+    float: left;
+}
+.map_overlay {
+    position: absolute;
+    padding-left: 290px;
+    padding-top: 86px;
+    width: 310px;
+    height: 164px;
+}

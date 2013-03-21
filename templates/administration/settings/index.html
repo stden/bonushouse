@@ -1,0 +1,285 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Настройки</span></li>
+    </ul>
+    <div class="container">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% include "_form_errors.html" with form=settings_form %}
+            <table class="info-table">
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>SEO</h2></td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ settings_form.META_TITLE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.META_TITLE }}<br/>
+                        {{ settings_form.META_TITLE.help_text }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ settings_form.META_DESCRIPTION.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.META_DESCRIPTION }}<br/>
+                        {{ settings_form.META_DESCRIPTION.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.META_KEYWORDS.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.META_KEYWORDS }}<br/>
+                        {{ settings_form.META_KEYWORDS.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Аукционы</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.AUCTIONS_BID_ADD_TIME.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.AUCTIONS_BID_ADD_TIME }} <br/>
+                        {{ settings_form.AUCTIONS_BID_ADD_TIME.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.AUCTIONS_BID_MIN_INTERVAL.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.AUCTIONS_BID_MIN_INTERVAL }} <br/>
+                        {{ settings_form.AUCTIONS_BID_MIN_INTERVAL.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Бонусы</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.BONUS_PRICE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.BONUS_PRICE }} <br/>
+                        {{ settings_form.BONUS_PRICE.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Контакты</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CONTACTS_ADDRESS.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CONTACTS_ADDRESS }} <br/>
+                        {{ settings_form.CONTACTS_ADDRESS.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CONTACTS_EMAIL_ADDRESS.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CONTACTS_EMAIL_ADDRESS }} <br/>
+                        {{ settings_form.CONTACTS_EMAIL_ADDRESS.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CONTACTS_EMAIL_SUBJECT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CONTACTS_EMAIL_SUBJECT }} <br/>
+                        {{ settings_form.CONTACTS_EMAIL_SUBJECT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CONTACTS_EMAIL_TEMPLATE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CONTACTS_EMAIL_TEMPLATE }} <br/>
+                        {{ settings_form.CONTACTS_EMAIL_TEMPLATE.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Форма "Перезвонить вам"</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CALL_ME_EMAIL_ADDRESS.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CALL_ME_EMAIL_ADDRESS }} <br/>
+                        {{ settings_form.CALL_ME_EMAIL_ADDRESS.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CALL_ME_EMAIL_SUBJECT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CALL_ME_EMAIL_SUBJECT }} <br/>
+                        {{ settings_form.CALL_ME_EMAIL_SUBJECT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CALL_ME_EMAIL_TEMPLATE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CALL_ME_EMAIL_TEMPLATE }} <br/>
+                        {{ settings_form.CALL_ME_EMAIL_TEMPLATE.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text"><a name="call_me_departments"></a>Доступные отделы(темы письма) в форме обратного звонка:</span></td>
+                    <td>
+                        <div class="autowrap" style="padding-bottom: 60px;">
+                            <a href="{% url administration_callme_subjects_add %}" class="add-button"><span>Добавить отдел</span></a>
+                        </div>
+                        <table class="list-table" style="margin-top: 10px;">
+                            <tr>
+                                <th><span><em><strong><b>Название</b></strong></em></span></th>
+                                <th><span><em><strong><b>Адрес E-mail</b></strong></em></span></th>
+                                <th><span><em><strong><b>Действия</b></strong></em></span></th>
+                            </tr>
+                            {% for department in call_me_departments %}
+                                <tr>
+                                    <td>{{ department.title }}</td>
+                                    <td>{{ department.email }}</td>
+                                    <td>
+                                        <a href="{% url administration_callme_subjects_edit department.pk %}">Редактировать</a>
+                                        <a href="{% url administration_callme_subjects_delete department.pk %}" onclick="return confirm('Удалить {{ department.title }}? Вы уверены?')">Удалить</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Пригласить друга</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.REFER_FRIEND_DESCRIPTION_TEXT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.REFER_FRIEND_DESCRIPTION_TEXT }} <br/>
+                        {{ settings_form.REFER_FRIEND_DESCRIPTION_TEXT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.REFER_FRIEND_EMAIL_SUBJECT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.REFER_FRIEND_EMAIL_SUBJECT }} <br/>
+                        {{ settings_form.REFER_FRIEND_EMAIL_SUBJECT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.REFER_FRIEND_EMAIL_TEMPLATE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.REFER_FRIEND_EMAIL_TEMPLATE }} <br/>
+                        {{ settings_form.REFER_FRIEND_EMAIL_TEMPLATE.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.REFER_FRIEND_BONUSES_COUNT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.REFER_FRIEND_BONUSES_COUNT }} <br/>
+                        {{ settings_form.REFER_FRIEND_BONUSES_COUNT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Подарочные купоны</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.GIFT_EMAIL_SUBJECT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.GIFT_EMAIL_SUBJECT }} <br/>
+                        {{ settings_form.GIFT_EMAIL_SUBJECT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.GIFT_EMAIL_TEMPLATE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.GIFT_EMAIL_TEMPLATE }} <br/>
+                        {{ settings_form.GIFT_EMAIL_TEMPLATE.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Уведомления</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.NOTIFICATIONS_COMPLETE_ORDER.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ORDER }} <br/>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ORDER.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.NOTIFICATIONS_COMPLETE_ABONEMENTORDER.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ABONEMENTORDER }} <br/>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ABONEMENTORDER.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.NOTIFICATIONS_COMPLETE_ADDITIONALSERVICES_ORDER.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ADDITIONALSERVICES_ORDER }} <br/>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ADDITIONALSERVICES_ORDER.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.NOTIFICATIONS_COMPLETE_ADDITIONALSERVICES_ORDER.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ADDITIONALSERVICES_ORDER }} <br/>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_ADDITIONALSERVICES_ORDER.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.NOTIFICATIONS_COMPLETE_AUCTION.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_AUCTION }} <br/>
+                        {{ settings_form.NOTIFICATIONS_COMPLETE_AUCTION.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Поделиться ссылкой</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.SHARE_LINK_EMAIL_SUBJECT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.SHARE_LINK_EMAIL_SUBJECT }} <br/>
+                        {{ settings_form.SHARE_LINK_EMAIL_SUBJECT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.SHARE_LINK_EMAIL_TEMPLATE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.SHARE_LINK_EMAIL_TEMPLATE }} <br/>
+                        {{ settings_form.SHARE_LINK_EMAIL_TEMPLATE.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Форма партнерам</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.FOR_PARTNERS_FORM_EMAIL.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.FOR_PARTNERS_FORM_EMAIL }} <br/>
+                        {{ settings_form.FOR_PARTNERS_FORM_EMAIL.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.FOR_PARTNERS_FORM_SUBJECT.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.FOR_PARTNERS_FORM_SUBJECT }} <br/>
+                        {{ settings_form.FOR_PARTNERS_FORM_SUBJECT.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.FOR_PARTNERS_FORM_TEMPLATE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.FOR_PARTNERS_FORM_TEMPLATE }} <br/>
+                        {{ settings_form.FOR_PARTNERS_FORM_TEMPLATE.help_text }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td colspan="2"><h2>Правила клубов</h2></td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ settings_form.CLUB_RULES_FILE.label_tag }}:</span></td>
+                    <td>
+                        {{ settings_form.CLUB_RULES_FILE }} <br/>
+                        {{ settings_form.CLUB_RULES_FILE.help_text }}
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-holder">
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

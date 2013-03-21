@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% load rupluralize %}
+{% load star_rating %}
+{% block content %}
+    <script type="text/javascript">
+        $(function() {
+            $('a.asdgift').click(function() {
+                $.blockUI({
+                    message:$('#gift_offer_overlay'),
+                    css:{width:'760px',
+                        left:'30%',
+                        top:'10%',
+                        textAlign:'left',
+                        cursor:'default',
+                        borderRadius:'10px',
+                        padding:'20px'
+                    }
+                });
+                return false;
+            });
+            $('.offer_tabs').tabs();
+        });
+    </script>
+    <script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
+    <script type="text/javascript">
+        // Как только будет загружен API и готов DOM, выполняем инициализацию
+        ymaps.ready(init);
+
+        function init () {
+            {% for address in offer.addresses.all %}
+                var mymap_{{ address.pk }} = new ymaps.Map('map-{{ address.pk }}', {
+                    center: [{{ address.get_geocode_longitude }}, {{ address.get_geocode_latitude }}],
+                    zoom: 14
+                });
+            {% endfor %}
+        }
+    </script>
+    <div class="container">
+        <span class="container-title">
+            {{ offer.title }}
+        </span>
+        <div class="carousel-holder">
+            <div class="carousel">
+                <div class="gallery">
+                    <a id="prev" href="#">Prev</a>
+                    <a id="next" href="#">Next</a>
+                    <div id="slideshow">
+                        {% for photo in offer.get_photos_list %}
+                            {% thumbnail photo.file '609x369' crop='center' format='PNG' as im %}
+                                <img src="{{ im.url }}" alt="">
+                            {% endthumbnail %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="sale-info">
+                {% if offer.can_buy %}
+                    <div class="price-info">
+                        <a href="{% url offers_buy offer.pk %}" class="link-button03">Купить</a>
+                        <span class="old-price">{{ offer.initial_price }} р.</span>
+                        <span class="new-price">{{ offer.discount_price }}р.</span>
+                    </div>
+                    <div class="payment_methods_link"><a href="/instruction/" target="_blank">Способы оплаты</a></div>
+                {% else %}
+                    <ul class="add-info">
+                        <li class="number-info">
+                            Вы не можете купить этот купон.
+                        </li>
+                    </ul>
+                {% endif %}
+                <ul class="add-info">
+                    <li class="number-info">
+                        <dl>
+                            <dt>{{ offer.get_bought_count }}</dt>
+                            <dd>купонов<br /> уже купили</dd>
+                        </dl>
+                    </li>
+                    <li class="coupon-info">
+                        <dl>
+                            <dt>Вы получите<br /> за покупку:</dt>
+                            <dd><span class="number">{{ offer.money_bonuses_count }}</span> бонусов</dd>
+                        </dl>
+                    </li>
+                    <li class="counter-info">
+                        <span class="sale-counter">Осталось {{ offer.get_time_left_string }}</span>
+                        <div class="progress-bar"><div style="width:{{ offer.get_time_passed_percent }}%"></div></div>
+                    </li>
+                    <li class="cart-gift-buttons">
+                        <a href="{% url offers_add_to_cart offer.pk %}" class="cart">Отложить</a>
+                        <a href="{% url offers_add_to_cart offer.pk %}?is_gift=1" class="gift">Подарить</a>
+                    </li>
+                    {% include "_share_link_block.html" %}
+                </ul>
+            </div>
+        </div>
+        <div class="info-section">
+            <div class="wide-column">
+                <div class="autowrap">
+                    <div id="vk_like" style="display: inline-block;padding-top: 5px;"></div>
+                    <script type="text/javascript">
+                        VK.Widgets.Like("vk_like", {type: "full"});
+                    </script>
+                </div>
+                <div class="offer_tabs">
+                    <ul>
+                        <li><a href="#offer-about">Об акции</a></li>
+                        <li><a href="#offer-terms">Условия</a></li>
+                        {% comment %}
+                        <li><a href="#offer-comments">Вопросы</a></li>
+                        {% endcomment %}
+                        <li><a href="#offer-addresses">Место</a></li>
+                    </ul>
+                    <div id="offer-about">
+                        <h2>
+                            Об акции
+                        </h2>
+                        {{ offer.description|safe }}
+                    </div>
+                    <div id="offer-terms">
+                        <h2>Условия акции</h2>
+                        {{ offer.terms|safe }}
+                    </div>
+                    {% comment %}
+                    <div id="offer-comments">
+                        <h2>Вопросы</h2>
+                        <div id="vk_comments"></div>
+                        <script type="text/javascript">
+                            VK.Widgets.Comments("vk_comments", {limit: 10, width: "556", attach: "*"});
+                        </script>
+                    </div>
+                    {% endcomment %}
+                    <div id="offer-addresses">
+                        <h2>Место</h2>
+                        <ul>
+                            {% for address in offer.addresses.all %}
+                                <li class="autowrap">
+                                    <h3>{{ address.title }}</h3>
+                                    <strong>Адрес:</strong> {{ address.address }}<br/>
+                                    <strong>Метро:</strong> {{ address.metro.name }}<br/>
+                                    <strong>Телефон:</strong> {{ address.phone }}<br/>
+                                    <strong>График:</strong> {{ address.schedule }}<br/>
+                                    <div class="map" id="map-{{ address.pk }}"></div>
+                                    <div class="map_overlay"><img src="{{ STATIC_URL }}images/map_marker.png" alt="" /></div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+
+
+                {% comment %}
+                <div class="reviews-list">
+                    <h2>Отзывы</h2>
+                    <div class="your-review">
+                        <form action="" method="post">{% csrf_token %}
+                            {% include "_form_errors.html" with form=feedback_form %}
+                            <fieldset>
+                                {{ feedback_form.text }}
+                                <div class="rating-holder">
+                                    <span class="rating-title">Ваша оценка:</span>
+                                    <div class="rating-container">
+                                        {% star_rating name='rating' initial=3 read_only=False %}
+                                    </div>
+                                    <input class="btn-review" type="submit" value="Отправить" />
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                    <ul>
+                        {% for feedback in offer.feedbacks.all %}
+                            <li class="autowrap">
+                                <div class="heading">
+                                    <div class="user-block">
+                                        <div class="photo">
+                                            {% if feedback.user.get_profile.avatar %}
+                                                {% thumbnail feedback.user.get_profile.avatar '90x74' crop='center' as im %}
+                                                    <img src="{{ im.url }}" alt=""  />
+                                                {% endthumbnail %}
+                                            {% endif %}
+                                        </div>
+                                        <div class="text">
+                                            <span class="name">{{ feedback.user.get_profile.get_name }}</span>
+                                            <span class="info">написал {{ user.userfeedbacks_set.all.count }} {{ user.userfeedbacks_set.count|rupluralize:'отзыв,отзыва,отзывов' }}</span>
+                                        </div>
+                                    </div>
+                                    <div class="user-rating">
+                                        {% with str_pk=feedback.pk|stringformat:'s' %}
+                                            {% star_rating name='feedback-rating'|add:str_pk initial=feedback.get_author_rating %}
+                                        {% endwith %}
+                                        <span class="row">Отзыв добавлен: <em class="date">{{ feedback.add_date|date:'d.m.Y' }}</em></span>
+                                    </div>
+                                </div>
+                                <div class="text-frame">
+                                    <p>{{ feedback.text }}</p>
+                                </div>
+                                {% if user.is_staff or can_write_replies %}
+                                    <form action="" method="post">{% csrf_token %}
+                                        <div class="answer-frame">
+                                            <strong class="answer-text">Ответ администрации:</strong>
+                                            <div class="row autowrap">
+                                                <textarea name="admin_reply" cols="30" rows="5" class="textarea">{{ feedback.admin_reply }}</textarea>
+                                                <input type="hidden" name="feedback_id" value="{{ feedback.pk }}" />
+                                            </div>
+                                            <div class="row autowrap" style="padding-top: 10px;">
+                                                <input class="btn-review" type="submit" name="admin-reply" value="Сохранить" />
+                                            </div>
+                                        </div>
+                                    </form>
+                                {% elif feedback.admin_reply %}
+                                    <div class="answer-frame">
+                                        <strong class="answer-text">Ответ администрации:</strong>
+                                        <div class="answer-holder">
+                                            <p>{{ feedback.admin_reply }}</p>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endcomment%}
+
+
+
+            </div>
+            <div class="column">
+                {% if offer.partner %}
+                    <h2><a href="{{ offer.partner.get_url }}">{{ offer.partner.title }}</a></h2>
+                    <ul class="item-info">
+                        {% if offer.partner.site %}
+                            <li class="site"><a href="{{ offer.partner.site }}" target="_blank">Посмотреть сайт</a></li>
+                        {% endif %}
+                        {% if offer.partner.schedule %}
+                            <li class="schedule">
+                                <dl>
+                                    <dt>Время работы:</dt>
+                                    <dd>{{ offer.partner.schedule|safe }}</dd>
+                                </dl>
+                            </li>
+                        {% endif %}
+                        {% if offer.partner.phone %}
+                            <li class="phone-number">
+                                <dl>
+                                    <dt>Телефон:</dt>
+                                    <dd>{{ offer.partner.phone }}</dd>
+                                </dl>
+                            </li>
+                        {% endif %}
+                    </ul>
+                {% endif %}
+            <ul class="item-info">
+                    <li style="background-image: none"><a href="{% url refer_friend %}">Пригласить друга</a></li>
+            </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

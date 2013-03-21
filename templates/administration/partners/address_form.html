@@ -1,0 +1,127 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs" xmlns="http://www.w3.org/1999/html">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_partners_index %}">Партнеры</a></li>
+        <li><a href="{% url administration_partners_address_index partner.pk %}">{{ partner.title }}</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {% include "_form_errors.html" with form=form %}
+            <table class="info-table">
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.title.label_tag }}:</span></td>
+                    <td>{{ form.title }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.address.label_tag }}:</span></td>
+                    <td>
+                        {{ form.address }}
+                        <script type="text/javascript">
+                            // Как только будет загружен API и готов DOM, выполняем инициализацию
+                            $('#id_address').keypress(function(e) {
+                                if(e.keyCode==13) {
+                                    $('#find-address').click();
+                                    return false;
+                                }
+                            });
+                            ymaps.ready(init);
+
+                            function init () {
+                                var myMap = new ymaps.Map("map", {
+                                            center: [59.938806,30.314278], // Центр питера
+                                            zoom: 12
+                                        }),
+                                        myCollection = new ymaps.GeoObjectCollection();
+                                myMap.controls
+                                    // Кнопка изменения масштаба
+                                        .add('zoomControl');
+
+                                $('#find-address').click(function () {
+                                    var search_query = $('#id_address').val();
+
+                                    ymaps.geocode('Санкт-Петербург '+search_query, {
+                                        results: 1,
+                                        boundedBy: myMap.getBounds()
+                                    }).then(function (res) {
+                                        myCollection.removeAll();
+                                        coords = res.geoObjects.get(0).geometry.getCoordinates();
+                                        $('#id_geocode_latitude').val(coords[1]);
+                                        $('#id_geocode_longitude').val(coords[0]);
+                                        myPlacemark = new ymaps.Placemark(coords, {
+                                            hintContent: 'Уточните место на карте'
+                                        }, {
+                                            draggable: true
+                                        });
+                                        myPlacemark.events.add('drag', function(e) {
+                                            coords = myPlacemark.geometry.getCoordinates();
+                                            $('#id_geocode_latitude').val(coords[1]);
+                                            $('#id_geocode_longitude').val(coords[0]);
+                                        });
+                                        myCollection.add(myPlacemark);
+                                        myMap.geoObjects.add(myCollection);
+                                        myMap.panTo(res.geoObjects.get(0).geometry.getCoordinates(), {flying:true});
+                                    });
+                                    return false;
+                                });
+                                if($('#id_geocode_latitude').val() && $('#id_geocode_longitude').val()) {
+                                    myCollection.removeAll();
+                                    coords = [parseFloat($('#id_geocode_longitude').val()), parseFloat($('#id_geocode_latitude').val())];
+                                    myPlacemark = new ymaps.Placemark(coords, {
+                                        hintContent: 'Уточните место на карте'
+                                    }, {
+                                        draggable: true
+                                    });
+                                    myPlacemark.events.add('drag', function(e) {
+                                        coords = myPlacemark.geometry.getCoordinates();
+                                        $('#id_geocode_latitude').val(coords[1]);
+                                        $('#id_geocode_longitude').val(coords[0]);
+                                    });
+                                    myCollection.add(myPlacemark);
+                                    myMap.geoObjects.add(myCollection);
+                                    myMap.panTo(coords, {flying:true});
+
+                                }
+                                else {
+                                    $('#find-address').click();
+                                }
+                            }
+                        </script>
+                        <a href="#" id="find-address">Найти</a>
+                        <div id="map" style="width: 700px; height: 300px"></div>
+                        {{ form.geocode_latitude }}
+                        {{ form.geocode_longitude }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.metro.label_tag }}:</span></td>
+                    <td>{{ form.metro }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.schedule.label_tag }}:</span></td>
+                    <td>{{ form.schedule }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.phone.label_tag }}:</span></td>
+                    <td>{{ form.phone }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.fitnesshouse_id.label_tag }}:</span></td>
+                    <td>{{ form.fitnesshouse_id }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-holder">
+                {% if address %}
+                <a href="{% url administration_partners_address_delete address.pk %}" class="button">Удалить</a>
+                {% endif %}
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

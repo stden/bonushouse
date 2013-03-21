@@ -1,0 +1,4 @@
+{% load i18n %}
+Активация акаунта на {{ site.domain }}:
+
+http://{{ site.domain }}{% url registration_activate activation_key %}

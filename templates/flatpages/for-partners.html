@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <h2 class="underline">{{ flatpage.title }}</h2>
+        <div class="info-box">
+            {{ flatpage.content|safe }}
+            <form action="" method="post">{% csrf_token %}
+                {% include "_form_errors.html" with form=for_partners_form %}
+                {% include "_form.html" with form=for_partners_form %}
+                <input type="hidden" name="form_id" value="for_partners_form" />
+                <p class="form_row">
+                    <input type="submit" value="Отправить" class="orange_button" />
+                </p>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,179 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <script type="text/javascript">
+        $(function() {
+            $('#id_partner').change(function() {
+                $('#addresses_wraper').html('');
+                if($(this).val()=='') {
+                    $('#addresses_wraper').html('<strong>Сначала выберите партнера</strong>');
+                }
+                else {
+                $('#addresses_wraper').load('/administration/partners/address/ajax/'+$(this).val()+'/', function() {
+                    {% if auction %}
+                        {% for address in auction.addresses.all %}
+                            $('#addresses_wraper input[value={{ address.pk }}]').attr('checked', 'checked');
+                        {% endfor %}
+                    {% endif %}
+                    $('#addresses_wraper').customRadioCheckbox();
+                });
+            }});
+            $('#id_partner').change();
+            $('#id_type').change(function() {
+                $('.conditional-row').hide();
+                if($(this).val()=='2') {
+                    $('.abonement-specific').show();
+                }
+                else if($(this).val()=='3') {
+                    $('.additional-services-specific').show();
+                }
+            });
+            $('#id_type').change();
+            {% if not auction %}
+                function updatePermalink() {
+                    title = $('input#id_title').val();
+                    title_translit = toTranslit(title);
+                    friendly_url = ('/auctions/'+title_translit+'/').toLowerCase();
+                    $('input#id_friendly_url').val(friendly_url);
+                }
+                $('input#id_title').keyup(updatePermalink);
+                $('input#id_title').change(updatePermalink);
+            {% endif %}
+        });
+    </script>
+    <ul class="breadcrumbs" xmlns="http://www.w3.org/1999/html">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_auctions_index %}">Аукционы</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        {% include "_form_errors.html" with form=auction_form %}
+        {% include "_form_errors.html" with form=seo_meta_form %}
+        {% include "_form_errors.html" with form=seo_url_form %}
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ auction_form.title.label_tag }}:</span></td>
+                    <td>{{ auction_form.title }}</td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ auction_form.description.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.description }}
+                    </td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">Фотографии:</span></td>
+                    <td>
+                        {% include "administration/_plupload_widget.html" with object=auction %}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ auction_form.type.label_tag }}:</span></td>
+                    <td>
+                        {% if auction_form.instance.pk %}
+                            {{ auction_form.instance.get_type_display }}
+                            {{ auction_form.type }}
+                        {% else %}
+                            {{ auction_form.type }}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr class="conditional-row abonement-specific additional-services-specific">
+                    <td><span class="title-text">{{ auction_form.fh_inner_title.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.fh_inner_title }}
+                    </td>
+                </tr>
+                <tr class="conditional-row abonement-specific">
+                    <td><span class="title-text">{{ auction_form.abonements_is_multicard.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.abonements_is_multicard }}
+                    </td>
+                </tr>
+                <tr class="conditional-row abonement-specific">
+                    <td><span class="title-text">{{ auction_form.abonements_term.label_tag }}:</span></td>
+                    <td style="vertical-align: middle;">
+                        {{ auction_form.abonements_term }} дней
+                    </td>
+                </tr>
+                <tr class="conditional-row additional-services-specific">
+                    <td><span class="title-text">{{ auction_form.additional_services_term.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.additional_services_term }}
+                        дней
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ auction_form.partner.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.partner }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ auction_form.addresses.label_tag }}:</span></td>
+                    <td id="addresses_wraper">
+                        {{ auction_form.addresses }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td></td>
+                    <td>
+                        <div class="info-col">
+                            <span class="info-text">{{ auction_form.initial_bid.label_tag }}:</span>
+                            {{ auction_form.initial_bid }}
+                            <span class="price-text">руб.</span>
+                        </div>
+                        <div class="info-col">
+                            <span class="info-text">{{ auction_form.bid_step.label_tag }}:</span>
+                            {{ auction_form.bid_step }}
+                            <span class="price-text">руб.</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ auction_form.buyout_price.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.buyout_price }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ auction_form.start_date.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.start_date }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ auction_form.end_date.label_tag }}:</span></td>
+                    <td>
+                        {{ auction_form.end_date }}
+                    </td>
+                </tr>
+                {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="check-post">
+                            {{ auction_form.is_published }} {{ auction_form.is_published.label_tag }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-area">
+                {% if auction %}
+                    <input class="button del" type="button" value="Удалить" onclick="if(confirm('Удалить этот аукцион? Вы уверены?')) {window.location='{{ auction.get_administration_delete_url }}';}" />
+                {% endif %}
+                <input class="button preview" onclick="$(this).parents('form:first').attr('action','{% url administration_auctions_preview %}').attr('target','_blank').submit().removeAttr('target').attr('action','');return false" type="submit" value="Предварительный просмотр" />
+                <input class="button post" type="button" value="Опубликовать" />
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

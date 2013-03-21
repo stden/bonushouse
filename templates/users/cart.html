@@ -1,0 +1,55 @@
+{% extends "users/cabinet.html" %}
+{% load thumbnail %}
+{% block content_cabinet %}
+    <div class="content">
+        <h2>Моя корзина</h2>
+        <table class="info-table cart-table">
+            <tr>
+                <th colspan="2"><span><em>название</em></span></th>
+                <th style="width: 100px;"><span><em>кол-во</em></span></th>
+                <th colspan="2" class="align-center"><span><em>действия</em></span></th>
+            </tr>
+            {% for item in cart.get_contents %}
+                <tr>
+                    <td>
+                        {% thumbnail item.item.get_photos_list.0.file '50x50' crop='center' as im %}
+                            <img src="{{ im.url }}" alt="" />
+                        {% endthumbnail %}
+                    </td>
+                    <td>
+                        <a href="{{ item.item.get_url }}">{{ item.item.title }}</a>
+                        {% if item.item.is_abonement and not item.is_gift %}
+                            ({{ item.additional_info.first_name }} {{ item.additional_info.last_name }})
+                        {% endif %}
+                        {% if item.is_gift %}
+                            (Подарок)
+                        {% endif %}
+                    </td>
+                    <td class="quantity">
+                        {{ item.quantity }}
+                    </td>
+                    <td class="align-center">
+                        <a href="{% url offers_cart_buy item.id %}" class="orange_button">Оплатить</a>
+                    </td>
+                    <td>
+                        <a href="{% url cart_remove item.id %}">Убрать</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" style="text-align: center"><h3>Ваша корзина пуста</h3></td>
+                </tr>
+            {% endfor %}
+            {% if cart.get_contents %}
+                <tr>
+                    <td colspan="1">Итого:</td>
+                    <td class="align-right" colspan="2">{{ cart.get_total_bonuses }} бонусов или</td>
+                    <td class="align-right" colspan="2">{{ cart.get_total_money }} руб.</td>
+                </tr>
+            {% endif %}
+        </table>
+        <div style="text-align: center">
+            <a href="{% url cart_clear %}" class="orange_button" onclick="return confirm('Очистить корзину? Вы уверены?');">Очистить корзину</a>
+        </div>
+    </div>
+{% endblock %}

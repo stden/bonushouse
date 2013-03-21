@@ -1,0 +1,16 @@
+{% extends "users/cabinet.html" %}
+{% block bigtitle %}
+    <h2>Пригласить друга</h2>
+{% endblock %}
+{% block content_cabinet %}
+    <div class="content">
+        <div style="padding-bottom: 20px; font-size: 15px;">{{ description_text|safe }}</div>
+        {% include "_form_errors.html" with form=form %}
+        <form action="" method="post">{% csrf_token %}
+        {% include "_form.html" with form=form %}
+        <p class="form_row">
+            <input type="submit" value="Отправить приглашение" class="orange_button" />
+        </p>
+    </form>
+    </div>
+{% endblock %}
