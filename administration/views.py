@@ -1727,7 +1727,6 @@ def uploaded_photo(request):
         raise Http404
     photo_id = int(photo_id)
     photo = get_object_or_404(UploadedFile, pk=photo_id)
-    print photo
     context = RequestContext(request)
     context['photo'] = photo
     return render_to_response('administration/_uploaded_photo_item.html', context)

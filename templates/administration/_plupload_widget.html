@@ -3,7 +3,6 @@
     $(function() {
         function updateWeights() {
             $('#pl_uploadedfiles li').each(function(i) {
-                console.log(i);
                 $('input.weight-input',$(this)).val(i);
             });
         }
@@ -63,7 +62,6 @@
             file_id = parseInt(response.response);
             if(file_id) {
                 $.get('{% url administration_uploaded_photo %}?photo_id='+file_id, {}, function(data) {
-                    console.log(data);
                     $('#pl_uploadedfiles').append(data);
                     updateWeights();
                 }, 'html');
