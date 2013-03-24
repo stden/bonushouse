@@ -3,13 +3,14 @@
     $(function() {
         function updateWeights() {
             $('#pl_uploadedfiles li').each(function(i) {
+                console.log(i);
                 $('input.weight-input',$(this)).val(i);
             });
         }
         $('#pl_uploadedfiles').sortable({
             stop: updateWeights
         });
-        $( "#pl_uploadedfiles" ).disableSelection();
+        $("#pl_uploadedfiles").disableSelection();
         updateWeights();
         var uploader = new plupload.Uploader({
             runtimes : 'html5,flash,html4',
@@ -24,7 +25,7 @@
         });
 
         uploader.bind('Init', function(up, params) {
-            //$('#filelist').html("<div>Current runtime: " + params.runtime + "</div>");
+{#            $('#filelist').html("<div>Current runtime: " + params.runtime + "</div>");#}
         });
 
         $('#uploadfiles').click(function(e) {
@@ -44,7 +45,6 @@
 
             up.refresh(); // Reposition Flash/Silverlight
         });
-
         uploader.bind('UploadProgress', function(up, file) {
             $('#' + file.id + " b").html(file.percent + "%");
         });
@@ -63,6 +63,7 @@
             file_id = parseInt(response.response);
             if(file_id) {
                 $.get('{% url administration_uploaded_photo %}?photo_id='+file_id, {}, function(data) {
+                    console.log(data);
                     $('#pl_uploadedfiles').append(data);
                     updateWeights();
                 }, 'html');
