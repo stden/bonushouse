@@ -20,7 +20,7 @@ class ShoppingCart(object):
     def add_item(self, request, new_item, quantity=1, force_new_item=False, additional_info=None, is_gift=False):
         """Добавление в корзину. Нельзя отложить или подарить, если купоны закончились"""
         #@TODO: Сделать по-человечески, не Indian-style
-        if new_item.quantity >=quantity:
+        if new_item.coupons_left() >=quantity:
             contents = self.get_contents()
             added = False
             id = None
@@ -28,7 +28,7 @@ class ShoppingCart(object):
             for item in contents:
                 if item['item'] == new_item:
                     total_quantity += item['quantity']
-                    if quantity + total_quantity <= new_item.quantity:
+                    if quantity + total_quantity <= new_item.coupons_left():
                         if not force_new_item:
                             item['quantity'] += quantity
                             added = True
