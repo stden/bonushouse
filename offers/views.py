@@ -78,17 +78,24 @@ def cart_add(request, offer_id):
     is_gift = request.GET.get('is_gift')
     if is_gift == '1':
         cart_item_id = cart.add_item(request, offer, is_gift=True, force_new_item=True)
-        if request.is_ajax() and cart_item_id:
-            result = {
-                'success': True,
-                'message': 'Подарок в вашей корзине. <a href="%s">Оплатить</a>/<a href="#" onclick="$.unblockUI(); return false;">продолжить покупки</a>' % (reverse_lazy('offers.views.cart_buy', kwargs={'item_id':cart_item_id}),),
-                'newCartCount': len(cart.get_contents()),
-                }
+        if request.is_ajax():
+            if cart_item_id:
+                result = {
+                    'success': True,
+                    'message': 'Подарок в вашей корзине. <a href="%s">Оплатить</a>/<a href="#" onclick="$.unblockUI(); return false;">продолжить покупки</a>' % (reverse_lazy('offers.views.cart_buy', kwargs={'item_id':cart_item_id}),),
+                    'newCartCount': len(cart.get_contents()),
+                    }
+            else:
+                result = {
+                    'success': True,
+                    'message': 'Купоны по этой акции закончились. Их больше нельзя купить.',
+                    'newCartCount': len(cart.get_contents()),
+                    }
             return HttpResponse(simplejson.dumps(result))
     elif offer.is_abonement() or offer.is_additional_service():
         context = RequestContext(request)
         context['offer'] = offer
-        # Возвращает None, если кол-во купонов = 9
+        # Возвращает None, если кол-во купонов = 0
         is_success = cart.add_item(request, offer, force_new_item=True)
         if is_success:
             messages.info(request, ('Акция добавлена в вашу <a href="%s">корзину</a>' % (reverse_lazy('offers.views.cart'))))

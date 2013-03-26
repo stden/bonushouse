@@ -51,6 +51,7 @@ class DepositForm(forms.Form):
 class LoginForm(forms.Form):
     email = forms.CharField(widget=forms.TextInput(attrs={'placeholder':'E-mail','class':'text'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'Пароль','class':'text'}))
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         password = self.data.get('password')

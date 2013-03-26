@@ -19,25 +19,32 @@ class ShoppingCart(object):
 
     def add_item(self, request, new_item, quantity=1, force_new_item=False, additional_info=None, is_gift=False):
         """Добавление в корзину. Нельзя отложить или подарить, если купоны закончились"""
-        if new_item.quantity >=1:
+        #@TODO: Сделать по-человечески, не Indian-style
+        if new_item.quantity >=quantity:
             contents = self.get_contents()
             added = False
             id = None
-            if not force_new_item:
-                for item in contents:
-                    if item['item'] == new_item:
-                        item['quantity'] += quantity
-                        added = True
-                        break
+            total_quantity = 0  # Накопитель одинаковых необъединённых элементов в корзине. Прости меня, Гвидо(
+            for item in contents:
+                if item['item'] == new_item:
+                    total_quantity += item['quantity']
+                    if quantity + total_quantity <= new_item.quantity:
+                        if not force_new_item:
+                            item['quantity'] += quantity
+                            added = True
+                            break
+                    else:
+                        if not is_gift:
+                            messages.info(request, 'Купоны по этой акции закончились. Их больше нельзя купить.')
+                        return None
             if not added:
                 id = self.get_new_id()
                 contents.append({'item': new_item, 'quantity': quantity, 'id': id, 'additional_info':additional_info, 'is_gift':is_gift})
-            new_item.quantity -= quantity
-            new_item.save()
             self.request.session['shopping_cart'] = contents
             return id
         else:
-            messages.info(request, 'Купоны по этой акции закончились. Их больше нельзя купить.')
+            if not is_gift:
+                messages.info(request, 'Купоны по этой акции закончились. Их больше нельзя купить.')
             return None
 
     def set_contents(self, contents):
@@ -61,7 +68,6 @@ class ShoppingCart(object):
 
     def get_new_id(self):
         contents = self.get_contents()
-        print contents
         if not len(contents):
             id = 1
         else:
