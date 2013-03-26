@@ -67,8 +67,7 @@ class LoginForm(forms.Form):
 class RegisterForm(forms.Form):
     email = forms.EmailField(max_length=75, widget=forms.TextInput(attrs={'placeholder':'E-mail','class':'text'}))
     password = forms.CharField(widget=forms.PasswordInput(attrs={'placeholder':'Пароль','class':'text'}))
-    # Временно не нужно:
-    # agreement = forms.BooleanField(label='Я согласен с правилами оферты', required=True)
+    agreement = forms.BooleanField(label='Я согласен с правилами оферты', required=True)
 
     def clean_email(self):
         email = self.cleaned_data['email']

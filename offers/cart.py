@@ -1,4 +1,8 @@
+# -*- coding: utf-8 -*-
+from django.contrib import messages
+
 class ShoppingCart(object):
+
     def __init__(self, request):
         self.request = request
 
@@ -13,20 +17,28 @@ class ShoppingCart(object):
         if len(self.get_contents()):
             self.request.session['shopping_cart'] = []
 
-    def add_item(self, new_item, quantity=1, force_new_item=False, additional_info=None, is_gift=False):
-        contents = self.get_contents()
-        added = False
-        if not force_new_item:
-            for item in contents:
-                if item['item'] == new_item:
-                    item['quantity'] += quantity
-                    added = True
-                    break
-        if not added:
-            id = self.get_new_id()
-            contents.append({'item': new_item, 'quantity': quantity, 'id': id, 'additional_info':additional_info, 'is_gift':is_gift})
-        self.request.session['shopping_cart'] = contents
-        return id
+    def add_item(self, request, new_item, quantity=1, force_new_item=False, additional_info=None, is_gift=False):
+        """Добавление в корзину. Нельзя отложить или подарить, если купоны закончились"""
+        if new_item.quantity >=1:
+            contents = self.get_contents()
+            added = False
+            id = None
+            if not force_new_item:
+                for item in contents:
+                    if item['item'] == new_item:
+                        item['quantity'] += quantity
+                        added = True
+                        break
+            if not added:
+                id = self.get_new_id()
+                contents.append({'item': new_item, 'quantity': quantity, 'id': id, 'additional_info':additional_info, 'is_gift':is_gift})
+            new_item.quantity -= quantity
+            new_item.save()
+            self.request.session['shopping_cart'] = contents
+            return id
+        else:
+            messages.info(request, 'Купоны по этой акции закончились. Их больше нельзя купить.')
+            return None
 
     def set_contents(self, contents):
         self.request.session['shopping_cart'] = contents
@@ -49,6 +61,7 @@ class ShoppingCart(object):
 
     def get_new_id(self):
         contents = self.get_contents()
+        print contents
         if not len(contents):
             id = 1
         else:

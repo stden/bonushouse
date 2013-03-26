@@ -70,19 +70,9 @@ def get_clubs_by_card_number(card_number):
                 return None
 
 class OffersForm(forms.ModelForm):
+
     categories = forms.ModelMultipleChoiceField(queryset=Categories.objects.all(), label='Категории', widget=CategoriesCheckboxSelectMultiple)
-    def save(self, commit=True):
-        is_new = False
-        if not self.instance.pk:
-            is_new = True
-        result = super(OffersForm, self).save(commit)
-        for photo in self.instance.get_photos_list():
-            weight = self.data.get('weight-%s' % (photo.pk))
-            if weight is not None and weight.isdigit() and weight != photo.weight:
-                photo.weight = weight
-                photo.save()
-        important_model_change.send(sender=self.instance, created=is_new)
-        return result
+
     def __init__(self, *args, **kwargs):
         partner_user = kwargs.get('partner_user')
         if partner_user:
@@ -97,12 +87,27 @@ class OffersForm(forms.ModelForm):
         if self.instance.pk and self.fields.has_key('type'):
             self.fields['type'].widget = forms.HiddenInput()
         return result
+
+    def save(self, commit=True):
+        is_new = False
+        if not self.instance.pk:
+            is_new = True
+        result = super(OffersForm, self).save(commit)
+        for photo in self.instance.get_photos_list():
+            weight = self.data.get('weight-%s' % (photo.pk))
+            if weight is not None and weight.isdigit() and weight != photo.weight:
+                photo.weight = weight
+                photo.save()
+        important_model_change.send(sender=self.instance, created=is_new)
+        return result
+
     def clean_abonements_term(self):
         type = self.cleaned_data.get('type')
         term  = self.cleaned_data.get('abonements_term')
         if type == 2 and not term:
             raise forms.ValidationError('Не задан срок действия договора')
         return term
+
     def clean_additional_services_term(self):
         type = self.cleaned_data.get('type')
         term  = self.cleaned_data.get('additional_services_term')

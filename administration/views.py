@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
+import csv
+
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 from django.db import models
@@ -38,7 +40,7 @@ from administration.menu import load_menu_context
 from django.views.generic import FormView, ListView, TemplateView, CreateView, UpdateView, DeleteView
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
-import csv
+
 from bonushouse.utils import get_auto_bonus_count
 from newsletter.sms_gate import Gate
 from django.conf import settings as django_settings
@@ -47,6 +49,7 @@ from model_changelog.models import LogMessage
 from django.contrib import messages
 from django.contrib.contenttypes.models import ContentType
 from django.template import Template, Context
+
 
 
 class BaseAdminView(object):

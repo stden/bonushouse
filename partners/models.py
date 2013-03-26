@@ -12,7 +12,9 @@ from django.conf import settings
 
 # Create your models here.
 
+
 class Partner(ModelWithSeo):
+
     title = models.CharField(max_length=255, unique=True, verbose_name='Название')
     description = models.TextField(verbose_name='Описание', blank=True, null=True)
     photos = models.ManyToManyField(UploadedFile, verbose_name='Фотографии')
@@ -21,11 +23,17 @@ class Partner(ModelWithSeo):
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     feedbacks = generic.GenericRelation(UserFeedbacks,object_id_field='content_id',content_type_field='content_type')
     admin_user = models.ForeignKey(User, verbose_name='Пользователь-администратор', blank=True, null=True)
+
+    def __unicode__(self):
+        return self.title
+
     def get_address_list(self):
         return self.partneraddress_set.all()
+
     def get_photos_list(self):
         result = self.photos.all()
         return result
+
     def get_rating(self):
         feedbacks_count = self.feedbacks.count()
         if not feedbacks_count:
@@ -35,17 +43,19 @@ class Partner(ModelWithSeo):
             ratings_sum += feedback.get_author_rating()
         result = ratings_sum / feedbacks_count
         return int(result)
+
     @models.permalink
     def get_administration_edit_url(self):
-        return ('administration.views.partners_edit', (), {'partner_id':self.pk})
+        return ('administration.views.partners_edit', (), {'partner_id': self.pk})
+
     @models.permalink
     def get_administration_delete_url(self):
-        return ('administration.views.partners_delete', (), {'partner_id':self.pk})
+        return ('administration.views.partners_delete', (), {'partner_id': self.pk})
+
     def get_view_for_model(self):
         from partners.views import partner_page
         return partner_page
-    def __unicode__(self):
-        return self.title
+
     class Meta:
         ordering = ('title', )
         verbose_name = 'Партнер'
@@ -87,6 +97,7 @@ TOTAL_CHARS_SIGN_CHOICES = (
     ('=', '='),
 )
 
+
 class ClubCardNumbers(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название шаблона')
     clubs = models.ManyToManyField('PartnerAddress', verbose_name='Клубы', limit_choices_to={'partner__id__in':settings.FITNESSHOUSE_PARTNER_IDS})
@@ -94,5 +105,6 @@ class ClubCardNumbers(models.Model):
     total_chars_sign = models.CharField(max_length=3, verbose_name='Цифр в номере карты всего(знак)', default='=', choices=TOTAL_CHARS_SIGN_CHOICES)
     total_chars = models.IntegerField(verbose_name='Цифр в номере карты всего')
     is_multicard = models.BooleanField(verbose_name='Мультикарта')
+
     def __unicode__(self):
         return self.title

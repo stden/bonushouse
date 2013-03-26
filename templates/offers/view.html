@@ -86,10 +86,18 @@
                         <span class="sale-counter">Осталось {{ offer.get_time_left_string }}</span>
                         <div class="progress-bar"><div style="width:{{ offer.get_time_passed_percent }}%"></div></div>
                     </li>
-                    <li class="cart-gift-buttons">
-                        <a href="{% url offers_add_to_cart offer.pk %}" class="cart">Отложить</a>
-                        <a href="{% url offers_add_to_cart offer.pk %}?is_gift=1" class="gift">Подарить</a>
-                    </li>
+                    {% if offer.can_buy %}
+                        <li class="cart-gift-buttons">
+                            <a href="{% url offers_add_to_cart offer.pk %}" class="cart">Отложить</a>
+                            <a href="{% url offers_add_to_cart offer.pk %}?is_gift=1" class="gift">Подарить</a>
+                        </li>
+                    {% else %}
+                        <ul class="add-info">
+                            <li class="number-info">
+                                Вы не можете отложить или подарить этот купон.
+                            </li>
+                        </ul>
+                    {% endif %}
                     {% include "_share_link_block.html" %}
                 </ul>
             </div>

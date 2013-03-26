@@ -20,7 +20,7 @@ from django.template.loader import render_to_string
 from django.utils.timezone import now
 from django.utils import timezone
 import datetime
-# Create your views here.
+
 
 def view(request, offer_id):
     offer_id = int(offer_id)
@@ -70,52 +70,35 @@ def view(request, offer_id):
         context['META_DESCRIPTION'] = seo_meta.meta_description
     return render_to_response('offers/view.html', context)
 
+
 def cart_add(request, offer_id):
     offer = get_object_or_404(Offers.all_objects, pk=offer_id)
     cart = ShoppingCart(request)
+    is_success = False
     is_gift = request.GET.get('is_gift')
     if is_gift == '1':
-        cart_item_id = cart.add_item(offer, is_gift=True, force_new_item=True)
-    elif offer.is_abonement():
-        #Если добавляют в корзину абонемент, предварительно выдаем форму ввода дополнительной информации
+        cart_item_id = cart.add_item(request, offer, is_gift=True, force_new_item=True)
+        if request.is_ajax() and cart_item_id:
+            result = {
+                'success': True,
+                'message': 'Подарок в вашей корзине. <a href="%s">Оплатить</a>/<a href="#" onclick="$.unblockUI(); return false;">продолжить покупки</a>' % (reverse_lazy('offers.views.cart_buy', kwargs={'item_id':cart_item_id}),),
+                'newCartCount': len(cart.get_contents()),
+                }
+            return HttpResponse(simplejson.dumps(result))
+    elif offer.is_abonement() or offer.is_additional_service():
         context = RequestContext(request)
         context['offer'] = offer
-        if request.method == 'GET':
-            additional_info_form = AbonementsAdditionalInfoForm(offer=offer)
-        else:
-            additional_info_form = AbonementsAdditionalInfoForm(request.POST, offer=offer)
-            if additional_info_form.is_valid():
-                cart.add_item(offer, force_new_item=True, additional_info=additional_info_form.cleaned_data)
-                messages.info(request, ('Акция добавлена в вашу <a href="%s">корзину</a>' % (reverse_lazy('offers.views.cart'))))
-                return redirect(offer.get_url())
-        context['additional_info_form'] = additional_info_form
-        return render_to_response('offers/cart_add_additional_info.html', context)
-    elif offer.is_additional_service():
-        #Если добавляют в корзину дополнительную услугу, предварительно выдаем форму ввода дополнительной информации
-        context = RequestContext(request)
-        context['offer'] = offer
-        if request.method == 'GET':
-            additional_info_form = AbonementsClubCardForm(offer=offer)
-        else:
-            additional_info_form = AbonementsClubCardForm(request.POST, offer=offer)
-            if additional_info_form.is_valid():
-                cart.add_item(offer, force_new_item=True, additional_info=additional_info_form.cleaned_data)
-                messages.info(request, ('Акция добавлена в вашу <a href="%s">корзину</a>' % (reverse_lazy('offers.views.cart'))))
-                return redirect(offer.get_url())
-        context['additional_info_form'] = additional_info_form
-        return render_to_response('offers/cart_add_additional_info.html', context)
-    else:
-        cart.add_item(offer)
-    if request.is_ajax() and is_gift:
-        result = {
-            'success': True,
-            'message': 'Подарок в вашей корзине. <a href="%s">Оплатить</a>/<a href="#" onclick="$.unblockUI(); return false;">продолжить покупки</a>' % (reverse_lazy('offers.views.cart_buy', kwargs={'item_id':cart_item_id}),),
-            'newCartCount': len(cart.get_contents()),
-        }
-        return HttpResponse(simplejson.dumps(result))
-    else:
-        messages.info(request, ('Акция добавлена в вашу <a href="%s">корзину</a>' % (reverse_lazy('offers.views.cart'))))
+        # Возвращает None, если кол-во купонов = 9
+        is_success = cart.add_item(request, offer, force_new_item=True)
+        if is_success:
+            messages.info(request, ('Акция добавлена в вашу <a href="%s">корзину</a>' % (reverse_lazy('offers.views.cart'))))
         return redirect(offer.get_url())
+    else:
+        is_success = cart.add_item(request, offer)
+        if is_success:
+            messages.info(request, ('Акция добавлена в вашу <a href="%s">корзину</a>' % (reverse_lazy('offers.views.cart'))))
+        return redirect(offer.get_url())
+
 
 @login_required
 def buy(request, offer_id):
@@ -123,11 +106,13 @@ def buy(request, offer_id):
     offer = get_object_or_404(Offers, pk=offer_id)
     return buy_view(request, offer)
 
+
 def cart(request):
     context = RequestContext(request)
     cart = ShoppingCart(request)
     context['cart'] = cart
     return render_to_response('users/cart.html', context)
+
 
 def cart_clear(request):
     cart = ShoppingCart(request)
@@ -143,7 +128,6 @@ def cart_buy(request, item_id):
         raise Http404
     offer = item['item']
     return buy_view(request, offer, item)
-
 
 
 def buy_view(request, offer, cart_item=None):
@@ -308,6 +292,7 @@ def buy_view(request, offer, cart_item=None):
         context['buy_form'] = buy_form
         return render_to_response('offers/buy.html', context)
 
+
 def buy_gift_view(request, offer, cart_item):
     context = RequestContext(request)
     context['offer'] = offer
@@ -370,11 +355,13 @@ def buy_gift_view(request, offer, cart_item):
     context['buy_form'] = buy_form
     return render_to_response('offers/buy_gift_additional_info.html', context)
 
+
 def cart_remove(request, item_id):
     cart = ShoppingCart(request)
     cart.remove_item(int(item_id))
     messages.info(request, 'Товар удален из корзины')
     return redirect('cart')
+
 
 @login_required
 @csrf_exempt
@@ -388,6 +375,7 @@ def like(request, offer_id):
         result['new_count'] = likes_count
         return HttpResponse(simplejson.dumps(result))
     return redirect(offer.get_url())
+
 
 @csrf_exempt
 @login_required
@@ -413,6 +401,7 @@ def ajax_additional_info_club_card_validate(request, offer_id):
         return HttpResponse(simplejson.dumps(result))
     else:
         return redirect('home')
+
 
 @csrf_exempt
 @login_required
@@ -446,6 +435,7 @@ def ajax_additional_info_club_card_load_clubs(request, offer_id):
         return HttpResponse(simplejson.dumps(result))
     else:
         return redirect('home')
+
 
 @csrf_exempt
 @login_required
