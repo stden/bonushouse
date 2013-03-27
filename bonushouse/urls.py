@@ -26,7 +26,7 @@ urlpatterns = patterns('',
     url(r'^accounts/cabinet/refer-friend/$', ReferFriendView.as_view(), name='refer_friend'),
     url(r'^accounts/cabinet/refer-friend/success/$', ReferFriendSuccessView.as_view(), name='refer_friend_success'),
     url(r'^accounts/deposit/$', 'bonushouse.views.deposit_account', name='deposit_account'),
-    url(r'^accounts/buy_bonuses/$', 'bonushouse.views.buy_bonuses', name='buy_bonuses'),
+    # url(r'^accounts/buy_bonuses/$', 'bonushouse.views.buy_bonuses', name='buy_bonuses'),
     url(r'^accounts/deposit-log/$', 'bonushouse.views.deposit_account_log', name='users_deposit_account_log'),
     url(r'^accounts/cabinet/gift-code-form/$', 'bonushouse.views.cabinet_gift_code_form', name='cabinet_gift_code_form'),
 

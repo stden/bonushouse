@@ -111,8 +111,10 @@ def home(request, show_login=False):
     context['show_login_overlay'] = show_login
     return render_to_response('home.html', context)
 
+
 def login_view(request):
     return home(request, show_login=True)
+
 
 def logout_view(request, next_page=None,
            template_name='registration/logged_out.html',
@@ -353,32 +355,32 @@ def deposit_account(request):
     context['deposit_form'] = deposit_form
     return render_to_response('users/deposit_account.html', context)
 
-
-@login_required
-def buy_bonuses(request):
-    context = RequestContext(request)
-    if request.method == 'POST':
-        deposit_form = DepositForm(request.POST)
-        if deposit_form.is_valid():
-            bonus_transaction = BonusTransactions(user=request.user,
-                                                  amount=int(float(deposit_form.cleaned_data['amount']) /
-                                                             float(context['BONUS_PRICE'])),
-                                                  comment='Пополнение личного счета')
-            bonus_transaction.save()
-            payment_request = PaymentRequest(inner_transaction=bonus_transaction,
-                                             amount=deposit_form.cleaned_data['amount'],
-                                             comment="Bonus-House.ru. Покупка бонусов. Пользователь #%s" %
-                                             (bonus_transaction.user.pk,))
-            payment_request.save()
-            context = RequestContext(request)
-            context['amount'] = deposit_form.cleaned_data['amount']
-            context['nickname'] = request.user.email
-            context['order_id'] = payment_request.pk
-            return render_to_response('payments/dol/redirect_form.html', context)
-    else:
-        deposit_form = DepositForm()
-    context['deposit_form'] = deposit_form
-    return render_to_response('users/buy_bonuses.html', context)
+# Issue #1221 Убрать возможность покупки бонусов
+# @login_required
+# def buy_bonuses(request):
+#     context = RequestContext(request)
+#     if request.method == 'POST':
+#         deposit_form = DepositForm(request.POST)
+#         if deposit_form.is_valid():
+#             bonus_transaction = BonusTransactions(user=request.user,
+#                                                   amount=int(float(deposit_form.cleaned_data['amount']) /
+#                                                              float(context['BONUS_PRICE'])),
+#                                                   comment='Пополнение личного счета')
+#             bonus_transaction.save()
+#             payment_request = PaymentRequest(inner_transaction=bonus_transaction,
+#                                              amount=deposit_form.cleaned_data['amount'],
+#                                              comment="Bonus-House.ru. Покупка бонусов. Пользователь #%s" %
+#                                              (bonus_transaction.user.pk,))
+#             payment_request.save()
+#             context = RequestContext(request)
+#             context['amount'] = deposit_form.cleaned_data['amount']
+#             context['nickname'] = request.user.email
+#             context['order_id'] = payment_request.pk
+#             return render_to_response('payments/dol/redirect_form.html', context)
+#     else:
+#         deposit_form = DepositForm()
+#     context['deposit_form'] = deposit_form
+#     return render_to_response('users/buy_bonuses.html', context)
 
 
 @login_required

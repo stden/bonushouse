@@ -61,7 +61,9 @@ OFFER_TYPE_CHOICES = (
     (3, 'Дополнительные услуги FH'),
 )
 
+
 class Offers(ModelWithSeo):
+
     from partners.models import Partner, PartnerAddress
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     categories = models.ManyToManyField(Categories, verbose_name='Категории')
@@ -90,11 +92,14 @@ class Offers(ModelWithSeo):
     feedbacks = generic.GenericRelation(UserFeedbacks, object_id_field='content_id', content_type_field='content_type')
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     views_count = models.PositiveIntegerField(default=0, editable=False)
+
     #Менеджеры
     objects = ActiveOffersManager()
     all_objects = AllOffersManager()
+
     def __unicode__(self):
         return self.title
+
     def get_views_count(self):
         return self.views_count
 
@@ -131,11 +136,13 @@ class Offers(ModelWithSeo):
             return False
         else:
             return True
+
     def can_buy_for_money(self):
         if self.coupon_price_money:
             return True
         else:
             return False
+
     def can_buy_for_bonuses(self):
         if self.coupon_price_bonuses:
             return True
@@ -200,8 +207,10 @@ class Offers(ModelWithSeo):
         time_passed_percent = time_passed / (total_duration/100)
         time_passed_percent = int(round(time_passed_percent))
         return time_passed_percent
+
     def get_time_left_percent(self):
         return 100 - self.get_time_passed_percent()
+
     def get_rating(self):
         #@TODO: Доделать
         return 4
@@ -272,8 +281,10 @@ class AbonementOrder(models.Model):
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     barcode = models.ImageField(upload_to='barcodes/', blank=True, null=True)
     agreement_id = models.CharField(max_length=30, blank=True, null=True)
+
     def get_meta_order(self):
         return get_meta_order(self)
+
     def get_start_date(self):
         if self.is_completed:
             return self.get_meta_order().get_payment_date()+datetime.timedelta(days=1)
@@ -284,6 +295,7 @@ class AbonementOrder(models.Model):
             duration_days = self.offer.abonements_term
             result = start_date + datetime.timedelta(days=duration_days)
             return result
+
     def complete(self, payment_transaction, is_gift=False):
         """Помечает заказ, как завершенный и генерирует код купона. Ожидает на входе транзакцию оплаты"""
         self.transaction_object = payment_transaction
@@ -334,13 +346,13 @@ class AbonementOrder(models.Model):
         bar_code = createBarcodeDrawing('Standard39', value=self.agreement_id, checksum=False, humanReadable=True, barHeight=10*mm, width=400, height=200, isoScale=1)
         bar_code = ContentFile(bar_code.asString(format='png'))
         return bar_code
+
     def get_barcode(self):
         if self.barcode:
             return self.barcode
         else:
             self.barcode.save('barcode.png', self.gen_barcode())
             return self.barcode
-
 
     def get_price_display(self):
         if self.price_type == 1:
@@ -430,11 +442,14 @@ class AdditionalServicesOrder(models.Model):
     transaction_object = generic.GenericForeignKey("transaction_type", "transaction_id")
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     agreement_id = models.CharField(max_length=30, verbose_name='Номер абонемента', editable=False, blank=True, null=True)
+
     def get_meta_order(self):
         return get_meta_order(self)
+
     def get_start_date(self):
         if self.is_completed:
             return self.get_meta_order().get_payment_date()+datetime.timedelta(days=1)
+
     def get_end_date(self):
         if self.is_completed:
             start_date = self.get_start_date()
@@ -452,6 +467,7 @@ class AdditionalServicesOrder(models.Model):
             self.agreement_id = id
             self.save()
             return id
+
     def complete(self, payment_transaction, is_gift=False):
         """Помечает заказ, как завершенный и генерирует код купона. Ожидает на входе транзакцию оплаты"""
         self.transaction_object = payment_transaction
@@ -471,6 +487,7 @@ class AdditionalServicesOrder(models.Model):
         self.send_notification()
 
         schedule_fitnesshouse_notification(self)
+
     def send_notification(self):
         notification_template = Template(get_settings_value('NOTIFICATIONS_COMPLETE_ADDITIONALSERVICES_ORDER'))
         notification_context = Context({'LINK':settings.BASE_URL+str(reverse_lazy('cabinet_additional_services'))})
@@ -487,6 +504,7 @@ class AdditionalServicesOrder(models.Model):
         else:
             suffix = ' бонусов'
         return str(self.price)+suffix
+
     def notify_fitnesshouse(self):
         """Отправляет уведомление о заказе на обработчик FH"""
         request_params = {}
@@ -608,6 +626,7 @@ DELIVERY_CHOICES = (
     ('print', 'Я распечатаю и отдам сам'),
 )
 
+
 class GiftOrder(models.Model):
     user = models.ForeignKey(User)
     visitor_info = models.ForeignKey(VisitorInfo, blank=True, null=True)
@@ -629,6 +648,7 @@ class GiftOrder(models.Model):
     real_order_type = models.ForeignKey(ContentType, editable=False, blank=True, null=True, related_name='+')
     real_order_id = models.PositiveIntegerField(editable=False, blank=True, null=True)
     real_order = generic.GenericForeignKey("real_order_type", "real_order_id")
+
     def complete(self, payment_transaction):
         """Помечает заказ, как завершенный и генерирует код купона. Ожидает на входе транзакцию оплаты"""
         self.transaction_object = payment_transaction
@@ -660,6 +680,7 @@ class GiftOrder(models.Model):
         #Пересчитываем количество купленных купонов и обновляем профиль пользователя
         self.user.get_profile().coupons_bought = get_user_coupons_bought_count(self.user)
         self.user.get_profile().save()
+
     def create_real_order(self, user, visitor_info, additional_info=None):
         """Создает реальный заказ, когда юзер использует код подарочного купона, и деактивирует подарочный код"""
         if self.offer.is_abonement():
@@ -681,14 +702,17 @@ class GiftOrder(models.Model):
         self.gift_code_used = True
         self.real_order = order
         self.save()
+
     def send_notification(self):
         notification_template = Template(get_settings_value('NOTIFICATIONS_COMPLETE_ORDER'))
         notification_context = Context({'LINK':settings.BASE_URL+str(reverse_lazy('cabinet_gifts'))})
         message = notification_template.render(notification_context)
         subject = settings.ORDER_COMPLETE_SUBJECT
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.user.email,], True)
+
     def get_meta_order(self):
         return get_meta_order(self)
+
     def get_real_order(self):
         if self.gift_code_used:
             if self.real_order:
@@ -774,6 +798,7 @@ class AdditionalServicesInfo(models.Model):
     birth_date = models.DateField(verbose_name='Дата рождения')
     phone = models.CharField(max_length=20, verbose_name='Контактный телефон')
     email = models.EmailField(verbose_name='Электронный адрес', help_text='на данный электронный адрес Вы получите подтверждение')
+
     def card_number_is_agreement(self):
         if self.card_number[0] == 'M':
             return True
@@ -825,6 +850,7 @@ class MetaOrder(models.Model):
     user = models.ForeignKey(User)
     add_date = models.DateTimeField()
     is_completed = models.BooleanField(default=False)
+
     def get_type_display(self):
         if type(self.order_object) is Order:
             return 'Простая акция'
@@ -834,16 +860,19 @@ class MetaOrder(models.Model):
             return 'Абонемент'
         elif type(self.order_object) is GiftOrder:
             return 'Подарок'
+
     def paid_via_dol(self):
         if type(self.order_object.transaction_object) is PaymentRequest and type(self.order_object.transaction_object.payment_object) is DolPaymentInfo:
             return True
         else:
             return False
+
     def get_dol_payment_info(self):
         if self.paid_via_dol():
             return self.order_object.transaction_object.payment_object
         else:
             return False
+
     def get_paid_amount_display(self):
         result = str(self.order_object.transaction_object.amount)
         if type(self.order_object.transaction_object) is BonusTransactions:
@@ -851,6 +880,7 @@ class MetaOrder(models.Model):
         else:
             result += ' руб.'
         return result
+
     def get_paid_source_display(self):
         if type(self.order_object.transaction_object) is BonusTransactions:
             return 'Бонусный счет'
@@ -860,6 +890,7 @@ class MetaOrder(models.Model):
             return 'Деньги Онлайн'
         else:
             return 'Другое'
+
     def get_payment_id(self):
         if self.is_completed:
             return self.order_object.transaction_object.pk
@@ -869,11 +900,13 @@ class MetaOrder(models.Model):
                 return self.get_dol_payment_info().add_date
             else:
                 return self.order_object.transaction_object.add_date
+
     def is_gift_order(self):
         if type(self.order_object) is GiftOrder:
             return True
         else:
             return False
+
     def is_gift_suborder(self):
         if not self.is_completed:
             return None
@@ -885,9 +918,9 @@ class MetaOrder(models.Model):
             return True
         except GiftOrder.DoesNotExist:
             return False
+
     def get_fitnesshouse_notifications(self):
         return CronFitnesshouseNotifications.objects.filter(content_type=self.order_type, content_id=self.order_id)
-
 
 
 def get_meta_order(model_instance):

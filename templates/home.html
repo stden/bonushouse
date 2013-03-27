@@ -109,10 +109,10 @@
         <p>Пригласи друга и получи бонусы</p>
         <a href="{% url refer_friend %}" class="link-button02">Пригласить друга</a>
     </div>
-    <div class="orange-block">
-        <p>Пополнить счет</p>
-        <a href="{% url buy_bonuses %}" class="link-button02">Получить бонусы</a>
-    </div>
+{#    <div class="orange-block">#}
+{#        <p>Пополнить счет</p>#}
+{#        <a href="{% url buy_bonuses %}" class="link-button02">Получить бонусы</a>#}
+{#    </div>#}
     {% getcategory 4 as category %}
         <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
         <div class="blocks-holder">
