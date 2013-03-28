@@ -73,6 +73,7 @@ class Offers(ModelWithSeo):
     quantity = models.PositiveIntegerField(verbose_name='Количество купонов', default=100)
     initial_price = models.PositiveIntegerField(verbose_name='Цена товара/услуги без купона')
     discount_price = models.PositiveIntegerField(verbose_name='Цена товара/услуги с купоном')
+    show_initial_price = models.BooleanField(verbose_name='Отображать цену без скидки?', default=False)
     coupon_price_money = models.PositiveIntegerField(verbose_name='Цена купона в рублях', help_text='Не заполняйте, если купон можно купить только за бонусы', blank=True, null=True)
     coupon_price_bonuses = models.PositiveIntegerField(verbose_name='Цена купона в бонусах', help_text='Не заполняйте, если купон можно купить только за деньги', blank=True, null=True)
     money_bonuses_count = models.PositiveIntegerField(verbose_name='Количество бонусов, начисляемое пользователю при покупке за рубли', default=0)

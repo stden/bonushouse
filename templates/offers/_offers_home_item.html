@@ -7,7 +7,7 @@
             <a href="{{ offer.get_url }}"><img src="{{ im.url }}" alt=""></a>
         {% endthumbnail %}
 
-        <span class="sale">-{{ offer.get_discount_percent }}%</span>
+{#  Процент скидки      <span class="sale">-{{ offer.get_discount_percent }}%*</span>#}
         <div class="hover-info">
             {% if offer.partner.metro %}
                 <span class="metro"><span>{{ offer.partner.metro.name }}</span></span>
@@ -21,7 +21,9 @@
     <div class="price-area">
         <span class="coupon"><span class="number">{{ offer.coupons_left }}</span> куп.</span>
         <div class="price">
-            <span class="old-price">{{ offer.initial_price }} р.</span>
+            {% if offer.show_initial_price %}
+                <span class="old-price">{{ offer.initial_price }} р.</span>
+            {% endif %}
             <strong class="new-price">{{ offer.discount_price }}р.</strong>
         </div>
     </div>
