@@ -13,10 +13,12 @@
             <div class="info">
 											<span class="price-info">
 												Цена:
-												<span class="old-price">{{ offer.initial_price }} р.</span>
+                                                {% if offer.show_initial_price %}
+												    <span class="old-price">{{ offer.initial_price }} р.</span>
+                                                {% endif %}
 												<span class="new-price">{{ offer.discount_price }}р.</span>
 											</span>
-                <span class="sale-info">Скидка: <span>{{ offer.get_discount_percent }}%</span></span>
+{#                <span class="sale-info">Скидка: <span>{{ offer.get_discount_percent }}%</span></span>#}
             </div>
         </div>
     </div>

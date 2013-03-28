@@ -58,7 +58,9 @@
                 {% if offer.can_buy %}
                     <div class="price-info">
                         <a href="{% url offers_buy offer.pk %}" class="link-button03">Купить</a>
-                        <span class="old-price">{{ offer.initial_price }} р.</span>
+                        {% if offer.show_initial_price %}
+                            <span class="old-price">{{ offer.initial_price }} р.</span>
+                        {% endif %}
                         <span class="new-price">{{ offer.discount_price }}р.</span>
                     </div>
                     <div class="payment_methods_link"><a href="/instruction/" target="_blank">Способы оплаты</a></div>
