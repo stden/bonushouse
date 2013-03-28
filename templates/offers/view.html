@@ -65,7 +65,7 @@
                 {% else %}
                     <ul class="add-info">
                         <li class="number-info">
-                            Вы не можете купить этот купон.
+                            К сожалению, купоны по данной акции закончились.
                         </li>
                     </ul>
                 {% endif %}
@@ -91,12 +91,6 @@
                             <a href="{% url offers_add_to_cart offer.pk %}" class="cart">Отложить</a>
                             <a href="{% url offers_add_to_cart offer.pk %}?is_gift=1" class="gift">Подарить</a>
                         </li>
-                    {% else %}
-                        <ul class="add-info">
-                            <li class="number-info">
-                                Вы не можете отложить или подарить этот купон.
-                            </li>
-                        </ul>
                     {% endif %}
                     {% include "_share_link_block.html" %}
                 </ul>
