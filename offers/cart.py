@@ -35,7 +35,7 @@ class ShoppingCart(object):
                             break
                     else:
                         if not is_gift:
-                            messages.info(request, 'Купоны по этой акции закончились. Их больше нельзя купить.')
+                            messages.info(request, 'К сожалению, купоны по данной акции закончились.')
                         return None
             if not added:
                 id = self.get_new_id()
@@ -44,7 +44,7 @@ class ShoppingCart(object):
             return id
         else:
             if not is_gift:
-                messages.info(request, 'Купоны по этой акции закончились. Их больше нельзя купить.')
+                messages.info(request, 'К сожалению, купоны по данной акции закончились.')
             return None
 
     def set_contents(self, contents):

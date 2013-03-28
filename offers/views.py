@@ -139,9 +139,9 @@ def cart_buy(request, item_id):
 
 def buy_view(request, offer, cart_item=None):
     context = RequestContext(request)
-    #if offer.coupons_left() > 0:
     if not offer.can_buy():
-        return HttpResponse('Нельзя купить')
+        messages.info(request, 'К сожалению, купоны по данной акции закончились')
+        return redirect(offer.get_url())
     context['offer'] = offer
     if cart_item is not None:
         cart = ShoppingCart(request)
