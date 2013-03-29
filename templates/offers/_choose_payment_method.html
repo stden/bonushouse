@@ -2,7 +2,7 @@
 <ul class="list payment_switch">
     {% if offer.can_buy_for_money %}
     <li>
-        <a href="#payment_deposit">Депозит Бонус-Хаус</a>
+        <a href="#payment_deposit">Денежный счёт Бонус-Хаус</a>
     </li>
     {% endif %}
     {% if offer.can_buy_for_bonuses %}
@@ -17,7 +17,7 @@
     {% endif %}
 </ul>
 <div class="tab autowrap" id="payment_deposit">
-    <h3>Депозит Бонус-Хаус</h3>
+    <h3>Денежный счёт Бонус-Хаус</h3>
     <p>На вашем счету: <strong>{{ user.get_profile.get_money_ballance }} руб.</strong></p>
     <p class="not_enough"></p>
     <p>

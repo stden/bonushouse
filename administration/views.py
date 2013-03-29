@@ -38,6 +38,7 @@ from newsletter.forms import NewsletterCampaignForm, NewsletterEmailForm, Newsle
 from newsletter.models import NewsletterCampaign, NewsletterEmail, NewsletterSms
 from administration.menu import load_menu_context
 from django.views.generic import FormView, ListView, TemplateView, CreateView, UpdateView, DeleteView
+from django.views.generic.edit import FormMixin
 from django.utils.decorators import method_decorator
 from django.core.urlresolvers import reverse_lazy
 
@@ -1532,6 +1533,8 @@ class UsersListView(ListView):
             context['ADMIN_MENU_ACTIVE'] = 'USERS'
         return context
 
+
+
     def post(self, request, *args, **kwargs):
         form = BulkUsersForm(request.POST)
         if form.is_valid():
@@ -1598,6 +1601,7 @@ class UsersFormView(FormView):
         else:
             context['page_title'] = 'Добавить пользователя'
         return context
+
 
 class PartnersPageListView(BaseAdminView, ListView):
     paginate_by = 20
