@@ -72,6 +72,7 @@ def get_clubs_by_card_number(card_number):
 class OffersForm(forms.ModelForm):
 
     categories = forms.ModelMultipleChoiceField(queryset=Categories.objects.all(), label='Категории', widget=CategoriesCheckboxSelectMultiple)
+    initial_price = forms.CharField(required=False, label='Цена без скидки')
 
     def __init__(self, *args, **kwargs):
         partner_user = kwargs.get('partner_user')
@@ -121,6 +122,13 @@ class OffersForm(forms.ModelForm):
         if (type == 2 or type == 3) and not value:
             raise forms.ValidationError('Вы не указали внутренний заголовок для базы FH')
         return value
+
+    def clean_initial_price(self):
+        data = self.cleaned_data['initial_price']
+        if not self.cleaned_data['initial_price']:
+            self.cleaned_data['initial_price'] = None
+            data = None
+        return data
 
     class Meta:
         model = Offers

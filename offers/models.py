@@ -71,7 +71,7 @@ class Offers(ModelWithSeo):
     partner = models.ForeignKey(Partner, verbose_name='Партнер', blank=True, null=True)
     addresses = models.ManyToManyField(PartnerAddress, verbose_name='Заведения')
     quantity = models.PositiveIntegerField(verbose_name='Количество купонов', default=100)
-    initial_price = models.PositiveIntegerField(verbose_name='Цена товара/услуги без купона')
+    initial_price = models.PositiveIntegerField(verbose_name='Цена товара/услуги без купона', blank=True, null=True, default=0)
     discount_price = models.PositiveIntegerField(verbose_name='Цена товара/услуги с купоном')
     show_initial_price = models.BooleanField(verbose_name='Отображать цену без скидки?', default=False)
     coupon_price_money = models.PositiveIntegerField(verbose_name='Цена купона в рублях', help_text='Не заполняйте, если купон можно купить только за бонусы', blank=True, null=True)
@@ -181,12 +181,13 @@ class Offers(ModelWithSeo):
 
     def get_discount_percent(self):
         """Вычисляет процент скидки на основе начальной стоимости товара и стоимости со скидкой"""
-        initial_price = float(self.initial_price)
-        discount_price = float(self.discount_price)
-        discount_absolute = initial_price - discount_price
-        discount_percent = discount_absolute / (initial_price / 100)
-        discount_percent = round(discount_percent)
-        return int(discount_percent)
+        if self.initial_price:
+            initial_price = float(self.initial_price)
+            discount_price = float(self.discount_price)
+            discount_absolute = initial_price - discount_price
+            discount_percent = discount_absolute / (initial_price / 100)
+            discount_percent = round(discount_percent)
+            return int(discount_percent)
 
     def get_time_passed_percent(self):
         """
