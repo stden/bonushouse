@@ -82,8 +82,10 @@
     </div>
     </div>
     <div class="footing-area">
-    {% paginate %}
-        {% include "_paginator.html" with page=offers_list paginator=offers_list.paginator %}
+    <div class="paging">
+        {% paginate %}
+    </div>
+{#        {% include "_paginator.html" with page=offers_list paginator=offers_list.paginator %}#}
         {% include "administration/_bulk_action_select.html" %}
     </div>
 {% endblock %}
