@@ -1,5 +1,11 @@
 {% extends "administration/base.html" %}
+{% load sorting_tags %}
+{% load pagination_tags %}
+
 {% block content %}
+    {% autosort offers_list %}
+    {% autopaginate offers_list 10 %}
+
     <ul class="breadcrumbs">
         <li><a href="{% url administration_index %}">Главная</a></li>
         <li><span>Акции</span></li>
@@ -31,7 +37,7 @@
             <span><em><strong><b>партнер</b></strong></em></span>
         </th>
         <th class="date-cell">
-            <span><em><strong><b>дата<br /> заявки</b></strong></em></span>
+            <span><em><strong><b>{% anchor add_date 'Дата заявки' %}</b></strong></em></span>
         </th>
         <th class="period-cell">
             <span><em><strong><b>период</b></strong></em></span>
@@ -43,6 +49,7 @@
             <span><em><strong><b>стоим.<br /> бонусы</b></strong></em></span>
         </th>
     </tr>
+
     {% for offer in offers_list %}
         <tr class="{% if not offer.is_moderated %}new {% endif %}{% if offer.is_published %}check-yes {% else %}check-no {% endif %}">
             <td>
@@ -75,6 +82,7 @@
     </div>
     </div>
     <div class="footing-area">
+    {% paginate %}
         {% include "_paginator.html" with page=offers_list paginator=offers_list.paginator %}
         {% include "administration/_bulk_action_select.html" %}
     </div>

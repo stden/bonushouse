@@ -124,6 +124,8 @@ MIDDLEWARE_CLASSES = (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'seo.middleware.FriendlyUrlFallbackMiddleware',
     'partners.middleware.ForPartnersPageFormMiddleware',
+    'django_sorting.middleware.SortingMiddleware',
+    'pagination.middleware.PaginationMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
@@ -170,6 +172,8 @@ INSTALLED_APPS = (
     'likes',
     'model_changelog',
     'threadlocals_user',
+    'django_sorting',
+    'pagination',
 )
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',
@@ -239,6 +243,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.debug",
     "django.core.context_processors.i18n",
     "django.core.context_processors.media",
+    'django.core.context_processors.request',
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.contrib.messages.context_processors.messages",

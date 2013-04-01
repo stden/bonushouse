@@ -95,13 +95,14 @@ def offers_index(request):
     context = load_menu_context(context, request, show_secondary_menu=False)
     context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
     offers_list = Offers.all_objects.all()
-    paginator = Paginator(offers_list, per_page)
-    try:
-        context['offers_list'] = paginator.page(page)
-    except PageNotAnInteger:
-        context['offers_list'] = paginator.page(1)
-    except EmptyPage:
-        context['offers_list'] = paginator.page(paginator.num_pages)
+    context['offers_list'] = offers_list
+    # paginator = Paginator(offers_list, per_page)
+    # try:
+    #     context['offers_list'] = paginator.page(page)
+    # except PageNotAnInteger:
+    #     context['offers_list'] = paginator.page(1)
+    # except EmptyPage:
+    #     context['offers_list'] = paginator.page(paginator.num_pages)
     return render_to_response('administration/offers/index.html', context)
 
 def get_bonus_count(request):
