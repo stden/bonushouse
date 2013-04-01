@@ -10,3 +10,5 @@ django_debug_toolbar
 mysql-python
 requests
 Whoosh
+django-sorting
+django-pagination
