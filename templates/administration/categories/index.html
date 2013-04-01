@@ -41,7 +41,7 @@
                                 <div class="img-frame">
                                     {% for offer in category.offers_set.all %}
                                         <div class="img-area">
-                                            <span class="img-title">{{ offer.title }}</span>
+                                            <span class="img-title"><a href="{% url administration_offers_edit offer.pk %}">{{ offer.title }}</a></span>
                                             <div class="img-holder">
                                                 {% thumbnail offer.get_photos_list.0.file '157x99' crop='center' as im %}
                                                     <img src="{{ im.url }}" width="157" height="99" alt="">
