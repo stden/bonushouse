@@ -66,7 +66,7 @@
     <div class="home_page home_page_text">
         {{ home_page.content|safe }}
     </div>
-    {% getcategory 3 as category %}
+    {% getcategory 19 as category %}
         <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
         <div class="blocks-holder">
             <div class="blocks-frame">
@@ -79,7 +79,7 @@
             </div>
         </div>
     {% endgetcategory %}
-    {% getcategory 17 as category %}
+    {% getcategory 21 as category %}
         <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
         <div class="blocks-holder">
             <div class="blocks-frame">
@@ -92,7 +92,7 @@
             </div>
         </div>
     {% endgetcategory %}
-    {% getcategory 5 as category %}
+    {% getcategory 18 as category %}
         <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
         <div class="blocks-holder">
             <div class="blocks-frame">
@@ -113,19 +113,19 @@
 {#        <p>Пополнить счет</p>#}
 {#        <a href="{% url buy_bonuses %}" class="link-button02">Получить бонусы</a>#}
 {#    </div>#}
-    {% getcategory 4 as category %}
-        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
-        <div class="blocks-holder">
-            <div class="blocks-frame">
-                <ul class="blocks">
-                    {% for offer in category.offers_set.all|slice:':4' %}
-                        {% include "offers/_offers_home_item.html" with offer=offer %}
-                    {% endfor %}
-
-                </ul>
-            </div>
-        </div>
-    {% endgetcategory %}
+{#    {% getcategory 4 as category %}#}
+{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
+{#        <div class="blocks-holder">#}
+{#            <div class="blocks-frame">#}
+{#                <ul class="blocks">#}
+{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
+{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
+{#                    {% endfor %}#}
+{##}
+{#                </ul>#}
+{#            </div>#}
+{#        </div>#}
+{#    {% endgetcategory %}#}
 
     <div class="orange-block">
         <p>Предложи идею бизнеса - заработай бонусы</p>
