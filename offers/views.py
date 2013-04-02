@@ -92,6 +92,8 @@ def cart_add(request, offer_id):
                     'newCartCount': len(cart.get_contents()),
                     }
             return HttpResponse(simplejson.dumps(result))
+        else:
+            return redirect(offer.get_url())
     elif offer.is_abonement() or offer.is_additional_service():
         context = RequestContext(request)
         context['offer'] = offer
