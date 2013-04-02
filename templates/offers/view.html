@@ -61,7 +61,13 @@
                         {% if offer.show_initial_price %}
                             <span class="old-price">{{ offer.initial_price }} р.</span>
                         {% endif %}
-                        <span class="new-price">{{ offer.discount_price }}р.</span>
+                        <span class="new-price">
+                            {% if not offer.coupon_price_bonuses %}
+                                {{ offer.discount_price }}р.
+                            {% else %}
+                                {{ offer.coupon_price_bonuses }}
+                                {{ offer.coupon_price_bonuses|rupluralize:'бонус,бонуса,бонусов' }}
+                        </span>
                     </div>
                     <div class="payment_methods_link"><a href="/instruction/" target="_blank">Способы оплаты</a></div>
                 {% else %}
