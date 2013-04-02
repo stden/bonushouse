@@ -28,10 +28,13 @@
             {% endif %}
                 {% if not offer.coupon_price_bonuses %}
                 <strong class="new-price">
-                    {{ offer.discount_price }} %}р.
+                    {{ offer.discount_price }}р.
                 </strong>
                 {% else %}
-                   {{ offer.coupon_price_bonuses|rupluralize:'бонус,бонуса,бонусов' }}
+                    <strong class="new-price">
+                    {{ offer.coupon_price_bonuses }}
+                    </strong>
+                    {{ offer.coupon_price_bonuses|rupluralize:'бонус,бонуса,бонусов' }}
                 {% endif %}
 
         </div>
