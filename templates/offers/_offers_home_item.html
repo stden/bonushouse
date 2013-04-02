@@ -26,12 +26,14 @@
             {% if offer.show_initial_price %}
                 <span class="old-price">{{ offer.initial_price }} р.</span>
             {% endif %}
-            <strong class="new-price">{% if not offer.coupon_price_bonuses %}
-                                        {{ offer.discount_price }} %}р.
-                                      {% else %}
-                                         {{ offer.coupon_price_bonuses|rupluralize:'бонус,бонуса,бонусов' }}
-                                      {% endif %}
-            </strong>
+                {% if not offer.coupon_price_bonuses %}
+                <strong class="new-price">
+                    {{ offer.discount_price }} %}р.
+                </strong>
+                {% else %}
+                   {{ offer.coupon_price_bonuses|rupluralize:'бонус,бонуса,бонусов' }}
+                {% endif %}
+
         </div>
     </div>
     <span class="sale-counter">Осталось {{ offer.get_time_left_string }}</span>
