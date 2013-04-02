@@ -77,8 +77,8 @@ def cart_add(request, offer_id):
     is_success = False
     is_gift = request.GET.get('is_gift')
     if is_gift == '1':
-        cart_item_id = cart.add_item(request, offer, is_gift=True, force_new_item=True)
         if request.is_ajax():
+            cart_item_id = cart.add_item(request, offer, is_gift=True, force_new_item=True)
             if cart_item_id:
                 result = {
                     'success': True,
