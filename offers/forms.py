@@ -19,6 +19,7 @@ import datetime
 
 class ClubCardOrAgreementField(forms.CharField):
     card_template = None
+
     def validate(self, value):
         super(ClubCardOrAgreementField, self).validate(value)
         card_number = value
@@ -68,6 +69,7 @@ def get_clubs_by_card_number(card_number):
                 return card_template.clubs.all()
             else:
                 return None
+
 
 class OffersForm(forms.ModelForm):
 
@@ -159,6 +161,7 @@ PAYMENT_TYPE_CHOICES = (
 class BuyOfferForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, label='Количество', initial=1)
     payment_type = forms.ChoiceField(choices=PAYMENT_TYPE_CHOICES, widget=forms.HiddenInput(), label='Способ оплаты')
+
     def __init__(self, *args, **kwargs):
         user = kwargs.get('user')
         offer = kwargs.get('offer')
@@ -221,6 +224,7 @@ class BuyOfferForm(forms.Form):
 
 class AbonementsAdditionalInfoForm(forms.ModelForm):
     agree_club_rules = forms.BooleanField(label=mark_safe(u'Я прочитал и согласен с <a href="%s" target="_blank">правилами клубов</a>' % (settings.MEDIA_URL+'misc/'+get_settings_value('CLUB_RULES_FILE'),)))
+
     def __init__(self, *args, **kwargs):
         offer = kwargs.get('offer')
         if offer:
@@ -233,6 +237,7 @@ class AbonementsAdditionalInfoForm(forms.ModelForm):
         if offer.abonements_is_multicard:
             self.fields['address'].label = 'Выберите основной клуб'
         return result
+
     def clean_birth_date(self):
         birth_date = self.cleaned_data.get('birth_date')
         cur_date = now().date()
@@ -243,11 +248,13 @@ class AbonementsAdditionalInfoForm(forms.ModelForm):
         if years > 90:
             raise forms.ValidationError('Вы правда старше 90 лет? Проверьте правильность даты рождения')
         return birth_date
+
     def clean_address(self):
         address = self.cleaned_data.get('address')
         if not address:
             raise forms.ValidationError('Вы не выбрали клуб')
         return address
+
     class Meta:
         model = AbonementsAdditionalInfo
         widgets = {
@@ -260,6 +267,7 @@ class AbonementsAdditionalInfoForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={'class':'text mask_phone'}),
             'email': forms.TextInput(attrs={'class':'text'}),
         }
+
 
 class AdditionalServicesAddressSelect(forms.Select):
     def render(self, name, value, attrs=None, choices=()):
@@ -276,6 +284,7 @@ class AbonementsClubCardForm(forms.ModelForm):
     card_number = ClubCardOrAgreementField(widget=forms.TextInput(attrs={'class':'text'}), label='Номер карты или договора')
     address = forms.ModelChoiceField(label='Выберите один из доступных клубов', queryset=PartnerAddress.objects, widget=AdditionalServicesAddressSelect())
     agree_club_rules = forms.BooleanField(label=mark_safe(u'Я прочитал и согласен с <a href="%s" target="_blank">правилами клубов</a>' % (settings.MEDIA_URL+'misc/'+get_settings_value('CLUB_RULES_FILE'),)))
+
     def __init__(self, *args, **kwargs):
         offer = kwargs.get('offer')
         if offer:
@@ -285,6 +294,7 @@ class AbonementsClubCardForm(forms.ModelForm):
             raise Exception('Offer is not set')
         result = super(AbonementsClubCardForm, self).__init__(*args, **kwargs)
         return result
+
     def clean_card_number(self):
         card_number = self.cleaned_data.get('card_number')
         clubs = get_clubs_by_card_number(card_number)
@@ -298,6 +308,7 @@ class AbonementsClubCardForm(forms.ModelForm):
         else:
             raise forms.ValidationError('Данная акция не распространяется на ваш клуб.')
         return card_number
+
     def clean_address(self):
         address = self.cleaned_data.get('address')
         card_number = self.cleaned_data.get('card_number')
@@ -316,9 +327,11 @@ class AbonementsClubCardForm(forms.ModelForm):
         if first_visit_date < cur_date:
             raise forms.ValidationError('Вы не можете указать дату раньше сегодняшнего дня')
         return first_visit_date
+
     def save(self, commit=True):
         result = super(AbonementsClubCardForm, self).save(commit)
         return result
+
     class Meta:
         model = AdditionalServicesInfo
         widgets = {
@@ -351,6 +364,7 @@ class ClubCardNumbersForm(forms.ModelForm):
             'total_chars': forms.TextInput(attrs={'class':'text', 'style':'width:120px;'}),
         }
 
+
 class GiftOfferForm(forms.Form):
     to_who = forms.CharField(label='Кому', help_text='Введите имя вашего друга, например Иван или Сергей Петров', widget=forms.TextInput(attrs={'class':'text'}))
     from_who = forms.CharField(label='От кого', help_text='Введите свое имя', widget=forms.TextInput(attrs={'class':'text'}))
@@ -368,12 +382,13 @@ class GiftOfferForm(forms.Form):
 
 class GiftCodeForm(forms.Form):
     code = forms.CharField(label='Введите код купона', widget=forms.TextInput(attrs={'class':'text'}))
+
     def clean_code(self):
         code = self.cleaned_data.get('code')
         try:
             gift_order = GiftOrder.objects.get(gift_code=code, gift_code_used=False, is_completed=True)
-            if now() - datetime.timedelta(days=3) > gift_order.get_meta_order().get_payment_date():
-                raise forms.ValidationError('К сожалению, срок действия этого купона истек')
+            # if now() - datetime.timedelta(days=3) > gift_order.get_meta_order().get_payment_date():
+            #     raise forms.ValidationError('К сожалению, срок действия этого купона истек')
             #if now() > gift_order.offer.end_date:
                 #raise forms.ValidationError('К сожалению, эта акция уже закончилась.')
             self.gift_order = gift_order

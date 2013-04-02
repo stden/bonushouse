@@ -33,6 +33,7 @@ class UserProfile(models.Model):
     coupons_bought = models.PositiveIntegerField(editable=False, default=0)
     refered_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='referer')
     referer_checked = models.BooleanField(editable=False, default=False)
+
     def calculate_age(self):
         if self.birth_date:
             age_delta = datetime.date.today() - self.birth_date
@@ -42,11 +43,13 @@ class UserProfile(models.Model):
             return result
         else:
             return None
+
     def get_name(self):
         if self.user.get_full_name():
             return self.user.get_full_name()
         else:
             return self.user.username
+
     def get_bonuses_ballance(self):
         """
         Возвращает количество неиспользованных бонусов у данного пользователя.
@@ -68,21 +71,25 @@ class UserProfile(models.Model):
         else:
             transactions_sum = 0
         return transactions_sum
+
     def withdraw_money_deposit(self, amount, comment):
         """Снимает деньги с депозита пользователя"""
         transaction = AccountDepositTransactions(user=self.user, amount=-amount, comment=comment, is_completed=True)
         transaction.save()
         return transaction
+
     def withdraw_bonuses(self, amount, comment):
         """Снимает бонусы со счета пользователя"""
         transaction = BonusTransactions(user=self.user, amount=-amount, is_completed=True, comment=comment)
         transaction.save()
         return transaction
+
     def deposit_bonuses(self, amount, comment):
         """Начисляет бонусы на счет пользователя"""
         transaction = BonusTransactions(user=self.user, amount=amount, comment=comment, is_completed=True)
         transaction.save()
         return transaction
+
     def is_partner(self):
         if self.user.partner_set.count():
             return True
@@ -118,11 +125,13 @@ class BonusTransactions(models.Model):
     payment_date = models.DateTimeField(verbose_name='Дата оплаты', blank=True, null=True)
     comment = models.TextField(verbose_name='Комментарий', blank=True, null=True)
     add_date = models.DateTimeField(verbose_name='Дата добавления', editable=False, auto_now_add=True)
+
     def complete(self, payment_info):
         self.payment_object = payment_info
         self.is_completed = True
         self.payment_date = now()
         self.save()
+
 
 class AccountDepositTransactions(models.Model):
     user = models.ForeignKey(User)
@@ -145,9 +154,11 @@ class ApprovedFeedbacksManager(models.Manager):
     def get_query_set(self):
         return super(ApprovedFeedbacksManager, self).get_query_set().filter(is_approved=True)
 
+
 class NotApprovedFeedbacksManager(models.Manager):
     def get_query_set(self):
         return super(NotApprovedFeedbacksManager, self).get_query_set().filter(is_approved=False)
+
 
 class UserFeedbacks(models.Model):
     content_type = models.ForeignKey(ContentType, editable=False, blank=True, null=True)
@@ -170,10 +181,12 @@ class UserFeedbacks(models.Model):
             return self.ratings.all()[0].rating
         else:
             return 3
+
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы пользователей'
         ordering = ('-add_date',)
+
 
 class UserRatings(models.Model):
     content_type = models.ForeignKey(ContentType, editable=False, blank=True, null=True)
@@ -182,11 +195,13 @@ class UserRatings(models.Model):
     rating = models.PositiveIntegerField(verbose_name='Оценка')
     user = models.ForeignKey(User, verbose_name='Автор', editable=False)
     add_date = models.DateTimeField(editable=False, auto_now_add=True, verbose_name='Дата добавления')
+
     class Meta:
         unique_together = ('user', 'content_type', 'content_id',)
         verbose_name = 'Оценка'
         verbose_name_plural = 'Оценки пользователей'
         ordering = ('-add_date',)
+
 
 class BusinessIdea(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
@@ -197,6 +212,7 @@ class BusinessIdea(models.Model):
     bonus_reward = models.IntegerField(editable=False, blank=True, null=True)
     bonus_reward_transaction = models.ForeignKey('BonusTransactions', blank=True, null=True, editable=False)
     add_date = models.DateTimeField(editable=False, auto_now_add=True, verbose_name='Дата добавления')
+
     def apply_reward(self, reward):
         """Начисляет автору идеи бонусы и помечает идею, как рассмотренную. Ожидает на входе число бонусов в награду."""
         transaction = self.user.get_profile().deposit_bonuses(reward, u'За идею "%s"' % (self.title,))
@@ -204,6 +220,7 @@ class BusinessIdea(models.Model):
         self.bonus_reward_transaction = transaction
         self.is_reviewed = True
         self.save()
+
     @models.permalink
     def get_administration_edit_url(self):
         return ('administration.views.ideas_edit', (), {'idea_id':self.pk})
@@ -212,12 +229,14 @@ class BusinessIdea(models.Model):
     def get_administration_delete_url(self):
         return ('administration.views.ideas_delete', (), {'idea_id':self.pk})
 
+
 class CronFitnesshouseNotifications(models.Model):
     content_type = models.ForeignKey(ContentType, editable=False)
     content_id = models.PositiveIntegerField(editable=False)
     content_object = generic.GenericForeignKey("content_type", "content_id")
     is_completed = models.BooleanField(default=False)
     fitnesshouse_reply = models.TextField(blank=True, null=True)
+
     def send(self):
         reply = self.content_object.notify_fitnesshouse()
         self.fitnesshouse_reply = reply
@@ -225,27 +244,29 @@ class CronFitnesshouseNotifications(models.Model):
         self.save()
 
 
-
-
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
         UserProfile.objects.create(user=instance)
+
 
 def calculate_age(sender, instance, created, **kwargs):
     if instance.age != instance.calculate_age():
         instance.age = instance.calculate_age()
         instance.save()
 
+
 def update_bonuses_ballance(sender, instance, created, **kwargs):
     if instance.user.get_profile().bonuses_ballance != instance.user.get_profile().get_bonuses_ballance():
         instance.user.get_profile().bonuses_ballance = instance.user.get_profile().get_bonuses_ballance()
         instance.user.get_profile().save()
+
 
 @receiver(pre_update)
 def update_person_details(sender, **kwargs):
     person = kwargs.get('user')
     details = kwargs.get('details')
     load_person_avatar(sender, person.get_profile(), kwargs.get('response'))
+
 
 def update_partner_user(sender, instance, created, **kwargs):
     if created:
@@ -255,6 +276,7 @@ def update_partner_user(sender, instance, created, **kwargs):
         elif instance.content_type.name == 'offers':
             instance.partner_user = instance.content_object.partner.admin_user
             instance.save()
+
 
 def load_person_avatar(sender, person, info):
     image_url = None
