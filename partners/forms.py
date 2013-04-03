@@ -12,8 +12,12 @@ from django.template import Template, Context
 from django.core.mail import send_mail
 from django.conf import settings
 import re
+from django.contrib.auth.models import User
 
 class PartnerForm(forms.ModelForm):
+
+    admin_user = forms.ModelChoiceField(label='Пользователь-администратор',queryset=User.objects.all().order_by('username'), empty_label=None)
+
     def save(self, commit=True):
         is_new = False
         if not self.instance.pk:
@@ -26,6 +30,7 @@ class PartnerForm(forms.ModelForm):
                 photo.save()
         important_model_change.send(sender=self.instance, created=is_new)
         return result
+
     class Meta:
         model = Partner
         widgets = {
