@@ -369,7 +369,7 @@ def buy_gift_view(request, offer, cart_item):
         buy_form = BuyOfferForm(user=request.user, offer=offer, is_gift=True)
         if offer.is_additional_service():
             messages.warning(request, '<span class="color_red">Внимание! Вы не можете подарить данную услугу тому, кто НЕ является клиентом сети Fitness House!</span> Для активации подарочного купона потребуется действующий номер карты (или договора)')
-    messages.warning(request, 'Внимание! Подарочный купон действителен только в течение 3 дней с момента оплаты.')
+    #messages.warning(request, 'Внимание! Подарочный купон действителен только в течение 3 дней с момента оплаты.')
     context['additional_info_form'] = additional_info_form
     context['buy_form'] = buy_form
     return render_to_response('offers/buy_gift_additional_info.html', context)
