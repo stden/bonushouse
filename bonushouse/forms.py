@@ -26,7 +26,7 @@ class ProfileForm(forms.Form):
     gender = forms.IntegerField(widget=forms.Select(choices=GENDER_CHOICES), label='Пол')
     birth_date = forms.DateField(label='Дата рождения', widget=forms.DateInput(attrs={'class':'mask_date text'}))
     phone = forms.CharField(max_length=32, label='Контактный телефон', widget=forms.TextInput(attrs={'class':'mask_phone text'}))
-    avatar = forms.ImageField(label='Аватар')
+    # avatar = forms.ImageField(label='Аватар')
     def  clean_phone(self):
         phone = self.cleaned_data.get('phone')
         phone_re = re.compile('8\(\d{3}\)\d{7}')
@@ -40,7 +40,6 @@ class ProfileForm(forms.Form):
         user.email = self.cleaned_data['email']
         profile.gender = self.cleaned_data['gender']
         profile.birth_date = self.cleaned_data['birth_date']
-        profile.avatar = self.cleaned_data['avatar']
         profile.phone = self.cleaned_data['phone']
         profile.save()
         user.save()

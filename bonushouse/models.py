@@ -23,7 +23,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User)
     gender = models.IntegerField(verbose_name='Пол', choices=GENDER_CHOICES, blank=True, null=True)
     birth_date = models.DateField(verbose_name='Дата рождения', blank=True, null=True)
-    avatar = models.ImageField(upload_to='user_avatars/', verbose_name='Фото')
+    # avatar = models.ImageField(upload_to='user_avatars/', verbose_name='Фото')
     phone = models.CharField(max_length=32, verbose_name='Контактный телефон', blank=True, null=True)
     #Поля служащие для ускорения выборки
     #@TODO: Добавить функции для пересчета полей ниже

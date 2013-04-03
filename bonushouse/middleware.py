@@ -20,7 +20,6 @@ class CheckUserDataMiddleware(object):
                    not request.user.first_name or
                    not request.user.last_name or
                    request.user.get_profile().gender is None or
-                   not request.user.get_profile().avatar or
                    not request.user.get_profile().birth_date or
                    not request.user.get_profile().phone
 

@@ -172,11 +172,10 @@ def edit_profile(request):
         'email': request.user.email,
         'gender': request.user.get_profile().gender,
         'birth_date': request.user.get_profile().birth_date,
-        'avatar': request.user.get_profile().avatar,
         'phone': request.user.get_profile().phone,
     }
     if request.method == 'POST':
-        profile_form = ProfileForm(request.POST, request.FILES, initial=initial_data)
+        profile_form = ProfileForm(request.POST, initial=initial_data)
         if profile_form.is_valid():
             profile_form.save(request.user)
             return redirect('home')

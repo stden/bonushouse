@@ -371,6 +371,7 @@ class GiftOfferForm(forms.Form):
     delivery_type = forms.ChoiceField(choices=DELIVERY_CHOICES, label='Способ доставки')
     delivery_email = forms.EmailField(label='Адрес E-mail друга', required=False, widget=forms.TextInput(attrs={'class':'text'}))
     message = forms.CharField(widget=forms.Textarea(attrs={'class':'textarea'}), label='Сообщение')
+
     def clean_delivery_email(self):
         email = self.cleaned_data.get('delivery_email')
         delivery_type = self.cleaned_data.get('delivery_type')
