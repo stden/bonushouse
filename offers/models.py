@@ -600,7 +600,7 @@ class Order(models.Model):
         self.transaction_object = payment_transaction
         #Генерируем коды купонов и связываем с заказом
         for i in range(0, self.quantity):
-            code = CouponCodes(code=generate_code(partner=self.offer.partner), partner=self.offer.partner)
+            code = CouponCodes(code=generate_code(partner=self.offer.partner), partner=self.offer.partner, is_gift=is_gift)
             code.save()
             self.coupon_codes.add(code)
         #Если оплачивали деньгами и положены бонусы, начисляем пользователю бонусы
@@ -742,6 +742,7 @@ class CouponCodes(models.Model):
     is_used = models.BooleanField(default=False)
     used_date = models.DateTimeField(blank=True, null=True)
     barcode = models.ImageField(upload_to='barcodes/', blank=True, null=True)
+    is_gift = models.BooleanField(default=False)
 
     def get_order(self):
         return self.order_set.all()[0]
