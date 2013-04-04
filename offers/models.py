@@ -742,7 +742,7 @@ class CouponCodes(models.Model):
     is_used = models.BooleanField(default=False)
     used_date = models.DateTimeField(blank=True, null=True)
     barcode = models.ImageField(upload_to='barcodes/', blank=True, null=True)
-    is_gift = models.BooleanField(default=False)
+    is_gift = models.BooleanField(default=False) #  Подарочные купоны не должны выводиться как истекшие, т.к. они не имеют срока действия
 
     def get_order(self):
         return self.order_set.all()[0]
