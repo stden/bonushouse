@@ -401,7 +401,6 @@ def share_vk(request, offer_id):
     if request.method == 'POST' and request.is_ajax():
         offer = get_object_or_404(Offers, id=offer_id)
         profile = request.user.get_profile()
-        profile.offers_share.clear()
         if not offer in profile.offers_share.all():
             profile.offers_share.add(offer)
             bonus_amount = Settings.objects.get(key='REPOST_BONUS_COUNT').value
