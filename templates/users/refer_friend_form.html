@@ -8,17 +8,7 @@
         {% include "_form_errors.html" with form=form %}
         <form action="" method="post">{% csrf_token %}
         <div id="form">
-            {% for field in form %}
-                {% if field.is_hidden %}
-                    {{ field }}
-                {% else %}
-                    <div class="form_row">
-                        {{ field.label_tag }}
-                        {{ field }}<br/>
-                        <i>{{ field.help_text }}</i>
-                    </div>
-                {% endif %}
-            {% endfor %}
+            {% include "_form.html" with form=form %}
         </div>
         <p class="form_row">
             <input type="submit" value="Отправить приглашение" class="orange_button" />
