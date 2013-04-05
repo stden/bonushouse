@@ -3,8 +3,31 @@
 {% load rupluralize %}
 {% load star_rating %}
 {% block content %}
+
     <script type="text/javascript">
         $(function() {
+            $("#share_vk").click(function(){
+                $.post('/offers/share_vk/{{ offer.id }}/', function(response){
+                    if(response != ''){
+                        $.blockUI({
+                            message:'<div class="warning_message">' + response + '<br/><button id="ublock" class="orange_button" type="button" onclick="$.unblockUI(); return false;">Продолжить</button><br/></div>',
+                            css:{width:'760px',
+                                left:'30%',
+                                top:'10%',
+                                textAlign:'left',
+                                cursor:'default',
+                                borderRadius:'10px',
+                                padding:'20px'
+                            }
+                        });
+                        return false;
+                        console.log(response);
+                    }
+                });
+
+            });
+
+
             $('a.asdgift').click(function() {
                 $.blockUI({
                     message:$('#gift_offer_overlay'),

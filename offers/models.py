@@ -94,6 +94,7 @@ class Offers(ModelWithSeo):
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     views_count = models.PositiveIntegerField(default=0, editable=False)
 
+
     #Менеджеры
     objects = ActiveOffersManager()
     all_objects = AllOffersManager()
@@ -594,6 +595,7 @@ class Order(models.Model):
     transaction_id = models.PositiveIntegerField(editable=False, blank=True, null=True)
     transaction_object = generic.GenericForeignKey("transaction_type", "transaction_id")
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
+    users_share = models.ManyToManyField(User, related_name='users_share' ,verbose_name='Поделившиеся пользователи')
 
     def complete(self, payment_transaction, is_gift=False):
         """Помечает заказ, как завершенный и генерирует код купона. Ожидает на входе транзакцию оплаты"""

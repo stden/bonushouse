@@ -194,8 +194,8 @@ def cabinet(request):
         pass
     elif filter == 'used':
         my_coupons = my_coupons.filter(is_used=True)
-    elif filter == 'expired': #.
-        my_coupons = my_coupons.filter(order__offer__end_date__lt=now(), is_gift=False)
+    elif filter == 'expired':
+        my_coupons = my_coupons.filter(order__offer__end_date__lt=now(), is_gift=False)  # Подарочные купоны не попадают в истекшие
     else:
         my_coupons = my_coupons.filter(order__offer__end_date__gt=now(),is_used=False)
     context['coupons_filter'] = filter

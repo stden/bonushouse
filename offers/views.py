@@ -11,6 +11,7 @@ from django.contrib import messages
 from offers.utils import update_last_viewed_offers
 from django.http import Http404, HttpResponse
 from offers.cart import ShoppingCart
+from dbsettings.models import Settings
 from django.utils.safestring import mark_safe
 from django.core.urlresolvers import reverse_lazy
 from likes.functions import get_likes_count, toggle_like
@@ -369,7 +370,6 @@ def buy_gift_view(request, offer, cart_item):
         buy_form = BuyOfferForm(user=request.user, offer=offer, is_gift=True)
         if offer.is_additional_service():
             messages.warning(request, '<span class="color_red">Внимание! Вы не можете подарить данную услугу тому, кто НЕ является клиентом сети Fitness House!</span> Для активации подарочного купона потребуется действующий номер карты (или договора)')
-    #messages.warning(request, 'Внимание! Подарочный купон действителен только в течение 3 дней с момента оплаты.')
     context['additional_info_form'] = additional_info_form
     context['buy_form'] = buy_form
     return render_to_response('offers/buy_gift_additional_info.html', context)
@@ -394,6 +394,21 @@ def like(request, offer_id):
         result['new_count'] = likes_count
         return HttpResponse(simplejson.dumps(result))
     return redirect(offer.get_url())
+
+@login_required
+@csrf_exempt
+def share_vk(request, offer_id):
+    if request.method == 'POST' and request.is_ajax():
+        offer = get_object_or_404(Offers, id=offer_id)
+        profile = request.user.get_profile()
+        profile.offers_share.clear()
+        if not offer in profile.offers_share.all():
+            profile.offers_share.add(offer)
+            bonus_amount = Settings.objects.get(key='REPOST_BONUS_COUNT').value
+            profile.deposit_bonuses(bonus_amount, u'Бонусы за репост %s' % offer.title)
+            message = u'Поздравляем! Вам начислено %s бонусов! Бонусы начисляются только один раз за каждую акцию!' % bonus_amount
+            return HttpResponse(message)
+    return HttpResponse()
 
 
 @csrf_exempt

@@ -7,9 +7,20 @@
         <div style="padding-bottom: 20px; font-size: 15px;">{{ description_text|safe }}</div>
         {% include "_form_errors.html" with form=form %}
         <form action="" method="post">{% csrf_token %}
-        {% include "_form.html" with form=form %}
-            <p class="form_row">
-
+        <div id="form">
+            {% for field in form %}
+                {% if field.is_hidden %}
+                    {{ field }}
+                {% else %}
+                    <div class="form_row">
+                        {{ field.label_tag }}
+                        {{ field }}<br/>
+                        <i>{{ field.help_text }}</i>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+        <p class="form_row">
             <input type="submit" value="Отправить приглашение" class="orange_button" />
         </p>
     </form>
