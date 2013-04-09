@@ -29,13 +29,11 @@ class SettingsForm(forms.Form):
                 self.fields[setting.key] = forms.CharField(required=is_required, widget=forms.Textarea(attrs={'class':'textarea'}), label=setting.description, initial=setting.value, help_text=help_text)
             elif setting.type == 10:
                 if setting.value:
-                    try:
-                        initial = open(settings.MEDIA_ROOT+'misc/'+setting.value)
-                    except:
-                        initial = None
+                    initial = setting.value
                 else:
                     initial = None
                 self.fields[setting.key] = forms.FileField(required=is_required, label=setting.description, initial=initial, help_text=help_text)
+
     def save(self):
         settings_list = Settings.objects.all()
         for setting in settings_list:
