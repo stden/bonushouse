@@ -3,16 +3,67 @@
     <h2>Пригласить друга</h2>
 {% endblock %}
 {% block content_cabinet %}
+
+
     <div class="content">
         <div style="padding-bottom: 20px; font-size: 15px;">{{ description_text|safe }}</div>
         {% include "_form_errors.html" with form=form %}
-        <form action="" method="post">{% csrf_token %}
+        <form id="id_refer_friend_form" action="" method="post">{% csrf_token %}
         <div id="form">
             {% include "_form.html" with form=form %}
         </div>
-        <p class="form_row">
+        <button type="button" id="id_one_more_friend" class="orange_button" onclick="oneMoreFriend('id_name', 'id_email')">Ещё друг</button>
+        <p class="form_row" style="margin-top: 15px;">
             <input type="submit" value="Отправить приглашение" class="orange_button" />
         </p>
     </form>
     </div>
+
+    <script type="text/javascript">
+        var friends_count = 0; // Счётчик друзей, больше 4ёх пригласить нельзя
+
+        $(function(){
+            $("#id_refer_friend_form").submit(function(){
+                console.log(form2js("id_refer_friend_form"));
+                return false;
+            })
+
+        });
+
+        function oneMoreFriend(){
+            if(friends_count < 3){
+                // Проверяем, заполнены ли последние 2 поля ввода
+                if(!$("#form :input")[$("#form :input").length -1].value || !$("#form :input")[$("#form :input").length-2].value){
+                    if(!($("#field_errors").text())){
+                        $("#form").prepend($('<p id="field_errors" style="color: red;">Заполните все поля!</p>'));
+                    }
+                    else{
+                        $("#field_errors").text('Заполните все поля!');
+                    }
+                }
+                else{
+                    friends_count += 1;
+                    var template = _.template(
+                            '<p>Друг#<%= friends_count + 1%>' +
+                            '<div class="form_row"><label for id="id_name<%= friends_count %>">Как зовут вашего друга</label>' +
+                            '<input id="id_name<%= friends_count %>" type="text" class="text" name="name<%= friends_count %>"></div>' +
+                            '<div class="form_row"><label for id="id_email<%= friends_count %>">E-mail вашего друга</label>' +
+                            '<input id="id_email<%= friends_count %>" type="text" class="text" name="email<%= friends_count %>"></div>'
+                            );
+                    var compiled = template({friends_count: friends_count});
+                    $("#form :input").attr('disabled', true);
+                    $(compiled).appendTo('#form');
+                }
+            }
+        else{
+            if(!($("#friends_overflow").text())){
+                $("#form").prepend($('<p id="friends_overflow" style="color: red;">Нельзя пригласить больше четырёх друзей!</p>'));
+            }
+            else{
+                $("#friends_overflow").text('Нельзя пригласить больше четырёх друзей!');
+            }
+            }
+        }
+    </script>
+
 {% endblock %}
