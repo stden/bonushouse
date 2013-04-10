@@ -2945,3 +2945,7 @@ p.not_enough {
     width: 310px;
     height: 164px;
 }
+
+input[disabled="disabled"] {
+    background-color: #cecece;
+}
