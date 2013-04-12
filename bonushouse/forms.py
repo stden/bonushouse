@@ -4,6 +4,7 @@ from django import forms
 from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
 from django.db.models import Q
+from django.core.validators import validate_email
 from bonushouse.models import UserFeedbacks, GENDER_CHOICES, BusinessIdea
 from dbsettings.utils import get_settings_value
 from django.core.mail import send_mail
@@ -127,9 +128,13 @@ class CallMeForm(forms.Form):
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [to,], True)
 
 
+class EmailInput(forms.TextInput):
+    input_type = 'email'
+
+
 class ReferFriendForm(forms.Form):
     name = forms.CharField(label='Как зовут вашего друга', widget=forms.TextInput(attrs={'class':'text'}))
-    email = forms.EmailField(label='E-mail вашего друга', widget=forms.TextInput(attrs={'class':'text'}))
+    email = forms.EmailField(label='E-mail вашего друга', widget=EmailInput(attrs={'class':'text'}))
     def clean_email(self):
         email = self.cleaned_data.get('email')
         if email:
@@ -137,6 +142,7 @@ class ReferFriendForm(forms.Form):
             if users.count():
                 raise forms.ValidationError('Этот пользователь уже зарегистрирован у нас.')
         return email
+
     def save(self, referer):
         to = self.cleaned_data['email']
         name = self.cleaned_data['name']

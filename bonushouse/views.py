@@ -38,6 +38,9 @@ import datetime
 from django.template import Context, Template
 from django.core.mail import send_mail
 from django.utils import simplejson
+from django.contrib.sites.models import Site
+from django import forms
+
 
 class LoginRequiredView(object):
     @method_decorator(login_required)
@@ -404,6 +407,7 @@ def suggest_business_idea(request):
     context['idea_form'] = idea_form
     return render_to_response('ideas/form.html', context)
 
+
 @login_required
 def suggest_business_idea_success(request):
     context = RequestContext(request)
@@ -418,9 +422,36 @@ class ReferFriendView(LoginRequiredView, FormView):
         context = super(ReferFriendView, self).get_context_data(**kwargs)
         context['description_text'] = get_settings_value('REFER_FRIEND_DESCRIPTION_TEXT')
         return context
+
     def form_valid(self, form):
         form.save(self.request.user)
         return super(ReferFriendView, self).form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        if request.method == 'POST' and request.POST:
+            email_list = []
+            i = 0
+            while (i <= (len(request.POST)-1)/2 - 1): #  Криво и тупо, но работает(
+                if i == 0:
+                    email_list.append({'name': request.POST.get('name'), 'email': request.POST.get('email')})
+                else:
+                    email_list.append({'name': request.POST.get('name%d' % i), 'email': request.POST.get('email%d' % i)})
+                i += 1
+            for email in email_list:
+                form = self.form_class(email)
+                if not form.is_valid():
+                    return HttpResponse(simplejson.dumps({'text':u'Пользователь с email %s уже зарегистрирован!' % email.get('email'), 'email': email.get('email')}), status=500)
+                to = email.get('email')
+                name = email.get('name')
+                subject = get_settings_value('REFER_FRIEND_EMAIL_SUBJECT')
+                template = Template(get_settings_value('REFER_FRIEND_EMAIL_TEMPLATE'))
+                site = Site.objects.get_current()
+                link = 'http://' + site.domain + '/?refered_by='+str(request.user.pk)
+                context = Context({'name': name, 'link': link, 'sender':request.user.get_profile().get_name()})
+                message = template.render(context)
+                send_mail(subject, message,  settings.DEFAULT_FROM_EMAIL, [to,], True)
+            return HttpResponse('OK')
+        return HttpResponse()
 
 
 class ReferFriendSuccessView(LoginRequiredView, TemplateView):

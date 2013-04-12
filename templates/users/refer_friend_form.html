@@ -20,18 +20,41 @@
     </div>
 
     <script type="text/javascript">
-        var friends_count = 0; // Счётчик друзей, больше 4ёх пригласить нельзя
+        var friends_count = 0; // Счётчик друзей
 
         $(function(){
             $("#id_refer_friend_form").submit(function(){
-                console.log(form2js("id_refer_friend_form"));
+                $.ajax({
+                    type:'POST',
+                    url:'/accounts/cabinet/refer-friend/',
+                    data:form2js("id_refer_friend_form"),
+                    success: function(response, status){
+                        alert(response);
+                    },
+                    error: function(response, status, error){
+                        var error_object = JSON.parse(response.responseText);
+                        if(!($("#field_errors").text())){
+                            $("#form").prepend($('<p id="field_errors" style="color: red;">' + error_object.text + '</p>'));
+                        }
+                        else{
+                            $("#field_errors").text(error_object.text);
+                        }
+                        $("#form :input[value=" + error_object.email + "]").attr('disabled', false);
+                    }
+                });
                 return false;
             })
 
         });
 
+
+        function validateEmail(email) {
+            var re = /^([A-Za-z0-9_\-\.])+\@([A-Za-z0-9_\-\.])+\.([A-Za-z]{2,4})$/;
+            return re.test(email);
+        }
+
         function oneMoreFriend(){
-            if(friends_count < 3){
+            if(friends_count < 3){ //  больше 4ёх пригласить нельзя
                 // Проверяем, заполнены ли последние 2 поля ввода
                 if(!$("#form :input")[$("#form :input").length -1].value || !$("#form :input")[$("#form :input").length-2].value){
                     if(!($("#field_errors").text())){
@@ -41,6 +64,16 @@
                         $("#field_errors").text('Заполните все поля!');
                     }
                 }
+                else if(validateEmail(_.last($("#form :input[type=email]")).value) == false){
+                    $(_.last($("#form :input[type=email]"))).css('background-color', '#FF0033');
+                    if(!($("#field_errors").text())){
+                        $("#form").prepend($('<p id="field_errors" style="color: red;">Неправильный email-адрес!</p>'));
+                    }
+                    else{
+                        $("#field_errors").text('Неправильный email-адрес!');
+                    }
+
+                }
                 else{
                     friends_count += 1;
                     var template = _.template(
@@ -48,11 +81,14 @@
                             '<div class="form_row"><label for id="id_name<%= friends_count %>">Как зовут вашего друга</label>' +
                             '<input id="id_name<%= friends_count %>" type="text" class="text" name="name<%= friends_count %>"></div>' +
                             '<div class="form_row"><label for id="id_email<%= friends_count %>">E-mail вашего друга</label>' +
-                            '<input id="id_email<%= friends_count %>" type="text" class="text" name="email<%= friends_count %>"></div>'
+                            '<input id="id_email<%= friends_count %>" type="email" class="text" name="email<%= friends_count %>"></div>'
                             );
                     var compiled = template({friends_count: friends_count});
                     $("#form :input").attr('disabled', true);
+{#                    $("#form :input").css('background-color', '#cecece');#}
                     $(compiled).appendTo('#form');
+                    $("#field_errors").remove();
+                    $("#friends_overflow").remove();
                 }
             }
         else{
@@ -62,8 +98,10 @@
             else{
                 $("#friends_overflow").text('Нельзя пригласить больше четырёх друзей!');
             }
-            }
         }
+        }
+
+
     </script>
 
 {% endblock %}
