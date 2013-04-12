@@ -29,7 +29,7 @@
                     url:'/accounts/cabinet/refer-friend/',
                     data:form2js("id_refer_friend_form"),
                     success: function(response, status){
-                        alert(response);
+                        window.location.assign('/accounts/cabinet/refer-friend/success');
                     },
                     error: function(response, status, error){
                         var error_object = JSON.parse(response.responseText);
