@@ -309,7 +309,7 @@ def buy_view(request, offer, cart_item=None):
             else:
                 initial = None
             buy_form = BuyOfferForm(user=request.user, offer=offer, initial=initial)
-        context['buy_form'] = buy_form
+            context['buy_form'] = buy_form
         return render_to_response('offers/buy.html', context)
 
 
