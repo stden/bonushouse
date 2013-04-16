@@ -294,7 +294,7 @@ class SimpleActionAdditionalInfoForm(forms.ModelForm):
 
     class Meta:
         model = AbonementsAdditionalInfo
-        exclude = ('passport_code', 'passport_number')
+        exclude = ('address', 'passport_code', 'passport_number')
         widgets = {
             'first_name': forms.TextInput(attrs={'class':'text'}),
             'last_name': forms.TextInput(attrs={'class':'text'}),
