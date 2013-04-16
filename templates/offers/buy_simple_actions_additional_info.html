@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container" id="buy_offer_page">
+        <form action="" method="post" id="buy_offer_form">{% csrf_token %}
+            <div class="offer_info autowrap underline">
+                <div class="image">
+                    {% thumbnail offer.get_photos_list.0.file '215x145' crop='center' format='PNG' as im %}
+                        <img src="{{ im.url }}" alt="">
+                    {% endthumbnail %}
+                </div>
+                <div class="title">{{ offer.title }}</div>
+                <div class="price">
+                    {% if offer.can_buy_for_money %}
+                        <div class="money">
+                            {{ offer.coupon_price_money }} р.
+                        </div>
+                    {% endif %}
+                    {% if offer.can_buy_for_bonuses %}
+                        <div class="bonuses">
+                            {{ offer.coupon_price_bonuses }} бонусов
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <div id="step1">
+                <h2 class="underline">Для продолжения покупки вы должны указать дополнительную информацию о себе</h2>
+                <div id="buy_form_errors"></div>
+                {% include "_form_errors.html" with form=additional_info_form %}
+                {% include "_form_errors.html" with form=buy_form %}
+                <div class="autowrap">
+                    <div class="form_left_part">
+                        {% for field in additional_info_form %}
+                            {% if forloop.counter == 6 %}
+                                </div>
+                                <div class="form_right_part">
+                            {% endif %}
+                            {% if field.is_hidden %}
+                                {{ field }}
+                            {% else %}
+                                {% if field.name != 'agree_club_rules' %}
+                                <div class="form_row">
+                                    <label for="{{ field.id }}">
+                                        {% if field.field.required %}
+                                            <span class="required-sign">*</span>
+                                        {% endif %}
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field }}<br/>
+                                    <i>{{ field.help_text }}</i>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                        </div>
+                </div>
+                <div class="form_row agree_row">
+                    {{ additional_info_form.agree_club_rules }}
+                    {{ additional_info_form.agree_club_rules.label_tag }}
+                </div>
+                <div>* - обязательное поле</div>
+                <div class="form_row align-right">
+                    <input type="submit" value="Продолжить" class="orange_button" />
+                </div>
+            </div>
+            <div id="step2" style="display: none">
+                <div id="preview_wrap" class="autowrap">
+
+                </div>
+                <div class="align-right"><a href="#" class="back_link orange_button">Назад</a></div>
+                {% include "offers/_choose_payment_method.html" %}
+            </div>
+            <div>
+                <input type="hidden" name="price_money" value="{{ offer.coupon_price_money }}" />
+                <input type="hidden" name="price_bonuses" value="{{ offer.coupon_price_bonuses }}" />
+                <input type="hidden" name="temp_price_money" value="{{ offer.coupon_price_money }}" />
+                <input type="hidden" name="temp_price_bonuses" value="{{ offer.coupon_price_bonuses }}" />
+                <input type="hidden" name="money_ballance" value="{{ user.get_profile.get_money_ballance }}" />
+                <input type="hidden" name="bonuses_ballance" value="{{ user.get_profile.get_bonuses_ballance }}" />
+                {{ buy_form.payment_type }}
+            </div>
+            <div class="quantity">
+                <input type="hidden" name="quantity" value="1" />
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            $('#step1 input[type=submit]').click(function() {
+                $.post('{% url ajax_additional_info_simple_actions_validate offer.pk %}', $('#buy_offer_form').serialize(), function(data) {
+                    if(data.success) {
+                        $('#buy_form_errors').html('');
+                        $('#step1').hide();
+                        $('#preview_wrap').html(data.message);
+                        $('#step2').show();
+                    }
+                    else {
+                        $('#buy_form_errors').html(data.message);
+                    }
+                },'json');
+                return false;
+            });
+            $('#step2 .back_link').click(function() {
+                $('#step2').hide();
+                $('#step1').show();
+                return false;
+            });
+        });
+    </script>
+{% endblock %}

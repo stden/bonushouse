@@ -319,7 +319,7 @@ def buy_view(request, offer, cart_item=None):
             context['additional_info_form'] = additional_info_form
             buy_form = BuyOfferForm(user=request.user, offer=offer, initial=initial)
             context['buy_form'] = buy_form
-        return render_to_response('offers/buy_abonements_additional_info.html', context)
+            return render_to_response('offers/buy_simple_actions_additional_info.html', context)
 
 
 def buy_gift_view(request, offer, cart_item):
@@ -494,6 +494,32 @@ def ajax_additional_info_abonements_validate(request, offer_id):
             context.update(form.cleaned_data)
             context['add_date'] = now()
             context['valid_term'] = u'с %s по %s' % (timezone.localtime(context['add_date']).strftime('%d.%m.%Y'), timezone.localtime((context['add_date'] + datetime.timedelta(days=offer.abonements_term))).strftime('%d.%m.%Y'))
+            result['message'] = render_to_string('offers/_additional_services_buy_preview.html', context)
+        else:
+            result['success'] = False
+            context = {}
+            context['form'] = form
+            result['message'] = render_to_string('_form_errors.html', context)
+        return HttpResponse(simplejson.dumps(result))
+    else:
+        return redirect('home')
+
+
+@csrf_exempt
+@login_required
+def ajax_additional_info_simple_actions_validate(request, offer_id):
+    if request.method == 'POST':
+        offer = get_object_or_404(Offers, pk=offer_id)
+        form = AbonementsAdditionalInfoForm(request.POST, offer=offer)
+        result = {}
+        if form.is_valid():
+            result['success'] = True
+            context = RequestContext(request)
+            context['offer'] = offer
+            context['address'] = form.cleaned_data['address']
+            context.update(form.cleaned_data)
+            context['add_date'] = now()
+            # context['valid_term'] = u'с %s по %s' % (timezone.localtime(context['add_date']).strftime('%d.%m.%Y'), timezone.localtime((context['add_date'] + datetime.timedelta(days=offer.abonements_term))).strftime('%d.%m.%Y'))
             result['message'] = render_to_string('offers/_additional_services_buy_preview.html', context)
         else:
             result['success'] = False

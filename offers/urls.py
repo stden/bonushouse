@@ -12,4 +12,5 @@ urlpatterns = patterns('',
     url(r'^ajax-additional-info-club-card-validate/(?P<offer_id>[0-9]+)/$', 'offers.views.ajax_additional_info_club_card_validate', name='ajax_additional_info_club_card_validate'),
     url(r'^ajax-additional-info-club-card-load-clubs/(?P<offer_id>[0-9]+)/$', 'offers.views.ajax_additional_info_club_card_load_clubs', name='ajax_additional_info_club_card_load_clubs'),
     url(r'^ajax-additional-info-abonements-validate/(?P<offer_id>[0-9]+)/$', 'offers.views.ajax_additional_info_abonements_validate', name='ajax_additional_info_abonements_validate'),
+    url(r'^ajax-additional-info-simple-actions-validate/(?P<offer_id>[0-9]+)/$', 'offers.views.ajax_additional_info_simple_actions_validate', name='ajax_additional_info_simple_actions_validate'),
 )
