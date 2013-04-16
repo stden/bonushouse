@@ -3,7 +3,7 @@ from offers.models import Offers, Order, AbonementOrder, AdditionalServicesOrder
 from django.shortcuts import render_to_response, get_object_or_404, redirect
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
-from offers.forms import BuyOfferForm, AbonementsAdditionalInfoForm, AbonementsClubCardForm, GiftOfferForm, get_clubs_by_card_number
+from offers.forms import BuyOfferForm, AbonementsAdditionalInfoForm, SimpleActionAdditionalInfoForm, AbonementsClubCardForm, GiftOfferForm, get_clubs_by_card_number
 from payment_gateways.models import PaymentRequest
 from bonushouse.forms import FeedbacksForm
 from bonushouse.models import UserRatings, UserFeedbacks
@@ -315,7 +315,7 @@ def buy_view(request, offer, cart_item=None):
                        'phone': request.user.get_profile().phone,
                        'gender': request.user.get_profile().gender}
 
-            additional_info_form = AbonementsAdditionalInfoForm(offer=offer, initial=initial)
+            additional_info_form = SimpleActionAdditionalInfoForm(offer=offer, initial=initial)
             context['additional_info_form'] = additional_info_form
             buy_form = BuyOfferForm(user=request.user, offer=offer, initial=initial)
             context['buy_form'] = buy_form
