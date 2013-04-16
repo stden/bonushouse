@@ -510,7 +510,7 @@ def ajax_additional_info_abonements_validate(request, offer_id):
 def ajax_additional_info_simple_actions_validate(request, offer_id):
     if request.method == 'POST':
         offer = get_object_or_404(Offers, pk=offer_id)
-        form = AbonementsAdditionalInfoForm(request.POST, offer=offer)
+        form = SimpleActionAdditionalInfoForm(request.POST, offer=offer)
         result = {}
         if form.is_valid():
             result['success'] = True
