@@ -516,7 +516,6 @@ def ajax_additional_info_simple_actions_validate(request, offer_id):
             result['success'] = True
             context = RequestContext(request)
             context['offer'] = offer
-            context['address'] = form.cleaned_data['address']
             context.update(form.cleaned_data)
             context['add_date'] = now()
             # context['valid_term'] = u'с %s по %s' % (timezone.localtime(context['add_date']).strftime('%d.%m.%Y'), timezone.localtime((context['add_date'] + datetime.timedelta(days=offer.abonements_term))).strftime('%d.%m.%Y'))
