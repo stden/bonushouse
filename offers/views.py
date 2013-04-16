@@ -308,6 +308,15 @@ def buy_view(request, offer, cart_item=None):
                 initial = {'quantity':cart_item['quantity']}
             else:
                 initial = None
+            initial = {'first_name': request.user.first_name,
+                       'last_name': request.user.last_name,
+                       'email': request.user.email,
+                       'birth_date': request.user.get_profile().birth_date,
+                       'phone': request.user.get_profile().phone,
+                       'gender': request.user.get_profile().gender}
+
+            additional_info_form = AbonementsAdditionalInfoForm(offer=offer, initial=initial)
+            context['additional_info_form'] = additional_info_form
             buy_form = BuyOfferForm(user=request.user, offer=offer, initial=initial)
             context['buy_form'] = buy_form
         return render_to_response('offers/buy_abonements_additional_info.html', context)
