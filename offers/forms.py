@@ -278,7 +278,7 @@ class SimpleActionAdditionalInfoForm(forms.ModelForm):
             del(kwargs['offer'])
         else:
             raise Exception('Offer is not set')
-        result = super(AbonementsAdditionalInfoForm, self).__init__(*args, **kwargs)
+        result = super(SimpleActionAdditionalInfoForm, self).__init__(*args, **kwargs)
         return result
 
     def clean_birth_date(self):
