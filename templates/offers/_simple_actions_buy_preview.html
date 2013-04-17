@@ -5,7 +5,7 @@
     <div class="last_name">Фамилия: <span>{{ last_name }}</span></div>
     <div class="first_name">Имя: <span>{{ first_name }}</span></div>
     <div class="father_name">Отчество: <span>{{ father_name }}</span></div>
-    <div>Пол: <span>{% if gender == 0 %}TRUE{% endif %}</span></div>
+    <div>Пол: <span>{% if gender == 0 %}Женский{% else %}Мужской{% endif %}</span></div>
     <div>Дата рождения: <span>{{ birth_date }}</span></div>
     <div>Контактный телефон: <span>{{ phone }}</span></div>
     <div>Электронный адрес: <span>{{ email }}</span></div>
