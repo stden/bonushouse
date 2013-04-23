@@ -74,9 +74,13 @@ def prolongate_contract(request):
 @login_required
 def person_restruct_contract(request):
     """Переоформление договора на другого человека"""
+    context = RequestContext(request)
+    form = PersonalContractForm()
+    context['form'] = form
     if not request.session.get('contract_valid'):
-    #  Получение данных по договору
         form = PersonalContractForm()
+        context['form'] = form
+    #  Получение данных по договору
         if request.method == 'POST':
             form = PersonalContractForm(request.POST)
             if form.is_valid():
@@ -91,66 +95,78 @@ def person_restruct_contract(request):
 
                 # Переводим все в cp1251
                 for key in request_params.keys():
-                    request_params[key] = unicode(request_params[key]).encode('cp1251')
+                    request_params[key] = request_params[key]
                     # Шлем запрос
                 if settings.DEBUG:
                     fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 else:
                     fh_url = settings.FITNESSHOUSE_NOTIFY_URL
                 response = requests.get(fh_url, params=request_params, verify=False)
+                print response.text
                 response = urlparse.parse_qs(response.text)
                 if response['?status'][0] == '1' or response['?status'][0] == '2':
                     request.session['contract_valid'] = True  # Договор валидный
                     request.session['src_id'] = response['src_id'][0]
-                    request.session['dognumber'] = response['dognumber'][0]
-                    request.session['src_club'] = response['src_club'][0]
+                    request.session['dognumber'] = response['dognumber'][0].encode('ISO-8859-1')
+                    request.session['src_club'] = response['src_club'][0].encode('ISO-8859-1')
                     messages.success(request, 'Теперь введите данные нового клиента.')
                     return redirect('person_restruct_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
     else:
         # Договор валидный и его можно переоформлять
-        form = ContractPersonRestructingForm()
+        form = ContractPersonRestructingForm(request.user)
+        context['form'] = form
         if request.method == 'POST':
-            del request.session['contract_valid']   # Удаляем ключ из сессии
-            form = ContractPersonRestructingForm(request.POST)
+            form = ContractPersonRestructingForm(request.user, request.POST)
             context = RequestContext(request)
+            context['form'] = form
             if form.is_valid():
+                del request.session['contract_valid']   # Удаляем ключ из сессии
+                new_user = User.objects.get(email=form.cleaned_data['email'])
                 request_params = {}
                 request_params['bh_key'] = md5.new(str(request.user.id) + settings.BH_PASSWORD).hexdigest()  # md5 BH_KEY
                 request_params['userid'] = str(request.user.id)
-                request_params['fname'] = form.cleaned_data['first_name']
-                request_params['lname'] = form.cleaned_data['last_name']
-                request_params['sname'] = form.cleaned_data['second_name']
-                request_params['bd'] = datetime.datetime.strptime(form.cleaned_data['birthdate'], '%d.%m.%Y').strftime('%Y-%m-%d')
+                request_params['fname'] = unicode(new_user.first_name).encode('cp1251')
+                request_params['lname'] = unicode(new_user.last_name).encode('cp1251')
+                request_params['sname'] = unicode(form.cleaned_data['second_name']).encode('cp1251')
+                request_params['src_club'] = request.session['src_club'] #Гори в аду сунцов!!!!
+                request_params['bd'] = new_user.get_profile().birth_date.strftime('%Y-%m-%d')
                 request_params['dognumber'] = request.session['dognumber']
-                request_params['passport'] = form.cleaned_data['passport_series'] + form.cleaned_data['passport_number']  # test
+                request_params['passport'] = form.cleaned_data['passport_series'] + form.cleaned_data['passport_number'] # test
                 request_params['other_info'] = ''
                 request_params['sid'] = '301'
                 request_params['type'] = '301'
                 request_params['payment_id'] = ''
+
+                del request.session['src_club']
                 del request.session['dognumber']
                 del request.session['src_id']
                 # Переводим все в cp1251
-                for key in request_params.keys():
-                    request_params[key] = unicode(request_params[key]).encode('cp1251')
-                    # Шлем запрос
+                # for key in request_params.keys():
+                #     request_params[key] = request_params[key].encode('cp1251')
+                # # Шлем запрос
                 if settings.DEBUG:
                     fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 else:
                     fh_url = settings.FITNESSHOUSE_NOTIFY_URL
-                request_params['src_club'] = request.session['src_club']
-                del request.session['src_club']
-                response = requests.get(fh_url, params=request_params, verify=False)
+                query_string = urllib.quote(urllib.urlencode(request_params))
+                response = requests.get(fh_url + query_string, params=request_params, verify=False)
                 response = urlparse.parse_qs(response.text)
-                if response.get('?status') == '1' or response.get('?status') == '2':
-                    context['response'] = response
-                    comment = 'Переоформление договора %(number)s на клиента '
-                    transaction = ContractTransaction(operation_type=1, user=request.user, amount=0, payment_date=now(), ) #@TODO: Допилить транзакции
-                    return render_to_response('contracts/success.html', context)
-                else:
-                    messages.warning(request, 'Произошла ошибка')
-                    return redirect('person_restruct_contract')
-    context = RequestContext(request)
-    context['form'] = form
+                # if response.get('?status') == '1' or response.get('?status') == '2':
+                context['response'] = response
+                # comment = 'Переоформление договора %(number)s на клиента %(first_name)s %(last_name)s %(second_name)s' % \
+                #           {
+                #             'number': request_params['dognumber'],
+                #             'first_name': new_user.first_name,
+                #             'last_name': new_user.last_name,
+                #             'second_name': request_params['sname'],
+                #           }
+                # transaction = ContractTransaction(operation_type=1, user=request.user, amount=0, payment_date=now(), comment=comment) #@TODO: Допилить транзакции
+                # transaction.save()
+                return render_to_response('contracts/success.html', context)
+                # else:
+                #     messages.warning(request, 'Произошла ошибка')
+                #     return redirect('person_restruct_contract')
+
     return render_to_response('contracts/contract_form.html', context)
 
 

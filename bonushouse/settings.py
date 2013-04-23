@@ -158,6 +158,7 @@ INSTALLED_APPS = (
     'contact',
     'administration',
     'partners',
+    'contracts',
     'rating',
     'newsletter',
     'ckeditor',
