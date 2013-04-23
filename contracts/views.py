@@ -2,7 +2,6 @@
 import datetime
 import urllib, urllib2, base64, md5
 import requests
-import chardet
 import urlparse
 
 
