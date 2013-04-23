@@ -145,6 +145,33 @@
         </div>
     {% endgetcategory %}
 
+    {% getcategory 23 as category %}
+        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
+        <div class="blocks-holder">
+            <div class="blocks-frame">
+                <ul class="blocks">
+                    {% for offer in category.offers_set.all|slice:':4' %}
+                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    {% endgetcategory %}
+    {% getcategory 24 as category %}
+        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
+        <div class="blocks-holder">
+            <div class="blocks-frame">
+                <ul class="blocks">
+                    {% for offer in category.offers_set.all|slice:':4' %}
+                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    {% endgetcategory %}
+
     <div class="orange-block">
         <p>Пригласи друга и получи бонусы</p>
         <a href="{% url refer_friend %}" class="link-button02">Пригласить друга</a>

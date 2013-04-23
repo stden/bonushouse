@@ -1,0 +1,21 @@
+{% extends "users/cabinet.html" %}
+{% block bigtitle %}
+    <h2>Продлить договор</h2>
+{% endblock %}
+{% block content_cabinet %}
+    {{ response }}
+    <div class="content">
+        <form action="" method="post">{% csrf_token %}
+            {% include "_form_errors.html" with form=form %}
+            {% include "_form.html" with form=form %}
+{#            {% if additional_info_form %}#}
+{#                <h2>Для активации подарочного кода введите, пожалуйста, информацию о себе</h2>#}
+{#                {% include "_form_errors.html" with form=additional_info_form %}#}
+{#                {% include "_form.html" with form=additional_info_form %}#}
+{#                <input type="hidden" name="additional_info_form_active" value="1" />#}
+{#            {% endif %}#}
+                <p><input type="submit" value="Продолжить" class="orange_button" /></p>
+        </form>
+
+    </div>
+{% endblock %}

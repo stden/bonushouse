@@ -43,6 +43,8 @@ urlpatterns = patterns('',
 
     url(r'^offers/', include('offers.urls')),
 
+    url(r'^contracts/', include('contracts.urls')),
+
     url(r'^cart/$', 'offers.views.cart', name='cart'),
 
     url(r'^auctions/', include('auctions.urls')),
