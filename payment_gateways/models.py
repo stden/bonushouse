@@ -30,6 +30,7 @@ class PaymentRequest(models.Model):
     payment_object = generic.GenericForeignKey("payment_type", "payment_id")
     payment_date = models.DateTimeField(verbose_name='Дата оплаты', blank=True, null=True)
     add_date = models.DateTimeField(verbose_name='Дата добавления', editable=False, auto_now_add=True)
+
     def complete(self, payment_info):
         self.payment_object = payment_info
         self.is_completed = True

@@ -8,7 +8,9 @@
         <form action="" method="post">{% csrf_token %}
             {% include "_form_errors.html" with form=form %}
             {% include "_form.html" with form=form %}
-                <p><input type="submit" value="Продолжить" class="orange_button" /></p>
+
+            <p><button type="button" class="orange_button">Рассчитать стоимость</button></p>
+            <p><input type="submit" value="Продолжить" class="orange_button" /></p>
         </form>
 
     </div>

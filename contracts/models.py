@@ -16,17 +16,21 @@ class ContractTransaction(models.Model):
     user = models.ForeignKey(User)
     amount = models.IntegerField(verbose_name='Сумма')
     operation_type = models.IntegerField(choices=TYPE_CHOICES, verbose_name='Тип операции')
-    is_completed = models.BooleanField(verbose_name='Оплата завершена', default=False)
-    payment_date = models.DateTimeField(verbose_name='Дата оплаты', blank=True, null=True)
-    payment_type = models.ForeignKey(ContentType, editable=False, blank=True, null=True)
-    payment_id = models.PositiveIntegerField(editable=False, blank=True, null=True)
-    payment_object = generic.GenericForeignKey("payment_type", "payment_id")
+    is_completed = models.BooleanField(verbose_name='Перевод завершён', default=False)
+    transaction_date = models.DateTimeField(verbose_name='Дата оплаты', blank=True, null=True)
+    transaction_type = models.ForeignKey(ContentType, editable=False, blank=True, null=True)
+    transaction_id = models.PositiveIntegerField(editable=False, blank=True, null=True)
+    transaction_object = generic.GenericForeignKey("transaction_type", "transaction_id")
     comment = models.TextField(verbose_name='Комментарий', blank=True, null=True)
-    add_date = models.DateTimeField(verbose_name='Дата добавления', editable=False, auto_now=True)
+    add_date = models.DateTimeField(verbose_name='Дата добавления', editable=False, auto_now_add=True)
 
     def complete(self, payment_info):
         self.payment_object = payment_info
         self.is_completed = True
         self.payment_date = now()
         self.save()
+
+
+class ContractTransactionInfo(models.Model):
+    add_date = models.DateTimeField(auto_now_add=True)
 
