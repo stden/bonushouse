@@ -118,6 +118,19 @@
             </div>
         </div>
     {% endgetcategory %}
+    {% getcategory 25 as category %}
+        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
+        <div class="blocks-holder">
+            <div class="blocks-frame">
+                <ul class="blocks">
+                    {% for offer in category.offers_set.all|slice:':4' %}
+                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                    {% endfor %}
+
+                </ul>
+            </div>
+        </div>
+    {% endgetcategory %}
     {% getcategory 17 as category %}
         <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>
         <div class="blocks-holder">
