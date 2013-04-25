@@ -4,21 +4,22 @@ import urllib, urllib2, base64, md5
 import requests
 import urlparse
 
-
-from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
+from django.conf import settings
+from django.utils.timezone import now
+from django.http import HttpResponse, Http404
+from django.views.decorators.csrf import csrf_exempt
 from bonushouse.models import AccountDepositTransactions, UserProfile, BonusTransactions, CronFitnesshouseNotifications
 from payment_gateways.models import PaymentRequest
-from django.conf import settings
+
 from django.contrib.auth import login
 from offers.models import Order, AbonementOrder, CouponCodes, AdditionalServicesOrder, GiftOrder
 from newsletter.models import NewsletterEmail, NewsletterSms
-from django.utils.timezone import now
-from django.http import HttpResponse, Http404
+
 from django.db.models import Sum
 from datetime import timedelta
 from auctions.models import Auction
@@ -47,7 +48,7 @@ from django.contrib.sites.models import Site
 from django import forms
 
 from contracts.models import ContractTransaction, ContractTransactionInfo
-
+from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
 
 
 ########################
@@ -69,6 +70,7 @@ def prolongate_contract(request):
     context = RequestContext(request)
     form = PersonalContractForm()
     context['form'] = form
+    # request.session.clear()
     if not request.session.get('contract_valid'):
         form = PersonalContractForm()
         context['form'] = form
@@ -86,6 +88,7 @@ def prolongate_contract(request):
     else:
         form = ContractProlongationForm()
         context['form'] = form
+
         return render_to_response('contracts/contract_prolongation_form.html', context)
     return render_to_response('contracts/contract_form.html', context)
 
@@ -235,3 +238,12 @@ def load_data_to_session(request, response):
     request.session['sdate'] = response['sdate'][0]
     request.session['edate'] = response['edate'][0]
     request.session['type'] = response['type'][0].encode('ISO-8859-1')# + '~ё+*&'
+
+@csrf_exempt
+def calculate_price(request):
+    if request.method == 'POST' and request.is_ajax():
+        end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
+        new_date = datetime.datetime.strptime(request.POST.get('new_date'), '%d.%m.%Y')
+        print (end_date-new_date).days
+        #prolongation_term = new_date - end_date
+    return HttpResponse()

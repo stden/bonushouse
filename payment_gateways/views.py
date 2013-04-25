@@ -34,7 +34,6 @@ def complete_payment(request, backend):
             paymentid = int(request.POST.get('paymentid'))
             orderid = int(request.POST.get('orderid'))
             paymode = request.POST.get('paymode')
-
         except:
             amount = None
             userid = None

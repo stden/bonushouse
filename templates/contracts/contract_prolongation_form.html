@@ -9,9 +9,21 @@
             {% include "_form_errors.html" with form=form %}
             {% include "_form.html" with form=form %}
 
-            <p><button type="button" class="orange_button">Рассчитать стоимость</button></p>
+            <p><button type="button" id="id_calculate_button" class="orange_button">Рассчитать стоимость</button></p>
             <p><input type="submit" value="Продолжить" class="orange_button" /></p>
         </form>
 
     </div>
+
+<script type="text/javascript">
+
+    $(function(){
+       $("#id_calculate_button").click(function(){
+           $.post('{% url prolongate_calculate_price %}', {new_date: $('#id_new_date').val()},
+               function(response, status){
+                    console.log(response);
+               });
+       });
+    });
+</script>
 {% endblock %}
