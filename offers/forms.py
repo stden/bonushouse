@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from offers.models import Offers, AbonementsAdditionalInfo, AdditionalServicesInfo, DELIVERY_CHOICES, GiftOrder
+from offers.models import Offers, ProlongationOffers, AbonementsAdditionalInfo, AdditionalServicesInfo, DELIVERY_CHOICES, GiftOrder
 from common.forms import CategoriesCheckboxSelectMultiple
-from django.forms.util import flatatt, ErrorDict, ErrorList
 from common.models import Categories
+from django.forms.util import flatatt
 from django.utils.timezone import now
 from bonushouse.utils import total_seconds
 from partners.models import PartnerAddress, Partner, ClubCardNumbers
@@ -13,8 +13,7 @@ from django.conf import settings
 from model_changelog.signals import important_model_change
 from django.utils.html import mark_safe
 from dbsettings.utils import get_settings_value
-from django.utils.timezone import now
-import datetime
+
 
 
 class ClubCardOrAgreementField(forms.CharField):
@@ -152,11 +151,31 @@ class OffersForm(forms.ModelForm):
 
         }
 
+
+class ProlongationOffersForm(forms.ModelForm):
+
+    class Meta:
+        model = ProlongationOffers
+        widgets = {
+            'title': forms.TextInput(attrs={'class': 'text'}),
+            'addresses': forms.CheckboxSelectMultiple(),
+            'description': forms.Textarea(attrs={'class':'textarea', 'rows':10, 'cols':30}),
+            'terms': forms.Textarea(attrs={'class':'textarea', 'rows':10, 'cols':30}),
+            'price': forms.TextInput(attrs={'class': 'text'}),
+            'money_bonuses_count': forms.TextInput(attrs={'class': 'text'}),
+            'additional_services_term': forms.TextInput(attrs={'class':'text float_left', 'style':'width:60px;margin-right:20px;'}),
+            'abonements_term': forms.TextInput(attrs={'class':'text float_left', 'style':'width:60px;margin-right:20px;'}),
+            'fh_inner_title': forms.TextInput(attrs={'class': 'text'}),
+        }
+
 PAYMENT_TYPE_CHOICES = (
     (1, 'Депозит'),
     (2, 'Бонусы'),
     (3, 'Другие'),
 )
+
+
+
 
 class BuyOfferForm(forms.Form):
     quantity = forms.IntegerField(min_value=1, label='Количество', initial=1)

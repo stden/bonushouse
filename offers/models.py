@@ -37,6 +37,8 @@ from django.core.urlresolvers import reverse_lazy
 from payment_gateways.models import PaymentRequest, DolPaymentInfo
 from django.utils import timezone
 from bonushouse.models import CronFitnesshouseNotifications
+from partners.models import Partner, PartnerAddress
+
 
 TOTAL_CHARS_SIGN_CHOICES = (
     ('>=', '>='),
@@ -64,7 +66,6 @@ OFFER_TYPE_CHOICES = (
 
 class Offers(ModelWithSeo):
 
-    from partners.models import Partner, PartnerAddress
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     categories = models.ManyToManyField(Categories, verbose_name='Категории')
     photos = models.ManyToManyField(UploadedFile, verbose_name='Фотографии')
@@ -736,6 +737,26 @@ class GiftOrder(models.Model):
             return None
 
 
+PERIOD_TYPE_CHOICES = ((1, 'До двух лет'), (2, 'От двух до трёх лет'), (3, 'Больше трёх лет'))
+
+
+class ProlongationOffers(ModelWithSeo):
+    """Акции доступные только для продления"""
+    title = models.CharField(max_length=255, verbose_name='Заголовок')
+    partner = models.ForeignKey(Partner, verbose_name='Партнер', blank=True, null=True)
+    addresses = models.ManyToManyField(PartnerAddress, verbose_name='Заведения')
+    period_type = models.CharField(max_length=1, choices=PERIOD_TYPE_CHOICES, verbose_name='Категории продления')
+    price = models.PositiveIntegerField(verbose_name='Цена')
+    money_bonuses_count = models.PositiveIntegerField(verbose_name='Количество бонусов, начисляемое пользователю при покупке за рубли', default=0)
+    description = RichTextField(verbose_name='Описание акции')
+    terms = RichTextField(verbose_name='Условия акции')
+    fh_inner_title = models.CharField(max_length=255, verbose_name='Внутренний заголовок для FH', blank=True, null=True)
+    is_published = models.BooleanField(verbose_name='Опубликовано', default=True)
+    is_deleted = models.BooleanField(editable=False, default=False)
+    feedbacks = generic.GenericRelation(UserFeedbacks, object_id_field='content_id', content_type_field='content_type')
+    add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
+    views_count = models.PositiveIntegerField(default=0, editable=False)
+
 
 class CouponCodes(models.Model):
     from partners.models import Partner, PartnerAddress
@@ -975,3 +996,4 @@ def order_create_meta_order(sender, instance, created, raw, using, **kwargs):
         metaorder.is_completed = instance.is_completed
         metaorder.add_date = instance.add_date
         metaorder.save()
+

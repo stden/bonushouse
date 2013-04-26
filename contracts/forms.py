@@ -11,7 +11,7 @@ class PersonalContractForm(forms.Form):
 
 
 class ContractProlongationForm(forms.Form):
-    new_date = forms.CharField(max_length=100, label='Дата для продления', widget=forms.DateInput(attrs={'class':'text mask_date', 'placeholder':'дд.мм.гггг'}))
+    new_order = forms.ModelChoiceField(widget=forms.RadioSelect,queryset=[])
     price = forms.CharField(max_length=100, label='Стоимость переоформления', widget=forms.TextInput(attrs={'class':'text', 'disabled': True}))
 
 

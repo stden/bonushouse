@@ -326,3 +326,4 @@ post_save.connect(create_user_profile, sender=User)
 post_save.connect(calculate_age, sender=UserProfile)
 post_save.connect(update_bonuses_ballance, sender=BonusTransactions)
 post_save.connect(update_partner_user, sender=UserFeedbacks)
+    

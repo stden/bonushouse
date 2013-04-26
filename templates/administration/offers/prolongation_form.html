@@ -1,0 +1,145 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <script type="text/javascript">
+        $(function() {
+            $('#id_type').change(function() {
+                $('.conditional-row').hide();
+                if($(this).val()=='2') {
+                    $('.abonement-specific').show();
+                }
+                else if($(this).val()=='3') {
+                    $('.additional-services-specific').show();
+                }
+            });
+            $('#id_type').change();
+            {% if not offer %}
+                function updatePermalink() {
+                    title = $('input#id_title').val();
+                    title_translit = toTranslit(title);
+                    friendly_url = ('/offers/'+title_translit+'/').toLowerCase();
+                    $('input#id_friendly_url').val(friendly_url);
+                }
+                function updateBonusesCount() {
+                    price = $('#id_coupon_price_money').val();
+                    if(price) {
+                        $.get('{% url get_auto_bonus_count %}', {'price':price}, function(data){
+                            $('#id_money_bonuses_count').val(data.bonuses_count);
+                        },'json');
+                    }
+                }
+                $('input#id_title').keyup(updatePermalink);
+                $('input#id_title').change(updatePermalink);
+                $('#id_price').keyup(updateBonusesCount);
+                $('#id_price').change(updateBonusesCount);
+            {% endif %}
+        });
+    </script>
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_offers_index %}">Акции</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        {{ offers_form.media }}
+        {% include "_form_errors.html" with form=offers_form %}
+        {% include "_form_errors.html" with form=seo_meta_form %}
+        {% include "_form_errors.html" with form=seo_url_form %}
+        <form action="" method="post" enctype="multipart/form-data" id="offer_form">{% csrf_token %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ offers_form.title.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.partner.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.partner }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.addresses.label_tag }}:</span></td>
+                    <td id="addresses_wraper">
+                        {{ offers_form.addresses }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ offers_form.description.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.description }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">Цена товара услуги:</span></td>
+                    <td>
+                        {{ offers_form.price }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.money_bonuses_count.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.money_bonuses_count }}
+                    </td>
+                </tr>
+{#                    <td><span class="title-text">{{ offers_form.type.label_tag }}:</span></td>#}
+{#                    <td>#}
+{#                        {% if offers_form.instance.pk %}#}
+{#                            {{ offers_form.instance.get_type_display }}#}
+{#                            {{ offers_form.type }}#}
+{#                        {% else %}#}
+{#                        {{ offers_form.type }}#}
+{#                        {% endif %}#}
+{#                    </td>#}
+{#                <tr class="conditional-row abonement-specific additional-services-specific">#}
+{#                    <td><span class="title-text">{{ offers_form.fh_inner_title.label_tag }}:</span></td>#}
+{#                    <td>#}
+{#                        {{ offers_form.fh_inner_title }}#}
+{#                    </td>#}
+{#                </tr>#}
+                {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="check-post">
+                            {{ offers_form.is_published }} {{ offers_form.is_published.label_tag }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-area">
+                <input class="button save" type="submit" value="Сохранить" />
+                {% if offer %}
+                    <input class="button del" type="submit" name="delete" onclick="return confirm('Удалить эту акцию? Вы уверены?');" value="Удалить" />
+                {% endif %}
+                <input class="button preview" onclick="$(this).parents('form:first').attr('action','{% url administration_offers_preview %}').attr('target','_blank').submit().removeAttr('target').attr('action','');return false" type="submit" value="Предварительный просмотр" />
+                {% if offer %}
+                    <input class="button post" type="submit" name="publish" value="Опубликовать" />
+                {% endif %}
+            </div>
+        </form>
+    </div>
+    </form>
+    <script type="text/javascript">
+        $(function() {
+            $('#id_partner').change(function() {
+                $('#addresses_wraper').html('');
+                if($(this).val()=='') {
+                    $('#addresses_wraper').html('<strong>Сначала выберите партнера</strong>');
+                }
+            else {
+                $('#addresses_wraper').load('/administration/partners/address/ajax/'+$(this).val()+'/', function() {
+                    {% if offer %}
+                        {% for address in offer.addresses.all %}
+                            $('#addresses_wraper input[value={{ address.pk }}]').attr('checked', 'checked');
+                        {% endfor %}
+                    {% endif %}
+                    $('#addresses_wraper').customRadioCheckbox();
+                });
+            }
+            });
+
+            $('#id_partner').change();
+        });
+    </script>
+{% endblock %}

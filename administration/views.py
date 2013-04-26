@@ -10,7 +10,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from common.forms import CategoriesForm, PhotoForm
 from common.models import Categories
 from seo.forms import SeoModelMetaForm, SeoModelUrlForm
-from offers.forms import OffersForm
+from offers.forms import OffersForm, ProlongationOffersForm
 from offers.models import Offers, Order, AbonementOrder, AdditionalServicesOrder, MetaOrder, GiftOrder
 from partners.models import Partner, PartnerAddress, PartnersPage, ClubCardNumbers
 from partners.forms import PartnerForm, PartnerAddressForm, PartnersPageForm, ClubCardNumbersForm
@@ -138,6 +138,32 @@ def offers_add(request):
     context['seo_url_form'] = seo_url_form
     context['page_title'] = 'Добавить акцию'
     return render_to_response('administration/offers/form.html', context)
+
+@user_passes_test(lambda u: u.is_staff)
+def offers_add_prolongation(request):
+    context = RequestContext(request)
+    context = load_menu_context(context, request, show_secondary_menu=False)
+    context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
+    if request.method == 'POST':
+        offers_form = ProlongationOffersForm(request.POST)
+        seo_meta_form = SeoModelMetaForm(request.POST)
+        seo_url_form = SeoModelUrlForm(request.POST)
+        if offers_form.is_valid() and seo_meta_form.is_valid() and seo_url_form.is_valid():
+            offers_form.save()
+            seo_meta_form.instance.content_object = offers_form.instance
+            seo_meta_form.save()
+            seo_url_form.instance.content_object = offers_form.instance
+            seo_url_form.save()
+            return redirect('administration.views.offers_index')
+    else:
+        offers_form = ProlongationOffersForm()
+        seo_meta_form = SeoModelMetaForm()
+        seo_url_form = SeoModelUrlForm()
+    context['offers_form'] = offers_form
+    context['seo_meta_form'] = seo_meta_form
+    context['seo_url_form'] = seo_url_form
+    context['page_title'] = 'Добавить акцию'
+    return render_to_response('administration/offers/prolongation_form.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff)
