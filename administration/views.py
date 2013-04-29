@@ -21,7 +21,7 @@ from news.forms import NewsForm
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from administration.forms import BulkOffersForm, BulkCategoriesForm, BulkPartnersForm, BulkPagesForm, BulkBannersForm, \
     BulkAuctionsForm, DateRangeForm, IdeaRewardForm, BulkFeedbacksForm, UserForm, BulkUsersForm, BulkPartnersPageForm, \
-    BulkClubCardNumbersForm, CallMeSubjectForm
+    BulkClubCardNumbersForm, CallMeSubjectForm, BulkProlongationOffersForm
 from django.http import Http404, HttpResponse
 from common.models import UploadedFile
 from django.utils import simplejson
@@ -109,10 +109,12 @@ def offers_index(request):
 @user_passes_test(lambda u: u.is_staff)
 def offers_prolongation_index(request):
     if request.method == 'POST':
-        form = BulkOffersForm(request.POST)
+        form = BulkProlongationOffersForm(request.POST)
         if form.is_valid():
+            BulkProlongationOffersForm(request.POST)
             if form.cleaned_data['action'] == 'delete':
                 for offer in form.cleaned_data['selected_items']:
+                    print offer
                     offer.delete()
             elif form.cleaned_data['action'] == 'publish':
                 for offer in form.cleaned_data['selected_items']:
@@ -127,7 +129,7 @@ def offers_prolongation_index(request):
     page = request.GET.get('page', 1)
     context = RequestContext(request)
     context = load_menu_context(context, request, show_secondary_menu=False)
-    context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
+    context['ADMIN_MENU_ACTIVE'] = 'OFFERS_PROLONGATION'
     offers_list = ProlongationOffers.all_objects.all()
     context['offers_list'] = offers_list
     return render_to_response('administration/offers_prolongation/index.html', context)

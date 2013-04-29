@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from django import forms
-from offers.models import Offers
+from offers.models import Offers, ProlongationOffers
 from common.models import Categories
 from partners.models import Partner, PartnersPage, ClubCardNumbers
 from flatpages.models import FlatPage
@@ -27,6 +27,12 @@ class BulkClubCardNumbersForm(forms.Form):
 class BulkOffersForm(forms.Form):
     selected_items = forms.ModelMultipleChoiceField(queryset=Offers.all_objects.all(), label='Акции')
     action = forms.CharField(label='Действие')
+
+
+class BulkProlongationOffersForm(forms.Form):
+    selected_items = forms.ModelMultipleChoiceField(queryset=ProlongationOffers.all_objects.all(), label='Акции')
+    action = forms.CharField(label='Действие')
+
 
 class BulkCategoriesForm(forms.Form):
     selected_items = forms.ModelMultipleChoiceField(queryset=Categories.all_objects.all(), label='Категории')
