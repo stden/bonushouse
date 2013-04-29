@@ -20,7 +20,7 @@
                     $('input#id_friendly_url').val(friendly_url);
                 }
                 function updateBonusesCount() {
-                    price = $('#id_coupon_price_money').val();
+                    price = $('#id_price').val();
                     if(price) {
                         $.get('{% url get_auto_bonus_count %}', {'price':price}, function(data){
                             $('#id_money_bonuses_count').val(data.bonuses_count);
@@ -53,6 +53,12 @@
                     </td>
                 </tr>
                 <tr>
+                    <td><span class="title-text">{{ offers_form.period_type.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.period_type }}
+                    </td>
+                </tr>
+                <tr>
                     <td><span class="title-text">{{ offers_form.partner.label_tag }}:</span></td>
                     <td>
                         {{ offers_form.partner }}
@@ -70,6 +76,12 @@
                         {{ offers_form.description }}
                     </td>
                 </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ offers_form.terms.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.terms }}
+                    </td>
+                </tr>
                 <tr>
                     <td><span class="title-text">Цена товара услуги:</span></td>
                     <td>
@@ -80,6 +92,12 @@
                     <td><span class="title-text">{{ offers_form.money_bonuses_count.label_tag }}:</span></td>
                     <td>
                         {{ offers_form.money_bonuses_count }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.fh_inner_title.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.fh_inner_title }}
                     </td>
                 </tr>
 {#                    <td><span class="title-text">{{ offers_form.type.label_tag }}:</span></td>#}
@@ -122,6 +140,7 @@
     </form>
     <script type="text/javascript">
         $(function() {
+
             $('#id_partner').change(function() {
                 $('#addresses_wraper').html('');
                 if($(this).val()=='') {

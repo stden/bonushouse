@@ -53,6 +53,13 @@ class ActiveOffersManager(models.Manager):
         return super(ActiveOffersManager, self).get_query_set().filter(is_published=True, is_deleted=False, start_date__lte=cur_time, end_date__gte=cur_time)
 
 
+class ActiveProlongationOffersManager(models.Manager):
+    """Такой же менеджер, только для акций продления"""
+    def get_query_set(self):
+        cur_time=now()
+        return super(ActiveProlongationOffersManager, self).get_query_set().filter(is_published=True, is_deleted=False)
+
+
 class AllOffersManager(models.Manager):
     def get_query_set(self):
         return super(AllOffersManager, self).get_query_set().filter(is_deleted=False)
@@ -737,11 +744,11 @@ class GiftOrder(models.Model):
             return None
 
 
-PERIOD_TYPE_CHOICES = ((1, 'До двух лет'), (2, 'От двух до трёх лет'), (3, 'Больше трёх лет'))
+PERIOD_TYPE_CHOICES = (('1', 'До 2 лет'), ('2', 'От 2 до 3 лет'), ('3', 'Больше 3 лет'))
 
 
 class ProlongationOffers(ModelWithSeo):
-    """Акции доступные только для продления"""
+    """Акции доступные только для продления, только FH"""
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     partner = models.ForeignKey(Partner, verbose_name='Партнер', blank=True, null=True)
     addresses = models.ManyToManyField(PartnerAddress, verbose_name='Заведения')
@@ -756,6 +763,53 @@ class ProlongationOffers(ModelWithSeo):
     feedbacks = generic.GenericRelation(UserFeedbacks, object_id_field='content_id', content_type_field='content_type')
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     views_count = models.PositiveIntegerField(default=0, editable=False)
+
+    objects = ActiveProlongationOffersManager()
+    all_objects = AllOffersManager()
+
+    def __unicode__(self):
+        return self.title
+
+    def get_views_count(self):
+        return self.views_count
+
+    def delete(self, using=None):
+        self.is_deleted = True
+        self.save()
+
+    def publish(self):
+        self.is_published = True
+        self.save()
+
+    def get_bought_count(self):
+        result = 0
+        quantity_sum = Order.objects.filter(is_completed=True, offer=self).aggregate(models.Sum('quantity'))
+        if quantity_sum['quantity__sum']:
+            result = quantity_sum['quantity__sum']
+        return result
+
+    @models.permalink
+    def get_administration_edit_url(self):
+        return ('administration.views.offers_prolongation_edit', (), {'offer_id':int(self.pk)})
+
+    @models.permalink
+    def get_partner_edit_url(self):
+        return ('partners.views.menu_offers_edit', (), {'offer_id':self.pk})
+
+    @models.permalink
+    def get_administration_delete_url(self):
+        return ('administration.views.offers_prolongation_delete', (), {'offer_id':self.pk})
+
+    def get_absolute_url(self):
+        return self.get_url()
+
+    def get_view_for_model(self):
+        from offers.views import view
+        return view
+
+    class Meta:
+        verbose_name = 'Акция продления'
+        verbose_name_plural = 'Акции продления'
 
 
 class CouponCodes(models.Model):

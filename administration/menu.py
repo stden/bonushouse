@@ -8,6 +8,11 @@ ADMIN_MENU = [
         'url':reverse_lazy('administration_offers_index'),
     },
     {
+        'id': 'OFFERS_PROLONGATION',
+        'title': 'Акции продления',
+        'url':reverse_lazy('administration_offers_prolongation_index'),
+    },
+    {
         'id': 'CATEGORIES',
         'title': 'Категории',
         'url':reverse_lazy('administration_categories_index')

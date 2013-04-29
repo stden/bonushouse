@@ -154,6 +154,11 @@ class OffersForm(forms.ModelForm):
 
 class ProlongationOffersForm(forms.ModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super(ProlongationOffersForm, self).__init__(*args, **kwargs)
+        self.fields['partner'].initial = Partner.objects.get(title='Fitness House')  # Партнёр по умолчанию - FH
+
+
     class Meta:
         model = ProlongationOffers
         widgets = {

@@ -11,7 +11,7 @@ from common.forms import CategoriesForm, PhotoForm
 from common.models import Categories
 from seo.forms import SeoModelMetaForm, SeoModelUrlForm
 from offers.forms import OffersForm, ProlongationOffersForm
-from offers.models import Offers, Order, AbonementOrder, AdditionalServicesOrder, MetaOrder, GiftOrder
+from offers.models import Offers, ProlongationOffers, Order, AbonementOrder, AdditionalServicesOrder, MetaOrder, GiftOrder
 from partners.models import Partner, PartnerAddress, PartnersPage, ClubCardNumbers
 from partners.forms import PartnerForm, PartnerAddressForm, PartnersPageForm, ClubCardNumbersForm
 from flatpages.models import FlatPage
@@ -105,6 +105,34 @@ def offers_index(request):
     #     context['offers_list'] = paginator.page(paginator.num_pages)
     return render_to_response('administration/offers/index.html', context)
 
+
+@user_passes_test(lambda u: u.is_staff)
+def offers_prolongation_index(request):
+    if request.method == 'POST':
+        form = BulkOffersForm(request.POST)
+        if form.is_valid():
+            if form.cleaned_data['action'] == 'delete':
+                for offer in form.cleaned_data['selected_items']:
+                    offer.delete()
+            elif form.cleaned_data['action'] == 'publish':
+                for offer in form.cleaned_data['selected_items']:
+                    offer.is_published = True
+                    offer.save()
+            elif form.cleaned_data['action'] == 'hide':
+                for offer in form.cleaned_data['selected_items']:
+                    offer.is_published = False
+                    offer.save()
+        return redirect('administration.views.offers_prolongation_index')
+    per_page = 20
+    page = request.GET.get('page', 1)
+    context = RequestContext(request)
+    context = load_menu_context(context, request, show_secondary_menu=False)
+    context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
+    offers_list = ProlongationOffers.all_objects.all()
+    context['offers_list'] = offers_list
+    return render_to_response('administration/offers_prolongation/index.html', context)
+
+
 def get_bonus_count(request):
     price = request.GET.get('price')
     result = {'success':True, 'bonuses_count':0}
@@ -140,7 +168,7 @@ def offers_add(request):
     return render_to_response('administration/offers/form.html', context)
 
 @user_passes_test(lambda u: u.is_staff)
-def offers_add_prolongation(request):
+def offers_prolongation_add(request):
     context = RequestContext(request)
     context = load_menu_context(context, request, show_secondary_menu=False)
     context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
@@ -163,7 +191,7 @@ def offers_add_prolongation(request):
     context['seo_meta_form'] = seo_meta_form
     context['seo_url_form'] = seo_url_form
     context['page_title'] = 'Добавить акцию'
-    return render_to_response('administration/offers/prolongation_form.html', context)
+    return render_to_response('administration/offers_prolongation/form.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff)
@@ -201,6 +229,41 @@ def offers_edit(request, offer_id):
     return render_to_response('administration/offers/form.html', context)
 
 
+@user_passes_test(lambda u: u.is_staff)
+def offers_prolongation_edit(request, offer_id):
+    offer_id = int(offer_id)
+    offer = get_object_or_404(ProlongationOffers.all_objects, pk=offer_id)
+    context = RequestContext(request)
+    context = load_menu_context(context, request, show_secondary_menu=False)
+    context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
+    if request.method == 'POST':
+        offers_form = ProlongationOffersForm(request.POST, request.FILES, instance=offer)
+        seo_meta_form = SeoModelMetaForm(request.POST, instance=offer.get_seo_meta_object())
+        seo_url_form = SeoModelUrlForm(request.POST, instance=offer.get_seo_url_object())
+        if request.POST.get('delete') is not None:
+            offer.delete()
+            return redirect('administration.views.offers_prolongation_index')
+        else:
+            if offers_form.is_valid() and seo_meta_form.is_valid() and seo_url_form.is_valid():
+                offers_form.save()
+                seo_meta_form.save()
+                seo_url_form.save()
+                if request.POST.get('publish') is not None:
+                    offer.publish()
+                return redirect('administration.views.offers_prolongation_index')
+    else:
+        offers_form = ProlongationOffersForm(instance=offer)
+        seo_meta_form = SeoModelMetaForm(instance=offer.get_seo_meta_object())
+        seo_url_form = SeoModelUrlForm(instance=offer.get_seo_url_object())
+
+    context['offers_form'] = offers_form
+    context['seo_meta_form'] = seo_meta_form
+    context['seo_url_form'] = seo_url_form
+    context['page_title'] = offer.title
+    context['offer'] = offer
+    return render_to_response('administration/offers_prolongation/form.html', context)
+
+
 @csrf_exempt
 def offers_ajax_validate(request):
     response = {'success': False, 'messages': []}
@@ -236,6 +299,14 @@ def offers_delete(request, offer_id):
     offer = get_object_or_404(Offers, pk=offer_id)
     offer.delete()
     return redirect('administration.views.offers_index')
+
+
+@user_passes_test(lambda u: u.is_staff)
+def offers_prolongation_delete(request, offer_id):
+    offer_id = int(offer_id)
+    offer = get_object_or_404(ProlongationOffers, pk=offer_id)
+    offer.delete()
+    return redirect('administration.views.offers_prolongation_index')
 
 
 @user_passes_test(lambda u: u.is_staff and u.is_superuser)
