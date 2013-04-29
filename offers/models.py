@@ -755,6 +755,7 @@ class ProlongationOffers(ModelWithSeo):
     period_type = models.CharField(max_length=1, choices=PERIOD_TYPE_CHOICES, verbose_name='Категории продления')
     price = models.PositiveIntegerField(verbose_name='Цена')
     money_bonuses_count = models.PositiveIntegerField(verbose_name='Количество бонусов, начисляемое пользователю при покупке за рубли', default=0)
+    description = RichTextField(verbose_name='Описание акции')
     terms = RichTextField(verbose_name='Условия акции')
     fh_inner_title = models.CharField(max_length=255, verbose_name='Внутренний заголовок для FH', blank=True, null=True)
     is_published = models.BooleanField(verbose_name='Опубликовано', default=True)
