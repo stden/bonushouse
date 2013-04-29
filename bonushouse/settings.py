@@ -168,7 +168,7 @@ INSTALLED_APPS = (
     'auctions',
     'social_auth',
     'payment_gateways',
-    # 'south',
+    'south',
     'debug_toolbar',
     'likes',
     'model_changelog',
