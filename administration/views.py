@@ -182,7 +182,7 @@ def offers_prolongation_add(request):
             seo_meta_form.save()
             seo_url_form.instance.content_object = offers_form.instance
             seo_url_form.save()
-            return redirect('administration.views.offers_index')
+            return redirect('administration.views.offers_prolongation_index')
     else:
         offers_form = ProlongationOffersForm()
         seo_meta_form = SeoModelMetaForm()
