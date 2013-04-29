@@ -94,6 +94,11 @@ OPERATOR_MENU = [
         'url':reverse_lazy('administration_offers_index'),
     },
     {
+        'id': 'OFFERS_PROLONGATION',
+        'title': 'Акции продления',
+        'url':reverse_lazy('administration_offers_prolongation_index'),
+    },
+    {
         'id': 'PARTNERS',
         'title': 'Партнеры',
         'url':reverse_lazy('administration_partners_index')
