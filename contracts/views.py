@@ -192,7 +192,6 @@ def person_restruct_contract(request):
                 other_info_encoded = base64.b64encode(urllib2.unquote(other_info_encoded).replace('+',' '))
                 request_params['other_info'] = other_info_encoded
                 # Шлем запрос
-                print request_params['other_info']
                 response = requests.get(fh_url, params=request_params, verify=False)
                 response = urlparse.parse_qs(response.text)
 
