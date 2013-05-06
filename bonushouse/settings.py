@@ -169,7 +169,7 @@ INSTALLED_APPS = (
     'social_auth',
     'payment_gateways',
     # 'south',
-    'debug_too3lbar',
+    'debug_toolbar',
     'likes',
     'model_changelog',
     'threadlocals_user',
