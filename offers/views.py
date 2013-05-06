@@ -427,12 +427,13 @@ def ajax_additional_info_club_card_validate(request, offer_id):
         form = AbonementsClubCardForm(request.POST, offer=offer)
         result = {}
         if form.is_valid():
+            tomorrow = now() + datetime.timedelta(days=1)
             result['success'] = True
             context = RequestContext(request)
             context['offer'] = offer
             context['address'] = form.cleaned_data['address']
             context.update(form.cleaned_data)
-            context['add_date'] = now()
+            context['add_date'] = tomorrow
             context['valid_term'] = u'с %s по %s' % (timezone.localtime((now()+datetime.timedelta(days=1))).strftime('%d.%m.%Y'), timezone.localtime(((now()+datetime.timedelta(days=offer.additional_services_term + 1))).strftime('%d.%m.%Y')))
             result['message'] = render_to_string('offers/_additional_services_buy_preview.html', context)
         else:
@@ -487,12 +488,13 @@ def ajax_additional_info_abonements_validate(request, offer_id):
         form = AbonementsAdditionalInfoForm(request.POST, offer=offer)
         result = {}
         if form.is_valid():
+            tomorrow = now() + datetime.timedelta(days=1)
             result['success'] = True
             context = RequestContext(request)
             context['offer'] = offer
             context['address'] = form.cleaned_data['address']
             context.update(form.cleaned_data)
-            context['add_date'] = now()
+            context['add_date'] = tomorrow
             context['valid_term'] = u'с %s по %s' % (timezone.localtime(context['add_date']).strftime('%d.%m.%Y'), timezone.localtime((context['add_date'] + datetime.timedelta(days=offer.abonements_term))).strftime('%d.%m.%Y'))
             result['message'] = render_to_string('offers/_additional_services_buy_preview.html', context)
         else:
@@ -513,11 +515,12 @@ def ajax_additional_info_simple_actions_validate(request, offer_id):
         form = SimpleActionAdditionalInfoForm(request.POST, offer=offer)
         result = {}
         if form.is_valid():
+            tomorrow = now() + datetime.timedelta(days=1)
             result['success'] = True
             context = RequestContext(request)
             context['offer'] = offer
             context.update(form.cleaned_data)
-            context['add_date'] = now()
+            context['add_date'] = tomorrow
             # context['valid_term'] = u'с %s по %s' % (timezone.localtime(context['add_date']).strftime('%d.%m.%Y'), timezone.localtime((context['add_date'] + datetime.timedelta(days=offer.abonements_term))).strftime('%d.%m.%Y'))
             result['message'] = render_to_string('offers/_simple_actions_buy_preview.html', context)
         else:
