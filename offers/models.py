@@ -102,7 +102,6 @@ class Offers(ModelWithSeo):
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     views_count = models.PositiveIntegerField(default=0, editable=False)
 
-
     #Менеджеры
     objects = ActiveOffersManager()
     all_objects = AllOffersManager()

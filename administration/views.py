@@ -10,7 +10,7 @@ from django.shortcuts import render_to_response, redirect, get_object_or_404
 from common.forms import CategoriesForm, PhotoForm
 from common.models import Categories
 from seo.forms import SeoModelMetaForm, SeoModelUrlForm
-from offers.forms import OffersForm, ProlongationOffersForm
+from offers.forms import OffersForm, ProlongationOffersAdminForm
 from offers.models import Offers, ProlongationOffers, Order, AbonementOrder, AdditionalServicesOrder, MetaOrder, GiftOrder
 from partners.models import Partner, PartnerAddress, PartnersPage, ClubCardNumbers
 from partners.forms import PartnerForm, PartnerAddressForm, PartnersPageForm, ClubCardNumbersForm
@@ -175,7 +175,7 @@ def offers_prolongation_add(request):
     context = load_menu_context(context, request, show_secondary_menu=False)
     context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
     if request.method == 'POST':
-        offers_form = ProlongationOffersForm(request.POST)
+        offers_form = ProlongationOffersAdminForm(request.POST)
         seo_meta_form = SeoModelMetaForm(request.POST)
         seo_url_form = SeoModelUrlForm(request.POST)
         if offers_form.is_valid() and seo_meta_form.is_valid() and seo_url_form.is_valid():
@@ -186,7 +186,7 @@ def offers_prolongation_add(request):
             seo_url_form.save()
             return redirect('administration.views.offers_prolongation_index')
     else:
-        offers_form = ProlongationOffersForm()
+        offers_form = ProlongationOffersAdminForm()
         seo_meta_form = SeoModelMetaForm()
         seo_url_form = SeoModelUrlForm()
     context['offers_form'] = offers_form
@@ -239,7 +239,7 @@ def offers_prolongation_edit(request, offer_id):
     context = load_menu_context(context, request, show_secondary_menu=False)
     context['ADMIN_MENU_ACTIVE'] = 'OFFERS'
     if request.method == 'POST':
-        offers_form = ProlongationOffersForm(request.POST, request.FILES, instance=offer)
+        offers_form = ProlongationOffersAdminForm(request.POST, request.FILES, instance=offer)
         seo_meta_form = SeoModelMetaForm(request.POST, instance=offer.get_seo_meta_object())
         seo_url_form = SeoModelUrlForm(request.POST, instance=offer.get_seo_url_object())
         if request.POST.get('delete') is not None:
@@ -254,7 +254,7 @@ def offers_prolongation_edit(request, offer_id):
                     offer.publish()
                 return redirect('administration.views.offers_prolongation_index')
     else:
-        offers_form = ProlongationOffersForm(instance=offer)
+        offers_form = ProlongationOffersAdminForm(instance=offer)
         seo_meta_form = SeoModelMetaForm(instance=offer.get_seo_meta_object())
         seo_url_form = SeoModelUrlForm(instance=offer.get_seo_url_object())
 

@@ -49,6 +49,7 @@ from django import forms
 
 from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
+from offers.models import ProlongationOffers
 
 
 ########################
@@ -70,7 +71,8 @@ def prolongate_contract(request):
     context = RequestContext(request)
     form = PersonalContractForm()
     context['form'] = form
-    # request.session.clear()
+    # del request.session['contract_valid']
+
     if not request.session.get('contract_valid'):
         form = PersonalContractForm()
         context['form'] = form
@@ -80,13 +82,15 @@ def prolongate_contract(request):
             if form.is_valid():
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
+                total_time = calculate_dates(request, response)
+                print total_time
                 if response['?status'][0] == '1' or response['?status'][0] == '2': # status=1 и status=2 - успех, всё остальное - ошибки
                     #Грузим данные в сессию
                     load_data_to_session(request, response)
-                    messages.success(request, 'Теперь введите новую дату, до которой необходимо продлить договор.')
+                    messages.success(request, 'Теперь выберите новый договор.')
                     return redirect('prolongate_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
     else:
-        form = ContractProlongationForm()
+        form = ContractProlongationForm(queryset=ProlongationOffers.all_objects.all())
         context['form'] = form
 
         return render_to_response('contracts/contract_prolongation_form.html', context)
@@ -216,6 +220,7 @@ def get_contract_data(request, form):
     request_params['other_info'] = ''
     request_params['sid'] = '300'
 
+    request.session['user_contract_number'] = form.cleaned_data['contract_number']
     # Переводим все в cp1251
     for key in request_params.keys():
         request_params[key] = request_params[key]
@@ -231,19 +236,28 @@ def get_contract_data(request, form):
 
 def load_data_to_session(request, response):
     """Данные с сервера FH записываем в сессию"""
+    contract_index = response['dognumber'].index(request.session['user_contract_number'])
     request.session['contract_valid'] = True  # Договор валидный
-    request.session['src_id'] = response['src_id'][0]
-    request.session['dognumber'] = response['dognumber'][0].encode('ISO-8859-1')
-    request.session['src_club'] = response['src_club'][0].encode('ISO-8859-1')
-    request.session['sdate'] = response['sdate'][0]
-    request.session['edate'] = response['edate'][0]
-    request.session['type'] = response['type'][0].encode('ISO-8859-1')# + '~ё+*&'
+    request.session['src_id'] = response['src_id'][contract_index]
+    request.session['dognumber'] = response['dognumber'][contract_index].encode('ISO-8859-1')
+    request.session['src_club'] = response['src_club'][contract_index].encode('ISO-8859-1')
+    request.session['sdate'] = response['sdate'][contract_index]
+    request.session['edate'] = response['edate'][contract_index]
+    request.session['type'] = response['type'][contract_index].encode('ISO-8859-1')# + '~ё+*&'
 
-@csrf_exempt
-def calculate_price(request):
-    if request.method == 'POST' and request.is_ajax():
-        end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
-        new_date = datetime.datetime.strptime(request.POST.get('new_date'), '%d.%m.%Y')
-        print (end_date-new_date).days
-        #prolongation_term = new_date - end_date
-    return HttpResponse()
+
+def calculate_dates(request, response):
+    i = 0
+    total_time = 0
+    print response
+    while i < len(response['sdate']):
+        start_date = lambda i: datetime.datetime.strptime(response['sdate'][i], '%Y.%m.%d')
+        end_date = lambda i: datetime.datetime.strptime(response['edate'][i], '%Y.%m.%d')
+        if end_date(i) < start_date(i + 1):
+            print 'PARALLEL'
+        i += 1
+    # end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
+    # new_date = datetime.datetime.strptime(request.POST.get('new_date'), '%d.%m.%Y')
+    # print (end_date-new_date).days
+    #prolongation_term = new_date - end_date
+    return total_time

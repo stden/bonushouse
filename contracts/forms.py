@@ -2,7 +2,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
-
+from partners.models import Partner, PartnerAddress
 
 class PersonalContractForm(forms.Form):
     contract_number = forms.CharField(max_length=20, label='Номер договора', widget=forms.TextInput(attrs={'class':'text'}))
@@ -11,8 +11,12 @@ class PersonalContractForm(forms.Form):
 
 
 class ContractProlongationForm(forms.Form):
-    new_order = forms.ModelChoiceField(widget=forms.RadioSelect,queryset=[])
-    price = forms.CharField(max_length=100, label='Стоимость переоформления', widget=forms.TextInput(attrs={'class':'text', 'disabled': True}))
+    club = forms.ModelChoiceField(queryset=Partner.objects.get(title='Fitness House').partneraddress_set, widget=forms.Select(attrs={'class':'text'}), label='Клуб', empty_label='')
+    price = forms.CharField(max_length=100, label='Стоимость', widget=forms.TextInput(attrs={'class':'text', 'disabled': True}))
+
+    def __init__(self, queryset, *args, **kwargs):
+        super(ContractProlongationForm, self).__init__(*args, **kwargs)
+        self.fields['new_order'] = forms.ModelChoiceField(queryset=queryset, label='Договоры', empty_label='')
 
 
 class ContractPersonRestructingForm(forms.Form):

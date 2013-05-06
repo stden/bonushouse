@@ -11,6 +11,9 @@
     <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/star-rating/jquery.rating.css" />
     <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/all.css" />
     <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}js/flip-counter/css/counter.css" />
+
+    {% block extra_css %}{% endblock %}
+
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery-1.7.2.min.js" ></script>
     <script type="text/javascript" src="{{ STATIC_URL }}administration/js/jquery-ui.js"></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.placeholder.min.js" ></script>
@@ -26,6 +29,9 @@
     <script type="text/javascript" src="{{ STATIC_URL }}js/form2js/form2js.js" ></script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js" ></script>
     <script type="text/javascript" src="//vk.com/js/api/openapi.js?79"></script>
+
+    {% block extra_js %}{% endblock %}
+
     <script type="text/javascript">
         VK.init({apiId: 3428779, onlyWidgets: true});</script>
     <script type="text/javascript" src="{{ STATIC_URL }}js/main.js"></script>

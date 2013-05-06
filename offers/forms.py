@@ -152,19 +152,17 @@ class OffersForm(forms.ModelForm):
         }
 
 
-class ProlongationOffersForm(forms.ModelForm):
+class ProlongationOffersAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
-        super(ProlongationOffersForm, self).__init__(*args, **kwargs)
+        super(ProlongationOffersAdminForm, self).__init__(*args, **kwargs)
         self.fields['partner'].initial = Partner.objects.get(title='Fitness House')  # Партнёр по умолчанию - FH
-
 
     class Meta:
         model = ProlongationOffers
         widgets = {
             'title': forms.TextInput(attrs={'class': 'text'}),
             'addresses': forms.CheckboxSelectMultiple(),
-            'description': forms.Textarea(attrs={'class':'textarea', 'rows':10, 'cols':30}),
             'terms': forms.Textarea(attrs={'class':'textarea', 'rows':10, 'cols':30}),
             'price': forms.TextInput(attrs={'class': 'text'}),
             'money_bonuses_count': forms.TextInput(attrs={'class': 'text'}),
@@ -178,6 +176,7 @@ PAYMENT_TYPE_CHOICES = (
     (2, 'Бонусы'),
     (3, 'Другие'),
 )
+
 
 
 
