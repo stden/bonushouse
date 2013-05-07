@@ -191,6 +191,7 @@ def person_restruct_contract(request):
                     context['response'] = response
                     return render_to_response('contracts/success.html', context)
                 else:
+                    logger.info(response)
                     messages.info(request, 'Произошла ошибка!')
                     del request.session['contract_valid']   # Удаляем ключ из сессии
                     return render_to_response('contracts/contract_form.html', context)
