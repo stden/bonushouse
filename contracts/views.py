@@ -213,10 +213,10 @@ def get_contract_data(request, form):
     for key in request_params.keys():
         request_params[key] = request_params[key]
         # Шлем запрос
-    if settings.DEBUG:
-        fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-    else:
-        fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+    # if settings.DEBUG:
+    fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
+    # else:
+        # fh_url = settings.FITNESSHOUSE_NOTIFY_URL
     response = requests.get(fh_url, params=request_params, verify=False)
     response = urlparse.parse_qs(response.text)
     print response
