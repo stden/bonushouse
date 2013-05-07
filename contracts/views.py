@@ -142,9 +142,9 @@ def person_restruct_contract(request):
                 }
 
                 # Всё в cp1251
-                # for key in other_info.keys():
-                #     if key != 'src_club':
-                #         other_info[key] = unicode(other_info[key]).encode('cp1251')
+                for key in other_info.keys():
+                    if key != 'src_club':
+                        other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
                 #if settings.DEBUG:
                 fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
@@ -168,8 +168,8 @@ def person_restruct_contract(request):
                 del request.session['src_id']
                 del request.session['src_club']
                 # Переводим все в cp1251
-                # for key in request_params.keys():
-                #     request_params[key] = request_params[key].encode('cp1251')
+                for key in request_params.keys():
+                    request_params[key] = request_params[key].encode('cp1251')
                 if settings.DEBUG:
                     request_params['paymentid'] = '123456789' + str(transaction.transaction_id)
                 else:
