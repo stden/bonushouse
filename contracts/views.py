@@ -141,10 +141,10 @@ def person_restruct_contract(request):
                     if key != 'src_club':
                         other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
-                if settings.DEBUG:
-                    fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-                else:
-                    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+                #if settings.DEBUG:
+                fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
+                #else:
+                #    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
                 # if response.get('?status') == '1' or response.get('?status') == '2':
                 comment = u'Переоформление договора %s на клиента %s %s  ' % (other_info['cid'], new_user.first_name, new_user.last_name)
                 transaction_info = ContractTransactionInfo()
