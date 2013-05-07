@@ -162,7 +162,7 @@ def person_restruct_contract(request):
                     'paymode': '1',
                     }
 
-                logger.info(request_params)
+                logger.info('ERROR\n')
 
                 del request.session['dognumber']
                 del request.session['src_id']
