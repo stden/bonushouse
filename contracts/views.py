@@ -137,9 +137,9 @@ def person_restruct_contract(request):
                 }
 
                 # Всё в cp1251
-                for key in other_info.keys():
-                    if key != 'src_club':
-                        other_info[key] = unicode(other_info[key]).encode('cp1251')
+                # for key in other_info.keys():
+                #     if key != 'src_club':
+                #         other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
                 #if settings.DEBUG:
                 fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
