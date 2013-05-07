@@ -162,6 +162,7 @@ def person_restruct_contract(request):
                     'paymode': '1',
                     }
 
+                logger.info(request_params)
 
                 del request.session['dognumber']
                 del request.session['src_id']
@@ -173,14 +174,13 @@ def person_restruct_contract(request):
                     request_params['paymentid'] = '123456789' + str(transaction.transaction_id)
                 else:
                     request_params['paymentid'] = transaction.transaction_id
-                logger.info(request_params)
+
                 request_params['bh_key'] = md5.new('0.00' + str(request.user.id) + request_params['paymentid'] + settings.BH_PASSWORD).hexdigest(),  # md5 BH_KEY,
                 #Урлкодируем и переводим в base64
                 other_info_encoded = '&' + urllib.urlencode(dict([key, value] for key, value in other_info.items()))
                 other_info_encoded = base64.b64encode(urllib2.unquote(other_info_encoded).replace('+',' '))
                 request_params['other_info'] = other_info_encoded
                 # Шлем запрос
-                logger.info(request_params)
                 response = requests.get(fh_url, params=request_params, verify=False)
 
                 # response = urlparse.parse_qs(response.text)
