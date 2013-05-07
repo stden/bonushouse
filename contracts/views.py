@@ -181,7 +181,7 @@ def person_restruct_contract(request):
                 request_params['other_info'] = other_info_encoded
                 # Шлем запрос
                 response = requests.get(fh_url, params=request_params, verify=False)
-                logger.info(urlparse.parse_qs(response.text))
+                logger.info(request_params)
                 # response = urlparse.parse_qs(response.text)
                 xml_response = ElementTree.fromstring(response.text)
                 code = xml_response.find('code').text
