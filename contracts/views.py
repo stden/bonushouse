@@ -181,6 +181,7 @@ def person_restruct_contract(request):
                 request_params['other_info'] = other_info_encoded
                 # Шлем запрос
                 response = requests.get(fh_url, params=request_params, verify=False)
+                logger.info(urlparse.parse_qs(response.text))
                 # response = urlparse.parse_qs(response.text)
                 xml_response = ElementTree.fromstring(response.text)
                 code = xml_response.find('code').text
@@ -191,7 +192,6 @@ def person_restruct_contract(request):
                     context['response'] = response
                     return render_to_response('contracts/success.html', context)
                 else:
-                    logger.info(urlparse.parse_qs(response.text))
                     messages.info(request, 'Произошла ошибка!')
                     del request.session['contract_valid']   # Удаляем ключ из сессии
                     return render_to_response('contracts/contract_form.html', context)
