@@ -167,8 +167,8 @@ def person_restruct_contract(request):
                 del request.session['src_id']
                 del request.session['src_club']
                 # Переводим все в cp1251
-                for key in request_params.keys():
-                    request_params[key] = request_params[key].encode('cp1251')
+                # for key in request_params.keys():
+                #     request_params[key] = request_params[key].encode('cp1251')
                 if settings.DEBUG:
                     request_params['paymentid'] = '123456789' + str(transaction.transaction_id)
                 else:
