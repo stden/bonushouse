@@ -4,6 +4,8 @@ import urllib, urllib2, base64, md5
 import requests
 import urlparse
 
+import xml.etree.ElementTree as ElementTree
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -11,41 +13,14 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.conf import settings
 from django.utils.timezone import now
+from django import forms
 from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from bonushouse.models import AccountDepositTransactions, UserProfile, BonusTransactions, CronFitnesshouseNotifications
 from payment_gateways.models import PaymentRequest
 
-from django.contrib.auth import login
-from offers.models import Order, AbonementOrder, CouponCodes, AdditionalServicesOrder, GiftOrder
-from newsletter.models import NewsletterEmail, NewsletterSms
 
-from django.db.models import Sum
 from datetime import timedelta
-from auctions.models import Auction
-from flatpages.models import FlatPage
-from django.views.generic import TemplateView, FormView
-from django.utils.decorators import method_decorator
-from dbsettings.utils import get_settings_value
-from django.core.urlresolvers import reverse_lazy
-from offers.models import Offers
-from bonushouse.utils import total_seconds
-import math
-from offers.forms import GiftCodeForm, AbonementsClubCardForm, AbonementsAdditionalInfoForm
 from django.contrib import messages
-from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
-from django.http import HttpResponseRedirect, QueryDict
-from django.contrib.sites.models import get_current_site
-from django.template.response import TemplateResponse
-from offers.cart import ShoppingCart
-from django.utils.translation import ugettext as _
-from django.utils import timezone
-
-from django.template import Context, Template
-from django.core.mail import send_mail
-from django.utils import simplejson
-from django.contrib.sites.models import Site
-from django import forms
 
 from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
@@ -116,6 +91,11 @@ def person_restruct_contract(request):
                     load_data_to_session(request, response)
                     messages.success(request, 'Теперь введите данные нового клиента.')
                     return redirect('person_restruct_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
+                elif response['?status'][0] == '-2':
+                    messages.info(request, 'Договор не найден!')
+                    # r['message'] = render_to_string('_form_errors.html', context)
+                    return render_to_response('contracts/contract_form.html', context)
+
     else:
         # Договор валидный и его можно переоформлять
         form = ContractPersonRestructingForm(request.user)
@@ -125,7 +105,6 @@ def person_restruct_contract(request):
             context = RequestContext(request)
             context['form'] = form
             if form.is_valid():
-                del request.session['contract_valid']   # Удаляем ключ из сессии
 
                 new_user = User.objects.get(email=form.cleaned_data['email'])
                 cid = request.session['dognumber']
@@ -133,8 +112,9 @@ def person_restruct_contract(request):
                 if len(request.session['dognumber'].split('/')) == 2:
                     cid = request.session['dognumber'] + '/1'
                 elif len(request.session['dognumber'].split('/')) == 3:
-                    first_number = request.session['dognumber'].split('/')[:-1]  # Номер договора без слэша
-                    cid = first_number + str(int(request.session['dognumber'].split('/')[-1]) + 1)
+                    old_number = request.session['dognumber'].split('/')
+                    old_number[-1] = str(int(old_number[-1]) + 1)
+                    cid = '/'.join(old_number)
 
                 other_info = {
                     'fname': new_user.first_name,
@@ -193,10 +173,19 @@ def person_restruct_contract(request):
                 request_params['other_info'] = other_info_encoded
                 # Шлем запрос
                 response = requests.get(fh_url, params=request_params, verify=False)
-                response = urlparse.parse_qs(response.text)
-
-                context['response'] = response
-                return render_to_response('contracts/success.html', context)
+                # response = urlparse.parse_qs(response.text)
+                xml_response = ElementTree.fromstring(response.text)
+                code = xml_response.find('code').text
+                comment = xml_response.find('comment').text
+                if code == 'YES' and comment == 'NO':
+                    del request.session['contract_valid']   # Удаляем ключ из сессии
+                    print code, comment
+                    context['response'] = response
+                    return render_to_response('contracts/success.html', context)
+                else:
+                    messages.info(request, 'Произошла ошибка!')
+                    del request.session['contract_valid']   # Удаляем ключ из сессии
+                    return render_to_response('contracts/contract_form.html', context)
                 # else:
                 #     messages.warning(request, 'Произошла ошибка')
                 #     return redirect('person_restruct_contract')
@@ -230,6 +219,7 @@ def get_contract_data(request, form):
         fh_url = settings.FITNESSHOUSE_NOTIFY_URL
     response = requests.get(fh_url, params=request_params, verify=False)
     response = urlparse.parse_qs(response.text)
+    print response
     return response
 
 
