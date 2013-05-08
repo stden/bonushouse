@@ -95,8 +95,10 @@ def person_restruct_contract(request):
                 contract_index = response['dognumber'].index(request.session['user_contract_number'])
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     # Договор найден
-                    if response['activity'][contract_index] != '1':
+                    if response['activity'][contract_index].split('?')[0].replace('\r\n', '') != '1':
                         # Если договор не активен
+                        print response['activity'][contract_index].split('?')[0]
+                        print response['dognumber']
                         messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
                         return render_to_response('contracts/contract_form.html', context)
                     elif response['debt'][contract_index] != '0.00':
@@ -241,6 +243,7 @@ def get_contract_data(request, form):
     # else:
         # fh_url = settings.FITNESSHOUSE_NOTIFY_URL
     response = requests.get(fh_url, params=request_params, verify=False)
+    print response.text
     response = urlparse.parse_qs(response.text)
     return response
 
