@@ -129,7 +129,6 @@ def person_restruct_contract(request):
             if form.is_valid():
                 new_user = User.objects.get(email=form.cleaned_data['email'])
                 print 'ALL IS FUCKING GOOD'
-                print request.session['step'], 'SESSION'
                 if len(request.session['dognumber'].split('/')) == 2:
                     cid = request.session['dognumber'] + '/1'
                 elif len(request.session['dognumber'].split('/')) == 3:
@@ -177,8 +176,6 @@ def person_restruct_contract(request):
                     'amount': '0.00',
                     'paymode': '1',
                     }
-
-
                 del request.session['dognumber']
                 del request.session['src_id']
                 del request.session['src_club']
@@ -250,6 +247,7 @@ def get_contract_data(request, form):
 def load_data_to_session(request, response, step):
     """Данные с сервера FH записываем в сессию"""
     contract_index = response['dognumber'].index(request.session['user_contract_number'])
+    print 'INDEX', contract_index
     request.session['step'] = step  # Договор валидный, переход на следующий шаг
     request.session['src_id'] = response['src_id'][contract_index]
     request.session['dognumber'] = response['dognumber'][contract_index].encode('ISO-8859-1')
