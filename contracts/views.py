@@ -129,8 +129,7 @@ def person_restruct_contract(request):
                 print 'ALL IS FUCKING GOOD'
                 for key in request.session:
                     print key, request.session[key]
-                cid = request.session['dognumber']
-                print cid
+                print request.session['dognumber'], 'DOGNUMBER111111111111111111'
                 if len(request.session['dognumber'].split('/')) == 2:
                     cid = request.session['dognumber'] + '/1'
                 elif len(request.session['dognumber'].split('/')) == 3:
