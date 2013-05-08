@@ -177,11 +177,12 @@ def person_restruct_contract(request):
                     'paymode': '1',
                     }
 
+                print 'ALL IS FUCKING GOOD'
+
                 del request.session['dognumber']
                 del request.session['src_id']
                 del request.session['src_club']
                 # Переводим все в cp1251
-                print 'ALL IS FUCKING GOOD'
                 for key in request_params.keys():
                     request_params[key] = request_params[key].encode('cp1251')
                 if settings.DEBUG:
