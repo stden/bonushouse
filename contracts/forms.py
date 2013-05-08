@@ -38,7 +38,7 @@ class ContractPersonRestructingForm(forms.Form):
         try:
             user = User.objects.get(email=email)
         except ObjectDoesNotExist:
-            raise forms.ValidationError('Пользователь с таким email не зарегистрирован!')
+            raise forms.ValidationError('Пользователь с таким email не зарегистрирован на сайте Бонус-Хаус!')
         if user == self.current_user:
             raise forms.ValidationError('Нельзя указать свой email!')
         return cleaned_data
