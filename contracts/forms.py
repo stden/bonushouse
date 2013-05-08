@@ -24,7 +24,7 @@ class ContractPersonRestructingForm(forms.Form):
     # last_name = forms.CharField(max_length=100, label='Фамилия', widget=forms.TextInput(attrs={'class':'text'}))
     # first_name = forms.CharField(max_length=100, label='Имя', widget=forms.TextInput(attrs={'class':'text'}))
     # birthdate = forms.CharField(max_length=100, label='Дата рождения', widget=forms.DateInput(attrs={'class':'text mask_date', 'placeholder':'дд.мм.гггг'}))
-    second_name = forms.CharField(max_length=100, label='Отчество', widget=forms.TextInput(attrs={'class':'text'}))
+    # second_name = forms.CharField(max_length=100, label='Отчество', required=False, widget=forms.TextInput(attrs={'class':'text'}))
     passport_series = forms.CharField(max_length=4, label='Серия паспорта', widget=forms.TextInput(attrs={'class':'text'}))
     passport_number = forms.CharField(max_length=6, label='Номер паспорта', widget=forms.TextInput(attrs={'class':'text'}))
 

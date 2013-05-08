@@ -92,12 +92,13 @@ def person_restruct_contract(request):
             if form.is_valid():
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
-                if response['?status'][0] == '1' or response['?status'][0] == '2':
+                contract_index = response['dognumber'].index(request.session['user_contract_number'])
+                if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     load_data_to_session(request, response)
                     messages.success(request, 'Теперь введите данные нового клиента.')
                     return redirect('person_restruct_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
-                elif response['?status'][0] == '-2':
-                    messages.info(request, 'Договор не найден!')
+                elif response['?status'][contract_index] == '-2':
+                    messages.info(request, 'Договор не найден или данные неверны!')
                     # r['message'] = render_to_string('_form_errors.html', context)
                     return render_to_response('contracts/contract_form.html', context)
 
@@ -124,7 +125,7 @@ def person_restruct_contract(request):
                 other_info = {
                     'fname': new_user.first_name,
                     'lname': new_user.last_name,
-                    'sname': form.cleaned_data['second_name'],
+                    'sname': '',
                     'email': new_user.email,
                     'phone': new_user.get_profile().phone.replace('(', ' ').replace(')', ' '),
                     'sex': u'жен.' if new_user.get_profile().gender == 0 else u'муж.',
@@ -162,8 +163,6 @@ def person_restruct_contract(request):
                     'paymode': '1',
                     }
 
-                logger.info('ERROR\n')
-
                 del request.session['dognumber']
                 del request.session['src_id']
                 del request.session['src_club']
@@ -193,6 +192,7 @@ def person_restruct_contract(request):
                     context['response'] = response
                     return render_to_response('contracts/success.html', context)
                 else:
+                    print code, comment
                     messages.info(request, 'Произошла ошибка!')
                     del request.session['contract_valid']   # Удаляем ключ из сессии
                     return render_to_response('contracts/contract_form.html', context)
@@ -229,7 +229,6 @@ def get_contract_data(request, form):
         # fh_url = settings.FITNESSHOUSE_NOTIFY_URL
     response = requests.get(fh_url, params=request_params, verify=False)
     response = urlparse.parse_qs(response.text)
-    print response
     return response
 
 
