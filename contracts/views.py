@@ -127,7 +127,6 @@ def person_restruct_contract(request):
             if form.is_valid():
                 new_user = User.objects.get(email=form.cleaned_data['email'])
                 print 'ALL IS FUCKING GOOD'
-                print request.session.get('dognumber')
 
                 if len(request.session.get('dognumber').split('/')) == 2:
                     cid = request.session.get('dognumber') + '/1'
@@ -135,6 +134,7 @@ def person_restruct_contract(request):
                     old_number = request.session.get('dognumber').split('/')
                     old_number[-1] = str(int(old_number[-1]) + 1)
                     cid = '/'.join(old_number)
+                print request.session.get('dognumber')
 
                 other_info = {
                     'fname': new_user.first_name,
@@ -144,10 +144,10 @@ def person_restruct_contract(request):
                     'phone': new_user.get_profile().phone.replace('(', ' ').replace(')', ' '),
                     'sex': u'жен.' if new_user.get_profile().gender == 0 else u'муж.',
                     'bd': new_user.get_profile().birth_date.strftime('%Y-%m-%d'),
-                    'dognumber': request.session['dognumber'],
+                    'dognumber': request.session.get('dognumber'),
                     'pserial': form.cleaned_data['passport_series'],
                     'pnumber': form.cleaned_data['passport_number'],
-                    'shash': md5.new('0.00' + cid + request.session['src_club'] + request.session['type'] + settings.FH_SALT).hexdigest(),
+                    'shash': md5.new('0.00' + cid + request.session.get('src_club') + request.session.get('type') + settings.FH_SALT).hexdigest(),
                     'sid': '301',
                     'sdate': request.session['sdate'],
                     'edate': request.session['edate'],
