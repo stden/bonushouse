@@ -110,7 +110,7 @@ def person_restruct_contract(request):
                         print response['dognumber'][contract_index]
                         load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
                         messages.success(request, 'Теперь введите данные нового клиента.')
-                        return render_to_response('contracts/contract_form.html', context)
+                        return redirect('person_restruct_contract')
                 elif response['?status'][contract_index] == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
