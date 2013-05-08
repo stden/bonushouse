@@ -252,7 +252,7 @@ def load_data_to_session(request, response, step):
     request.session['sdate'] = response['sdate'][contract_index]
     request.session['edate'] = response['edate'][contract_index]
     request.session['type'] = response['type'][contract_index].encode('ISO-8859-1')# + '~ё+*&'
-    print request.session.keys()
+    print request.session.get('dognumber')
 
 def calculate_dates(request, response):
     i = 0
