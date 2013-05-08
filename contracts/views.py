@@ -128,7 +128,6 @@ def person_restruct_contract(request):
                 new_user = User.objects.get(email=form.cleaned_data['email'])
                 print 'ALL IS FUCKING GOOD'
                 for key in request.session:
-                    
                     print key, request.session[key]
                 cid = request.session['dognumber']
                 print cid
