@@ -92,6 +92,7 @@ def person_restruct_contract(request):
             if form.is_valid():
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
+                print response
                 contract_index = response['dognumber'].index(request.session['user_contract_number'])
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     # Договор найден
