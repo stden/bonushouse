@@ -103,12 +103,13 @@ def person_restruct_contract(request):
                         # Если по договору имеется задолженность
                         messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
                         return render_to_response('contracts/contract_form.html', context)
-                    else:
-                        # Всё ок, идём дальше
-                        print 'GO NEXT'
-                        load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
-                        messages.success(request, 'Теперь введите данные нового клиента.')
-                        return redirect('person_restruct_contract')
+                    # Всё ок, идём дальше
+                    print 'GO NEXT'
+                    load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
+                    for key in request.session:
+                        print key, request.session[keyq]
+                    messages.success(request, 'Теперь введите данные нового клиента.')
+                    return redirect('person_restruct_contract')
                 elif response['?status'][contract_index] == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
@@ -242,7 +243,6 @@ def get_contract_data(request, form):
     # else:
         # fh_url = settings.FITNESSHOUSE_NOTIFY_URL
     response = requests.get(fh_url, params=request_params, verify=False)
-    print response.text
     response = urlparse.parse_qs(response.text)
     return response
 
