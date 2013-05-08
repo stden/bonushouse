@@ -160,7 +160,6 @@ def person_restruct_contract(request):
                     if key != 'src_club':
                         other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
-                print other_info
                 #if settings.DEBUG:
                 fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 #else:
@@ -169,6 +168,7 @@ def person_restruct_contract(request):
                 comment = u'Переоформление договора %s на клиента %s %s  ' % (other_info['cid'], new_user.first_name, new_user.last_name)
                 transaction_info = ContractTransactionInfo()
                 transaction_info.save()
+                print other_info
                 transaction = ContractTransaction(operation_type=1, user=request.user, amount=0, transaction_date=now(), comment=comment, transaction_object=transaction_info) #@TODO: Допилить транзакции
                 transaction.save()
                 request_params = {
