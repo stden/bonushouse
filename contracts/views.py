@@ -136,6 +136,9 @@ def person_restruct_contract(request):
                     old_number[-1] = str(int(old_number[-1]) + 1)
                     cid = '/'.join(old_number)
 
+                print 'ALL IS FUCKING GOOD'
+
+
                 other_info = {
                     'fname': new_user.first_name,
                     'lname': new_user.last_name,
@@ -177,7 +180,6 @@ def person_restruct_contract(request):
                     'paymode': '1',
                     }
 
-                print 'ALL IS FUCKING GOOD'
 
                 del request.session['dognumber']
                 del request.session['src_id']
