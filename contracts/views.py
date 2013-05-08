@@ -105,8 +105,8 @@ def person_restruct_contract(request):
                         return render_to_response('contracts/contract_form.html', context)
                     else:
                         # Всё ок, идём дальше
-                        print 'ALL IS FUCKING GOOD'
                         load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
+                        print 'ALL IS FUCKING GOOD1'
                         messages.success(request, 'Теперь введите данные нового клиента.')
                         return redirect('person_restruct_contract')
                 elif response['?status'][contract_index] == '3':
