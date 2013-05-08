@@ -155,14 +155,12 @@ def person_restruct_contract(request):
                     'src_id': request.session['src_id'],
                     'src_club': request.session['src_club'],
                 }
-
-                print other_info
-
                 # Всё в cp1251
                 for key in other_info.keys():
                     if key != 'src_club':
                         other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
+                print other_info
                 #if settings.DEBUG:
                 fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 #else:
@@ -251,11 +249,11 @@ def load_data_to_session(request, response, step):
     contract_index = response['dognumber'].index(request.session['user_contract_number'])
     request.session['step'] = step  # Договор валидный, переход на следующий шаг
     request.session['src_id'] = response['src_id'][contract_index]
-    request.session['dognumber'] = response['dognumber'][contract_index].encode('ISO-8859-1')
-    request.session['src_club'] = response['src_club'][contract_index].encode('ISO-8859-1')
+    request.session['dognumber'] = response['dognumber'][contract_index]#.encode('ISO-8859-1')
+    request.session['src_club'] = response['src_club'][contract_index]#.encode('ISO-8859-1')
     request.session['sdate'] = response['sdate'][contract_index]
     request.session['edate'] = response['edate'][contract_index]
-    request.session['type'] = response['type'][contract_index].encode('ISO-8859-1')# + '~ё+*&'
+    request.session['type'] = response['type'][contract_index]#.encode('ISO-8859-1')# + '~ё+*&'
 
 
 def calculate_dates(request, response):
