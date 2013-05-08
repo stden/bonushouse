@@ -66,7 +66,7 @@ def prolongate_contract(request):
                 print total_time
                 if response['?status'][0] == '1' or response['?status'][0] == '2': # status=1 и status=2 - успех, всё остальное - ошибки
                     #Грузим данные в сессию
-                    load_data_to_session(request, response)
+                    load_data_to_session(request, response, 2)
                     messages.success(request, 'Теперь выберите новый договор.')
                     return redirect('prolongate_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
     else:
@@ -198,7 +198,7 @@ def person_restruct_contract(request):
                 code = xml_response.find('code').text
                 comment = xml_response.find('comment').text
                 if code == 'YES' and comment == '0':
-                    del request.session['contract_valid']   # Удаляем ключ из сессии
+                    # del request.session['contract_valid']   # Удаляем ключ из сессии
                     print code, comment
                     context['response'] = response
                     return render_to_response('contracts/success.html', context)
