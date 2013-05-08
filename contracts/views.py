@@ -83,7 +83,7 @@ def person_restruct_contract(request):
     context = RequestContext(request)
     form = PersonalContractForm()
     context['form'] = form
-    if not request.session.get('contract_valid'):
+    if not request.session.get('step') or request.session.get('step') == 1:
         form = PersonalContractForm()
         context['form'] = form
         #  Получение данных по договору
@@ -94,12 +94,26 @@ def person_restruct_contract(request):
                 response = get_contract_data(request, form)
                 contract_index = response['dognumber'].index(request.session['user_contract_number'])
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
-                    load_data_to_session(request, response)
-                    messages.success(request, 'Теперь введите данные нового клиента.')
-                    return redirect('person_restruct_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
+                    # Договор найден
+                    if response['activity'][contract_index] != '1':
+                        # Если договор не активен
+                        messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
+                        return render_to_response('contracts/contract_form.html', context)
+                    elif float(response['debt'][contract_index]) > 0.00:
+                        # Если по договору имеется задолженность
+                        messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
+                        return render_to_response('contracts/contract_form.html', context)
+                    else:
+                        # Всё ок, идём дальше
+                        print response['dognumber'][contract_index]
+                        load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
+                        messages.success(request, 'Теперь введите данные нового клиента.')
+                        return render_to_response('contracts/contract_form.html', context)
                 elif response['?status'][contract_index] == '-2':
                     messages.info(request, 'Договор не найден или данные неверны!')
-                    # r['message'] = render_to_string('_form_errors.html', context)
+                    return render_to_response('contracts/contract_form.html', context)
+                elif response['?status'][contract_index] == '3':
+                    messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
 
     else:
@@ -111,7 +125,6 @@ def person_restruct_contract(request):
             context = RequestContext(request)
             context['form'] = form
             if form.is_valid():
-
                 new_user = User.objects.get(email=form.cleaned_data['email'])
                 cid = request.session['dognumber']
 
@@ -186,7 +199,7 @@ def person_restruct_contract(request):
                 xml_response = ElementTree.fromstring(response.text)
                 code = xml_response.find('code').text
                 comment = xml_response.find('comment').text
-                if code == 'YES' and comment == 'NO':
+                if code == 'YES' and comment == '0':
                     del request.session['contract_valid']   # Удаляем ключ из сессии
                     print code, comment
                     context['response'] = response
@@ -194,7 +207,6 @@ def person_restruct_contract(request):
                 else:
                     print code, comment
                     messages.info(request, 'Произошла ошибка!')
-                    del request.session['contract_valid']   # Удаляем ключ из сессии
                     return render_to_response('contracts/contract_form.html', context)
                 # else:
                 #     messages.warning(request, 'Произошла ошибка')
@@ -232,10 +244,10 @@ def get_contract_data(request, form):
     return response
 
 
-def load_data_to_session(request, response):
+def load_data_to_session(request, response, step):
     """Данные с сервера FH записываем в сессию"""
     contract_index = response['dognumber'].index(request.session['user_contract_number'])
-    request.session['contract_valid'] = True  # Договор валидный
+    request.session['step'] = step  # Договор валидный, переход на следующий шаг
     request.session['src_id'] = response['src_id'][contract_index]
     request.session['dognumber'] = response['dognumber'][contract_index].encode('ISO-8859-1')
     request.session['src_club'] = response['src_club'][contract_index].encode('ISO-8859-1')
@@ -259,3 +271,15 @@ def calculate_dates(request, response):
     # print (end_date-new_date).days
     #prolongation_term = new_date - end_date
     return total_time
+
+@csrf_exempt
+def back_to_1_step(request):
+    """Возврат на шаг 1 при переоформлении (поиск договора)"""
+    request.session['step'] = 1
+    del request.session['src_id']
+    del request.session['dognumber']
+    del request.session['src_club']
+    del request.session['sdate']
+    del request.session['edate']
+    del request.session['type']
+    return HttpResponse()
