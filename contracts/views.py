@@ -117,7 +117,6 @@ def person_restruct_contract(request):
 
 
     elif request.session.get('step') == 2:
-        print 'ALL IS FUCKING GOOD1'
         # Договор валидный и его можно переоформлять
         form = ContractPersonRestructingForm(request.user)
         context['form'] = form
@@ -127,7 +126,6 @@ def person_restruct_contract(request):
             context['form'] = form
             if form.is_valid():
                 new_user = User.objects.get(email=form.cleaned_data['email'])
-                print 'ALL IS FUCKING GOOD'
                 cid = request.session['dognumber']
                 if len(request.session['dognumber'].split('/')) == 2:
                     cid = request.session['dognumber'] + '/1'
@@ -135,6 +133,7 @@ def person_restruct_contract(request):
                     old_number = request.session['dognumber'].split('/')
                     old_number[-1] = str(int(old_number[-1]) + 1)
                     cid = '/'.join(old_number)
+                print 'ALL IS FUCKING GOOD'
 
                 other_info = {
                     'fname': new_user.first_name,
