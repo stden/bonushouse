@@ -128,11 +128,11 @@ def person_restruct_contract(request):
                 new_user = User.objects.get(email=form.cleaned_data['email'])
                 print 'ALL IS FUCKING GOOD'
                 print request.session.get('dognumber')
-
-                if len(request.session['dognumber'].split('/')) == 2:
-                    cid = request.session['dognumber'] + '/1'
-                elif len(request.session['dognumber'].split('/')) == 3:
-                    old_number = request.session['dognumber'].split('/')
+q
+                if len(request.session.get('dognumber').split('/')) == 2:
+                    cid = request.session.get('dognumber') + '/1'
+                elif len(request.session.get('dognumber').split('/')) == 3:
+                    old_number = request.session.get('dognumber').split('/')
                     old_number[-1] = str(int(old_number[-1]) + 1)
                     cid = '/'.join(old_number)
 
