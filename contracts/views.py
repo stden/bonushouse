@@ -164,6 +164,7 @@ def person_restruct_contract(request):
                 fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 #else:
                 #    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+                print 'CID', other_info.get('cid')
                 comment = u'Переоформление договора %s на клиента %s %s  ' % (other_info['cid'], new_user.first_name, new_user.last_name)
                 print other_info
                 transaction_info = ContractTransactionInfo()
