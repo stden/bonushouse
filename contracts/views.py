@@ -126,9 +126,9 @@ def person_restruct_contract(request):
             context['form'] = form
             if form.is_valid():
                 new_user = User.objects.get(email=form.cleaned_data['email'])
-                cid = request.session['dognumber']
                 print 'ALL IS FUCKING GOOD'
                 print cid
+                cid = request.session['dognumber']
                 if len(request.session['dognumber'].split('/')) == 2:
                     cid = request.session['dognumber'] + '/1'
                 elif len(request.session['dognumber'].split('/')) == 3:
