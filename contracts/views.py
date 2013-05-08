@@ -111,7 +111,7 @@ def person_restruct_contract(request):
                 elif response['?status'][contract_index] == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
-                elif response['?status'][contract_index] == '-2':
+                elif response['?status'] == '-2':
                     messages.info(request, 'Договор не найден или данные неверны!')
                     return render_to_response('contracts/contract_form.html', context)
 
