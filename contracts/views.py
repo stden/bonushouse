@@ -107,7 +107,7 @@ def person_restruct_contract(request):
                     print 'GO NEXT'
                     load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
                     for key in request.session:
-                        print key, request.session[keyq]
+                        print key, request.session[key]
                     messages.success(request, 'Теперь введите данные нового клиента.')
                     return redirect('person_restruct_contract')
                 elif response['?status'][contract_index] == '3':
