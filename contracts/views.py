@@ -96,7 +96,6 @@ def person_restruct_contract(request):
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     # Договор найден
                     if response['activity'][contract_index] != '1':
-                        print u'НЕ АКТИВЕН', response['activity'][contract_index]
                         # Если договор не активен
                         messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
                         return render_to_response('contracts/contract_form.html', context)
@@ -110,12 +109,13 @@ def person_restruct_contract(request):
                         load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
                         messages.success(request, 'Теперь введите данные нового клиента.')
                         return render_to_response('contracts/contract_form.html', context)
-                elif response['?status'][contract_index] == '-2':
-                    messages.info(request, 'Договор не найден или данные неверны!')
-                    return render_to_response('contracts/contract_form.html', context)
                 elif response['?status'][contract_index] == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
+                elif response['?status'][contract_index] == '-2':
+                    messages.info(request, 'Договор не найден или данные неверны!')
+                    return render_to_response('contracts/contract_form.html', context)
+
 
     else:
         # Договор валидный и его можно переоформлять
