@@ -106,7 +106,6 @@ def person_restruct_contract(request):
                     else:
                         # Всё ок, идём дальше
                         load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
-                        print 'ALL IS FUCKING GOOD1'
                         messages.success(request, 'Теперь введите данные нового клиента.')
                         return redirect('person_restruct_contract')
                 elif response['?status'][contract_index] == '3':
@@ -118,6 +117,7 @@ def person_restruct_contract(request):
 
 
     elif request.session.get('step') == 2:
+        print 'ALL IS FUCKING GOOD1'
         # Договор валидный и его можно переоформлять
         form = ContractPersonRestructingForm(request.user)
         context['form'] = form
