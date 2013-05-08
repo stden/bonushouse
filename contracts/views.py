@@ -96,6 +96,7 @@ def person_restruct_contract(request):
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     # Договор найден
                     if response['activity'][contract_index] != '1':
+                        print u'НЕ АКТИВЕН', response['activity'][contract_index]
                         # Если договор не активен
                         messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
                         return render_to_response('contracts/contract_form.html', context)
