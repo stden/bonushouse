@@ -156,6 +156,8 @@ def person_restruct_contract(request):
                     'src_club': request.session['src_club'],
                 }
 
+                print other_info
+
                 # Всё в cp1251
                 for key in other_info.keys():
                     if key != 'src_club':
