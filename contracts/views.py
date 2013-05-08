@@ -160,13 +160,12 @@ def person_restruct_contract(request):
                     if key != 'src_club':
                         other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
+
                 #if settings.DEBUG:
                 fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 #else:
                 #    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
-                print 'CID', other_info.get('cid')
                 comment = u'Переоформление договора %s на клиента %s %s  ' % (other_info['cid'], new_user.first_name, new_user.last_name)
-                print other_info
                 transaction_info = ContractTransactionInfo()
                 transaction_info.save()
                 transaction = ContractTransaction(operation_type=1, user=request.user, amount=0, transaction_date=now(), comment=comment, transaction_object=transaction_info) #@TODO: Допилить транзакции
@@ -249,11 +248,11 @@ def load_data_to_session(request, response, step):
     contract_index = response['dognumber'].index(request.session['user_contract_number'])
     request.session['step'] = step  # Договор валидный, переход на следующий шаг
     request.session['src_id'] = response['src_id'][contract_index]
-    request.session['dognumber'] = response['dognumber'][contract_index]#.encode('ISO-8859-1')
-    request.session['src_club'] = response['src_club'][contract_index]#.encode('ISO-8859-1')
+    request.session['dognumber'] = response['dognumber'][contract_index].encode('ISO-8859-1')
+    request.session['src_club'] = response['src_club'][contract_index].encode('ISO-8859-1')
     request.session['sdate'] = response['sdate'][contract_index]
     request.session['edate'] = response['edate'][contract_index]
-    request.session['type'] = response['type'][contract_index]#.encode('ISO-8859-1')# + '~ё+*&'
+    request.session['type'] = response['type'][contract_index].encode('ISO-8859-1')# + '~ё+*&'
 
 
 def calculate_dates(request, response):
