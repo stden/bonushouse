@@ -100,7 +100,7 @@ def person_restruct_contract(request):
                         # Если договор не активен
                         messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
                         return render_to_response('contracts/contract_form.html', context)
-                    elif float(response['debt'][contract_index]) > 0.00:
+                    elif response['debt'][contract_index] != '0.00':
                         # Если по договору имеется задолженность
                         messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
                         return render_to_response('contracts/contract_form.html', context)
