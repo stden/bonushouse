@@ -95,29 +95,29 @@ def person_restruct_contract(request):
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
                 print response
-
-                contract_index = response['dognumber'].index(request.session['user_contract_number'])
-                if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
-                    # Договор найден
-                    if response['email'][contract_index] != request.user.email:
-                        messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
+                if response['?status'][0] != '-2':
+                    contract_index = response['dognumber'].index(request.session['user_contract_number'])
+                    if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
+                        # Договор найден
+                        if response['email'][contract_index] != request.user.email:
+                            messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
+                            return redirect('person_restruct_contract')
+                        if response['activity'][contract_index].split('?')[0].replace('\r\n', '') != '1':
+                            # Если договор не активен
+                            messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
+                            return render_to_response('contracts/contract_form.html', context)
+                        elif response['debt'][contract_index] != '0.00':
+                            # Если по договору имеется задолженность
+                            messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
+                            return render_to_response('contracts/contract_form.html', context)
+                        # Всё ок, идём дальше
+                        load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
+                        messages.success(request, 'Теперь введите данные нового клиента.')
                         return redirect('person_restruct_contract')
-                    if response['activity'][contract_index].split('?')[0].replace('\r\n', '') != '1':
-                        # Если договор не активен
-                        messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
-                        return render_to_response('contracts/contract_form.html', context)
-                    elif response['debt'][contract_index] != '0.00':
-                        # Если по договору имеется задолженность
-                        messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
-                        return render_to_response('contracts/contract_form.html', context)
-                    # Всё ок, идём дальше
-                    load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
-                    messages.success(request, 'Теперь введите данные нового клиента.')
-                    return redirect('person_restruct_contract')
-                elif response['?status'][contract_index] == '3':
+                elif response['?status'][0] == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
-                elif response['?status'] == '-2':
+                elif response['?status'][0] == '-2':
                     messages.info(request, 'Договор не найден или данные неверны!')
                     return render_to_response('contracts/contract_form.html', context)
     elif request.session.get('step') == 2:
