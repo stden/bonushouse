@@ -632,6 +632,12 @@ class Order(models.Model):
         self.user.get_profile().save()
 
 
+    class ContractOrder(models.Model):
+        """Заказы на переоформление, продление, перевод в другие клубы.
+           Другая модель, т.к. offers не хранятся в бх"""
+        pass
+
+
 DELIVERY_CHOICES = (
     ('email', 'По Email'),
     ('print', 'Я распечатаю и отдам сам'),
