@@ -99,7 +99,7 @@ def person_restruct_contract(request):
                 contract_index = response['dognumber'].index(request.session['user_contract_number'])
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     # Договор найден
-                    if response['email'][0] != request.user.email:
+                    if response['email'][contract_index] != request.user.email:
                         messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                         return redirect('person_restruct_contract')
                     if response['activity'][contract_index].split('?')[0].replace('\r\n', '') != '1':
