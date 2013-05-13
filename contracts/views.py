@@ -10,6 +10,7 @@ import xml.etree.ElementTree as ElementTree
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
+from django.template.context import Context
 from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.conf import settings
@@ -27,6 +28,7 @@ from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
 from offers.models import ProlongationOffers
 
+from .utils import send_notification
 
 ########################
 # Коды операций:
@@ -93,6 +95,9 @@ def person_restruct_contract(request):
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
                 print response
+                if response['email'][0] != request.user.email:
+                    messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
+                    return redirect('person_restruct_contract')
                 contract_index = response['dognumber'].index(request.session['user_contract_number'])
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     # Договор найден
@@ -114,8 +119,6 @@ def person_restruct_contract(request):
                 elif response['?status'] == '-2':
                     messages.info(request, 'Договор не найден или данные неверны!')
                     return render_to_response('contracts/contract_form.html', context)
-
-
     elif request.session.get('step') == 2:
         # Договор валидный и его можно переоформлять
         form = ContractPersonRestructingForm(request.user)
@@ -174,9 +177,9 @@ def person_restruct_contract(request):
                     'amount': '0.00',
                     'paymode': '1',
                     }
-                del request.session['dognumber']
-                del request.session['src_id']
-                del request.session['src_club']
+                # del request.session['dognumber']
+                # del request.session['src_id']
+                # del request.session['src_club']
                 # Переводим все в cp1251
                 for key in request_params.keys():
                     request_params[key] = request_params[key].encode('cp1251')
@@ -197,10 +200,25 @@ def person_restruct_contract(request):
                 xml_response = ElementTree.fromstring(response.text)
                 code = xml_response.find('code').text
                 comment = xml_response.find('comment').text
-                if code == 'YES' and comment == '0':
-                    # del request.session['contract_valid']   # Удаляем ключ из сессии
-                    print code, comment
+                if code == 'YES':
                     context['response'] = response
+                    transaction.complete()
+                    notification_context = Context({
+                        'old_user_first_name': request.user.first_name,
+                        'old_user_last_name': request.user.last_name,
+                        'contract_number': request.session.get('dognumber'),
+                        'club_name': request.session.get('src_club'),
+                        'add_date': request.session['sdate'],
+                        'end_date': request.session['edate'],
+                        'cancelation_date': now(),  # test
+                        'new_user_first_name':'',
+                        'new_user_last_name': '',
+                        'new_passport_series':'',
+                        'new_passport_number':''
+
+                    })
+                    # Уведомление старому пользователю о расторжении договора
+                    send_notification(request.user.email, notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
                     return render_to_response('contracts/success.html', context)
                 else:
                     print code, comment
@@ -227,6 +245,7 @@ def get_contract_data(request, form):
     request_params['passport'] = form.cleaned_data['passport_series'] + form.cleaned_data['passport_number']  # test
     request_params['other_info'] = ''
     request_params['sid'] = '300'
+
 
     request.session['user_contract_number'] = form.cleaned_data['contract_number']
     # Переводим все в cp1251

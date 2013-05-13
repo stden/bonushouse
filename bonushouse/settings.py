@@ -169,7 +169,7 @@ INSTALLED_APPS = (
     'auctions',
     'social_auth',
     'payment_gateways',
-    # 'south',
+    'south',
     'debug_toolbar',
     'likes',
     'model_changelog',
@@ -283,6 +283,7 @@ FITNESSHOUSE_AGREEMENT_RE = re.compile('^M[A-Z]?(\d+)/\d{6}\d+$')
 
 BASE_URL = 'http://bonus-house.ru'
 ORDER_COMPLETE_SUBJECT = u'Покупка на сайте Бонус Хаус'
+CONTRACT_RESTRUCT_SUBJECT = u'Переоформление договора на сайте Бонус Хаус'
 FITNESSHOUSE_PARTNER_IDS = (
     3,
 )

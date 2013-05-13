@@ -22,11 +22,10 @@ class ContractTransaction(models.Model):
     transaction_object = generic.GenericForeignKey("transaction_type", "transaction_id")
     comment = models.TextField(verbose_name='Комментарий', blank=True, null=True)
     add_date = models.DateTimeField(verbose_name='Дата добавления', editable=False, auto_now_add=True)
+    complete_date = models.DateTimeField(verbose_name='Дата закрытия транзакции', editable=False, blank=True, null=True)
 
-    def complete(self, payment_info):
-        self.payment_object = payment_info
+    def complete(self):
         self.is_completed = True
-        self.payment_date = now()
         self.save()
 
 
