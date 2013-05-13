@@ -95,12 +95,13 @@ def person_restruct_contract(request):
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
                 print response
-                if response['email'][0] != request.user.email:
-                    messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
-                    return redirect('person_restruct_contract')
+
                 contract_index = response['dognumber'].index(request.session['user_contract_number'])
                 if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
                     # Договор найден
+                    if response['email'][0] != request.user.email:
+                        messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
+                        return redirect('person_restruct_contract')
                     if response['activity'][contract_index].split('?')[0].replace('\r\n', '') != '1':
                         # Если договор не активен
                         messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
