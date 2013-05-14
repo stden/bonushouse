@@ -12,7 +12,7 @@
             {% for abonement in my_restruct_abonements %}
                 <tr>
                     <td>{{ abonement.transaction_object.add_date.date }}</td>
-                    <td>{{ abonement.offer.end_date.date }}</td>
+                    <td>{{ abonement.offer.end_date }}</td>
                     <td>{{ abonement.contract_number }}</td>
                 </tr>
                 <tr>
