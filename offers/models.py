@@ -636,9 +636,12 @@ class ContractOrder(models.Model):
     """Заказы на переоформление, продление, перевод в другие клубы.
        Другая модель, т.к. offers не хранятся в бх"""
     user = models.ForeignKey(User)
+    old_user = models.ForeignKey(User, related_name='old_user')
     contract_number = models.CharField(max_length=255)
     offer_name = models.CharField(max_length=255)
     club_name = models.CharField(max_length=255)
+    user_passport_series = models.CharField(max_length=20)
+    user_passport_number = models.CharField(max_length=20)
     price = models.PositiveIntegerField(blank=True, null=True, default=0)
     is_completed = models.BooleanField(default=False)
     # coupon_codes = models.ManyToManyField('CouponCodes')

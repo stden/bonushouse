@@ -18,6 +18,7 @@ from django.utils.timezone import now
 from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse_lazy
+from django.core.exceptions import ObjectDoesNotExist
 
 from datetime import timedelta
 from django.contrib import messages
@@ -160,10 +161,10 @@ def person_restruct_contract(request):
                     if key != 'src_club':
                         other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
-                if settings.DEBUG:
-                    fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-                else:
-                    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+                # if settings.DEBUG:
+                #     fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
+                # else:
+                fh_url = settings.FITNESSHOUSE_NOTIFY_URL
 
                 comment = u'Переоформление договора %s на клиента %s %s  ' % (other_info['cid'], new_user.first_name, new_user.last_name)
                 transaction_info = ContractTransactionInfo()
@@ -172,9 +173,12 @@ def person_restruct_contract(request):
                 transaction.save()
                 order = ContractOrder()
                 order.user = new_user
+                order.old_user = request.user
                 order.contract_number = cid
-                order.offer_name = request.session.get('type').decode('ISO-8859-1')
-                order.club_name = request.session.get('src_club').decode('ISO-8859-1')
+                order.user_passport_series = form.cleaned_data['passport_series']
+                order.user_passport_number = form.cleaned_data['passport_number']
+                order.offer_name = request.session.get('type').decode('ISO-8859-1').encode('utf-8')
+                order.club_name = request.session.get('src_club').decode('ISO-8859-1').encode('utf-8')
                 order.end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
                 order.transaction_object = transaction
                 order.save()
@@ -208,8 +212,12 @@ def person_restruct_contract(request):
                     context['response'] = response
                     transaction.complete()
                     order.complete()
-                    old_order = ContractOrder.objects.get(contract_number = request.session['dognumber'], user=request.user)
-                    old_order.delete()
+                    try:
+                        old_order = ContractOrder.objects.get(contract_number = request.session['dognumber'], user=request.user)
+                        old_order.delete()
+                    except ObjectDoesNotExist:
+                        pass
+
 
                     old_user_notification_context = Context({
                         'old_user_first_name': request.user.first_name,
@@ -274,10 +282,10 @@ def get_contract_data(request, form):
     for key in request_params.keys():
         request_params[key] = request_params[key]
         # Шлем запрос
-    if settings.DEBUG:
-        fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-    else:
-        fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+    # if settings.DEBUG:
+        # fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
+    # else:
+    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
     response = requests.get(fh_url, params=request_params, verify=False)
     response = urlparse.parse_qs(response.text)
     return response

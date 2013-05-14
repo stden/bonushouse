@@ -32,16 +32,16 @@
         {% endif %}
 
         <dt>Пол:</dt>
-        <dd>{{ abonement.user.gender }}</dd>
+        <dd>{{ abonement.user.get_profile.get_gender }}</dd>
 
         <dt>Паспортные данные:</dt>
-        <dd>{{ passport_code }} {{ passport_number }}</dd>
+        <dd>{{ abonement.user_passport_series }} {{ abonement.user_passport_number }}</dd>
 
         <dt>Дата рождения</dt>
-        <dd>{{ abonement.user.birth_date|date:'d.m.Y' }}</dd>
+        <dd>{{ abonement.user.get_profile.birth_date|date:'d.m.Y' }}</dd>
 
         <dt>Контактный телефон</dt>
-        <dd>{{ abonement.user.phone }}</dd>
+        <dd>{{ abonement.user.get_profile.phone }}</dd>
 
         <dt>Электронный адрес</dt>
         <dd>{{ abonement.user.email }}</dd>
@@ -51,8 +51,9 @@
         {{ terms|safe }}
     </div>
     <p><strong>Уважаемый Клиент сети спортивных клубов {{ partner.title }}!</strong></p>
-
-    <p>Ваша оплата клубной карты {{ partner.title }} прошла успешно, и мы рады, что Вы присоединились к нашей команде!<br />
+    <p>Договор переоформлен с {{ abonement.old_user.last_name }} {{ abonement.old_user.first_name }}</p>
+    <p>Дата переуступки: {{ abonement.transaction_object.complete_date.date }}</p>
+    <p>Мы рады, что Вы присоединились к нашей команде!<br />
         Для того чтобы начать занятия в выбранном Вами клубе, Вам необходимо:</p>
     <ul><li>распечатать Договор (см. вложение к письму);</li>
         <li>приехать в выбранный Вами клуб;</li>

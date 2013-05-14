@@ -51,6 +51,14 @@ class UserProfile(models.Model):
         else:
             return self.user.username
 
+    def get_gender(self):
+        gender = None
+        if self.gender == 0:
+            gender = 'жен.'
+        elif self.gender == 1:
+            gender = 'муж.'
+        return gender
+
     def get_bonuses_ballance(self):
         """
         Возвращает количество неиспользованных бонусов у данного пользователя.
