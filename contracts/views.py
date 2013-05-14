@@ -15,11 +15,9 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.conf import settings
 from django.utils.timezone import now
-from django import forms
 from django.http import HttpResponse, Http404
 from django.views.decorators.csrf import csrf_exempt
-from payment_gateways.models import PaymentRequest
-
+from django.core.urlresolvers import reverse_lazy
 
 from datetime import timedelta
 from django.contrib import messages
@@ -178,9 +176,7 @@ def person_restruct_contract(request):
                     'amount': '0.00',
                     'paymode': '1',
                     }
-                # del request.session['dognumber']
-                # del request.session['src_id']
-                # del request.session['src_club']
+
                 # Переводим все в cp1251
                 for key in request_params.keys():
                     request_params[key] = request_params[key].encode('cp1251')
@@ -204,22 +200,35 @@ def person_restruct_contract(request):
                 if code == 'YES':
                     context['response'] = response
                     transaction.complete()
-                    notification_context = Context({
+                    old_user_notification_context = Context({
                         'old_user_first_name': request.user.first_name,
                         'old_user_last_name': request.user.last_name,
                         'contract_number': request.session.get('dognumber'),
                         'club_name': request.session.get('src_club'),
                         'add_date': request.session['sdate'],
                         'end_date': request.session['edate'],
-                        'cancelation_date': now(),  # test
-                        'new_user_first_name':'',
-                        'new_user_last_name': '',
-                        'new_passport_series':'',
-                        'new_passport_number':''
+                        'cancelation_date': transaction.complete_date,  # test
+                        'new_user_first_name': new_user.first_name,
+                        'new_user_last_name': new_user.last_name,
+                        'new_passport_series':form.cleaned_data['passport_serial'],
+                        'new_passport_number':form.cleaned_data['passport_number'],
 
                     })
+                    new_user_notification_context = Context({
+                        'LINK':settings.BASE_URL + str(reverse_lazy('cabinet')),
+                        'new_user_first_name': new_user.first_name,
+                        'new_user_last_name': new_user.last_name,
+                        'contract_number': cid,
+                        'club_name': request.session.get('src_club'),
+                        'add_date': request.session['sdate'],
+                        'end_date': request.session['edate'],
+                        'cancelation_date': transaction.complete_date,  # test
+                        })
                     # Уведомление старому пользователю о расторжении договора
-                    send_notification(request.user.email, notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
+                    send_notification(request.user.email, old_user_notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
+                    # Уведомление новому пользователю о переоформленном на него договоре
+                    send_notification(new_user.email, new_user_notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
+
                     return render_to_response('contracts/success.html', context)
                 else:
                     print code, comment
