@@ -136,7 +136,6 @@ def person_restruct_contract(request):
                     old_number[-1] = str(int(old_number[-1]) + 1)
                     cid = '/'.join(old_number)
 
-
                 other_info = {
                     'fname': new_user.first_name,
                     'lname': new_user.last_name,
@@ -209,6 +208,8 @@ def person_restruct_contract(request):
                     context['response'] = response
                     transaction.complete()
                     order.complete()
+                    old_order = ContractOrder.objects.get(contract_number = request.session['dognumber'], user=request.user)
+                    old_order.delete()
 
                     old_user_notification_context = Context({
                         'old_user_first_name': request.user.first_name,
