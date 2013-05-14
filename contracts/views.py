@@ -39,12 +39,9 @@ from .utils import send_notification
 #########################
 
 #@TODO: Рефакторинг этого говна
+# С кодировками полный бардак
 
-
-# Get an instance of a logger
-
-logger = logging.getLogger(__name__)
-
+ALLOWED_PREFIXES = ('M', 'MB')
 
 @login_required
 def prolongate_contract(request):
@@ -93,22 +90,37 @@ def person_restruct_contract(request):
             if form.is_valid():
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
-                print response
                 if response['?status'][0] != '-2':
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
-                    if response['?status'][contract_index] == '1' or response['?status'][contract_index] == '2':
+                    response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
+
+                    if response_index('?status') == '1' or response_index('?status') == '2':
                         # Договор найден
-                        if response['email'][contract_index] != request.user.email:
+                        try:
+                            # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
+                            int(response_index('dognumber').split('/')[0])
+                        except ValueError:
+                            # Значит префикс не число
+                            if response_index('dognumber').split('/')[0] not in ALLOWED_PREFIXES:
+                                messages.info(request, 'Данный договор переоформлению не подлежит!')
+                                return render_to_response('contracts/contract_form.html', context)
+
+                        if response_index('email') != request.user.email:
                             messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                             return redirect('person_restruct_contract')
-                        if response['activity'][contract_index].split('?')[0].replace('\r\n', '') != '1':
+                        elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
                             # Если договор не активен
                             messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
                             return render_to_response('contracts/contract_form.html', context)
-                        elif response['debt'][contract_index] != '0.00':
+                        elif response_index('debt') != '0.00':
                             # Если по договору имеется задолженность
                             messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
                             return render_to_response('contracts/contract_form.html', context)
+                        elif response_index('type').lower().find('мультикарта') != -1:
+                            # Мультикарты тоже нельзя переоформлять
+                            messages.info(request, 'Это мультикарта! Переоформлению не подлежит.')
+                            return render_to_response('contracts/contract_form.html', context)
+
                         # Всё ок, идём дальше
                         load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
                         messages.success(request, 'Теперь введите данные нового клиента.')
@@ -218,7 +230,6 @@ def person_restruct_contract(request):
                     except ObjectDoesNotExist:
                         pass
 
-
                     old_user_notification_context = Context({
                         'old_user_first_name': request.user.first_name,
                         'old_user_last_name': request.user.last_name,
@@ -229,8 +240,8 @@ def person_restruct_contract(request):
                         'cancelation_date': transaction.complete_date,  # test
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
-                        'new_passport_series':form.cleaned_data['passport_series'],
-                        'new_passport_number':form.cleaned_data['passport_number'],
+                        'new_passport_series': order.user_passport_series,
+                        'new_passport_number': order.user_passport_number,
                     })
 
                     new_user_notification_context = Context({
@@ -294,13 +305,14 @@ def get_contract_data(request, form):
 def load_data_to_session(request, response, step):
     """Данные с сервера FH записываем в сессию"""
     contract_index = response['dognumber'].index(request.session['user_contract_number'])
+    response_index = lambda key: response[key][contract_index]
     request.session['step'] = step  # Договор валидный, переход на следующий шаг
-    request.session['src_id'] = response['src_id'][contract_index]
-    request.session['dognumber'] = response['dognumber'][contract_index].encode('ISO-8859-1')
-    request.session['src_club'] = response['src_club'][contract_index].encode('ISO-8859-1')
-    request.session['sdate'] = response['sdate'][contract_index]
-    request.session['edate'] = response['edate'][contract_index]
-    request.session['type'] = response['type'][contract_index].encode('ISO-8859-1')# + '~ё+*&'
+    request.session['src_id'] = response_index('src_id')
+    request.session['dognumber'] = response_index('dognumber').encode('ISO-8859-1')
+    request.session['src_club'] = response_index('src_club').encode('ISO-8859-1')
+    request.session['sdate'] = response_index('sdate')
+    request.session['edate'] = response_index('edate')
+    request.session['type'] = response_index('type').encode('ISO-8859-1')# + '~ё+*&'
 
 
 def calculate_dates(request, response):
