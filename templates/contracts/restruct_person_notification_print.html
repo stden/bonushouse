@@ -12,39 +12,39 @@
     <div class="barcode_wrap autowrap">
         <div class="left">
             <h2>Номер договора</h2>
-            {{ agreement_id }}
+            {{ abonement.contract_number }}
         </div>
-        <div class="right">
-            <img src="{{ barcode.url }}" alt="{{ agreement_id }}" />
-        </div>
+{#        <div class="right">#}
+{#            <img src="{{ barcode.url }}" alt="{{ agreement_id }}" />#}
+{#        </div>#}
     </div>
     <h2 class="user_info">Сведения о посетителе</h2>
     <dl class="autowrap">
         <dt>Фамилия:</dt>
-        <dd>{{ additional_info.last_name }}</dd>
+        <dd>{{ abonement.user.last_name }}</dd>
 
         <dt>Имя:</dt>
-        <dd>{{ additional_info.first_name }}</dd>
+        <dd>{{ abonement.user.first_name }}</dd>
 
-        {% if additional_info.father_name %}
+        {% if abonement.user.father_name %}
         <dt>Отчество:</dt>
-        <dd>{{ additional_info.father_name }}</dd>
+        <dd>{{ abonement.users.father_name }}</dd>
         {% endif %}
 
         <dt>Пол:</dt>
-        <dd>{{ additional_info.get_gender_display }}</dd>
+        <dd>{{ abonement.user.get_gender_display }}</dd>
 
         <dt>Паспортные данные:</dt>
         <dd>{{ additional_info.passport_code }} {{ additional_info.passport_number }}</dd>
 
         <dt>Дата рождения</dt>
-        <dd>{{ additional_info.birth_date|date:'d.m.Y' }}</dd>
+        <dd>{{ abonement.user.birth_date|date:'d.m.Y' }}</dd>
 
         <dt>Контактный телефон</dt>
-        <dd>{{ additional_info.phone }}</dd>
+        <dd>{{ abonement.user.phone }}</dd>
 
         <dt>Электронный адрес</dt>
-        <dd>{{ additional_info.email }}</dd>
+        <dd>{{ abonement.user.email }}</dd>
     </dl>
     <h2 class="terms">Условия</h2>
     <div>
@@ -81,7 +81,7 @@
                 </tr>
                 <tr>
                     <td>Вы выбрали абонемент в клуб:</td>
-                    <td>{{ additional_info.address.title }}</td>
+{#                    <td>{{ additional_info.address.title }}</td>#}
                 </tr>
             </table>
         </div>

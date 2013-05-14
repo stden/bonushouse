@@ -24,7 +24,7 @@ from django.contrib import messages
 
 from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
-from offers.models import ProlongationOffers
+from offers.models import ProlongationOffers, ContractOrder
 
 from .utils import send_notification
 
@@ -171,6 +171,14 @@ def person_restruct_contract(request):
                 transaction_info.save()
                 transaction = ContractTransaction(operation_type=1, user=request.user, amount=0, transaction_date=now(), comment=comment, transaction_object=transaction_info) #@TODO: Допилить транзакции
                 transaction.save()
+                order = ContractOrder()
+                order.user = new_user
+                order.contract_number = cid
+                order.offer_name = request.session.get('type').decode('ISO-8859-1')
+                order.club_name = request.session.get('src_club').decode('ISO-8859-1')
+                order.end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
+                order.transaction_object = transaction
+                order.save()
                 request_params = {
                     'userid': str(request.user.id),
                     'amount': '0.00',
@@ -200,6 +208,8 @@ def person_restruct_contract(request):
                 if code == 'YES':
                     context['response'] = response
                     transaction.complete()
+                    order.complete()
+
                     old_user_notification_context = Context({
                         'old_user_first_name': request.user.first_name,
                         'old_user_last_name': request.user.last_name,
@@ -210,12 +220,12 @@ def person_restruct_contract(request):
                         'cancelation_date': transaction.complete_date,  # test
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
-                        'new_passport_series':form.cleaned_data['passport_serial'],
+                        'new_passport_series':form.cleaned_data['passport_series'],
                         'new_passport_number':form.cleaned_data['passport_number'],
-
                     })
+
                     new_user_notification_context = Context({
-                        'LINK':settings.BASE_URL + str(reverse_lazy('cabinet')),
+                        'LINK':settings.BASE_URL + str(reverse_lazy('bonushouse.views.cabinet_abonements')),
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
                         'contract_number': cid,
@@ -224,6 +234,7 @@ def person_restruct_contract(request):
                         'end_date': request.session['edate'],
                         'cancelation_date': transaction.complete_date,  # test
                         })
+
                     # Уведомление старому пользователю о расторжении договора
                     send_notification(request.user.email, old_user_notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
                     # Уведомление новому пользователю о переоформленном на него договоре

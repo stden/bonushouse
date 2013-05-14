@@ -38,7 +38,7 @@ from payment_gateways.models import PaymentRequest, DolPaymentInfo
 from django.utils import timezone
 from bonushouse.models import CronFitnesshouseNotifications
 from partners.models import Partner, PartnerAddress
-
+from contracts.models import ContractTransaction
 
 TOTAL_CHARS_SIGN_CHOICES = (
     ('>=', '>='),
@@ -632,11 +632,27 @@ class Order(models.Model):
         self.user.get_profile().save()
 
 
-    class ContractOrder(models.Model):
-        """Заказы на переоформление, продление, перевод в другие клубы.
-           Другая модель, т.к. offers не хранятся в бх"""
-        pass
+class ContractOrder(models.Model):
+    """Заказы на переоформление, продление, перевод в другие клубы.
+       Другая модель, т.к. offers не хранятся в бх"""
+    user = models.ForeignKey(User)
+    contract_number = models.CharField(max_length=255)
+    offer_name = models.CharField(max_length=255)
+    club_name = models.CharField(max_length=255)
+    price = models.PositiveIntegerField(blank=True, null=True, default=0)
+    is_completed = models.BooleanField(default=False)
+    # coupon_codes = models.ManyToManyField('CouponCodes')
+    transaction_object = models.ForeignKey(ContractTransaction)
+    add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
+    end_date = models.DateTimeField(editable=False, verbose_name='Дата окончания')
 
+    def get_start_date(self):
+        if self.is_completed:
+            return self.transaction_object.complete_date + datetime.timedelta(days=1)
+
+    def complete(self):
+        self.is_completed = True
+        self.save()
 
 DELIVERY_CHOICES = (
     ('email', 'По Email'),

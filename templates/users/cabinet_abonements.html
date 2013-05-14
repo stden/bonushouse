@@ -9,6 +9,26 @@
                 <th><span><em>дата<br/>окончания</em></span></th>
                 <th><span><em>номер<br/>договора</em></span></th>
             </tr>
+            {% for abonement in my_restruct_abonements %}
+                <tr>
+                    <td>{{ abonement.transaction_object.add_date.date }}</td>
+                    <td>{{ abonement.offer.end_date.date }}</td>
+                    <td>{{ abonement.contract_number }}</td>
+                </tr>
+                <tr>
+                    <td class="underline" colspan="3">
+{#                        {% thumbnail abonement.offer.get_photos_list.0.file '215x147' crop='center' as im %}#}
+{#                            <img class="alignleft" src="{{ im.url }}" width="215" height="147">#}
+{#                        {% endthumbnail %}#}
+                        <div class="text-holder">
+                            <p>{{ abonement.offer.title }}</p>
+                            <div class="link-holder">
+                                <a href="{% url cabinet_orders_abonements_print abonement.pk %}" class="link-button04" target="_blank">Распечатать договор</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
             {% for abonement in my_abonements %}
                 <tr>
                     <td>{{ abonement.transaction_object.add_date.date }}</td>

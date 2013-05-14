@@ -40,7 +40,8 @@ from django.core.mail import send_mail
 from django.utils import simplejson
 from django.contrib.sites.models import Site
 from django import forms
-
+from offers.models import ContractOrder
+from partners.models import Partner
 
 class LoginRequiredView(object):
     @method_decorator(login_required)
@@ -209,7 +210,9 @@ def cabinet(request):
 def cabinet_abonements(request):
     context = RequestContext(request)
     my_abonements = AbonementOrder.objects.filter(is_completed=True, user=request.user)
+    my_restruct_abonements = ContractOrder.objects.filter(is_completed=True, user=request.user)
     context['my_abonements'] = my_abonements
+    context['my_restruct_abonements'] = my_restruct_abonements
     return render_to_response('users/cabinet_abonements.html', context)
 
 @login_required
@@ -272,6 +275,26 @@ def cabinet_abonements_print(request, abonement_id):
     context['price'] = abonement.get_price_display()
     context['partner'] = abonement.offer.partner
     return render_to_response('users/cabinet_abonements_print.html', context)
+
+
+@login_required
+def cabinet_orders_abonements_print(request, order_id):
+    context = RequestContext(request)
+    abonement = get_object_or_404(ContractOrder, pk=order_id, is_completed=True, user=request.user)
+    context['abonement'] = abonement
+    # context['barcode'] = abonement.get_barcode()
+    # context['agreement_id'] = abonement.agreement_id
+    # context['additional_info'] = abonement.additional_info
+    context['terms'] = 'Условия'
+    context['offer_title'] = abonement.offer_name
+    context['add_date'] = abonement.get_start_date()
+    context['end_date'] = abonement.end_date
+    # if abonement.offer.abonements_term:
+    #     context['end_date'] = abonement.get_end_date()
+    context['price'] = abonement.price
+    context['partner'] = Partner.objects.get(title='Fitness House')
+    context['valid_term'] = u'с %s по %s' % (timezone.localtime(abonement.get_start_date()).strftime('%d.%m.%Y'), timezone.localtime(abonement.end_date).strftime('%d.%m.%Y'))
+    return render_to_response('contracts/restruct_person_notification_print.html', context)
 
 
 @login_required

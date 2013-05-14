@@ -26,6 +26,7 @@ class ContractTransaction(models.Model):
 
     def complete(self):
         self.is_completed = True
+        self.complete_date = now()
         self.save()
 
 
