@@ -287,6 +287,8 @@ def cabinet_orders_abonements_print(request, order_id):
     # context['additional_info'] = abonement.additional_info
     context['terms'] = 'Условия'
     context['offer_title'] = abonement.offer_name
+    context['passport_code'] = ''
+    context['passport_number'] =''
     context['add_date'] = abonement.get_start_date()
     context['end_date'] = abonement.end_date
     # if abonement.offer.abonements_term:

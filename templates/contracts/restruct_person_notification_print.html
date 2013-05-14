@@ -32,10 +32,10 @@
         {% endif %}
 
         <dt>Пол:</dt>
-        <dd>{{ abonement.user.get_gender_display }}</dd>
+        <dd>{{ abonement.user.gender }}</dd>
 
         <dt>Паспортные данные:</dt>
-        <dd>{{ additional_info.passport_code }} {{ additional_info.passport_number }}</dd>
+        <dd>{{ passport_code }} {{ passport_number }}</dd>
 
         <dt>Дата рождения</dt>
         <dd>{{ abonement.user.birth_date|date:'d.m.Y' }}</dd>
@@ -81,7 +81,7 @@
                 </tr>
                 <tr>
                     <td>Вы выбрали абонемент в клуб:</td>
-{#                    <td>{{ additional_info.address.title }}</td>#}
+                    <td>{{ abonement.club_name }}</td>
                 </tr>
             </table>
         </div>
