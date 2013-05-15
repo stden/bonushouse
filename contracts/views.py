@@ -243,8 +243,8 @@ def person_restruct_contract(request):
                         'old_user_last_name': request.user.last_name,
                         'contract_number': request.session.get('dognumber'),
                         'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251'),
-                        'add_date': request.session['sdate'],
-                        'end_date': request.session['edate'],
+                        'add_date': datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d'),
+                        'end_date': datetime.datetime.strptime(request.session['edate'], '%Y.%m.%d'),
                         'cancelation_date': transaction.complete_date,  # test
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
@@ -258,8 +258,8 @@ def person_restruct_contract(request):
                         'new_user_last_name': new_user.last_name,
                         'contract_number': cid,
                         'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251'),
-                        'add_date': request.session['sdate'],
-                        'end_date': request.session['edate'],
+                        'add_date': datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d'),
+                        'end_date': datetime.datetime.strptime(request.session['edate'], '%Y.%m.%d'),
                         'cancelation_date': transaction.complete_date,  # test
                         })
 
