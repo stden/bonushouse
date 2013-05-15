@@ -27,7 +27,7 @@ from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
 from offers.models import ProlongationOffers, ContractOrder
 
-from .utils import send_notification
+from .utils import send_notification, is_exclusive
 
 ########################
 # Коды операций:
@@ -120,6 +120,10 @@ def person_restruct_contract(request):
                         elif response_index('debt') != '0.00':
                             # Если по договору имеется задолженность
                             messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
+                            return render_to_response('contracts/contract_form.html', context)
+                        elif is_exclusive(response_index('sdate'), response_index('edate')):
+                            # Если по договору имеется задолженность
+                            messages.info(request, 'Данный договор переоформлению не подлежит!')
                             return render_to_response('contracts/contract_form.html', context)
                         # elif response_index('type').lower().find('мультикарта') != -1:
                         #     # Мультикарты тоже нельзя переоформлять

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from django.template.base import Template
+import datetime
 
+from django.template.base import Template
 from django.conf import settings
 from django.core.urlresolvers import reverse_lazy
 from django.core.mail import send_mail
@@ -18,3 +19,9 @@ def send_notification(email, context, settings_value, subject):
 
 def is_exclusive(start_date_str, end_date_str):
     """Проверка на эксклюзивы (срок действия 100 лет (36500 дней)"""
+    start_date = datetime.datetime.strptime(start_date_str, '%Y.%m.%d')
+    end_date = datetime.datetime.strptime(end_date_str, '%Y.%m.%d')
+    if (end_date - start_date).days >= 36500:
+        return True
+    else:
+        return False
