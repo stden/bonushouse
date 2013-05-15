@@ -145,6 +145,7 @@ def person_restruct_contract(request):
             context = RequestContext(request)
             context['form'] = form
             if form.is_valid():
+                cid = 0
                 new_user = User.objects.get(email=form.cleaned_data['email'])
 
                 if len(request.session.get('dognumber').split('/')) == 2:
