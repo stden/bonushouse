@@ -91,7 +91,7 @@ def person_restruct_contract(request):
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
                 print response
-                if response['?status'][0] != '-2':
+                if response['?status'][0] == '1' or response['?status'][0] == '2':
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
 
@@ -128,6 +128,9 @@ def person_restruct_contract(request):
                         return redirect('person_restruct_contract')
                 elif response['?status'][0] == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
+                    return render_to_response('contracts/contract_form.html', context)
+                elif response['?status'][0] == '0':
+                    messages.info(request, 'Договор не найден или данные не верны')
                     return render_to_response('contracts/contract_form.html', context)
                 elif response['?status'][0] == '-2' or response['?status'][0] == '0':
                     messages.info(request, 'Договор не найден или данные неверны!')
