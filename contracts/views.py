@@ -154,6 +154,8 @@ def person_restruct_contract(request):
                     old_number = request.session.get('dognumber').split('/')
                     old_number[-1] = str(int(old_number[-1]) + 1)
                     cid = '/'.join(old_number)
+                elif len(request.session.get('dognumber').split('/')) == 3:
+                    cid = request.session.get('dognumber') + '/1'
 
                 other_info = {
                     'fname': new_user.first_name,
