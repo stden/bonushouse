@@ -107,10 +107,10 @@ def person_restruct_contract(request):
                                     messages.info(request, 'Данный договор переоформлению не подлежит!')
                                     return render_to_response('contracts/contract_form.html', context)
 
-                        print response_index('fname'), request.user.first_name
-                        print response_index('lname'), request.user.last_name
+                        print response_index('fname').decode('ISO-8859-1').encode('cp1252').decode('cp1251'), request.user.first_name
+                        print response_index('lname').decode('ISO-8859-1').encode('cp1252').decode('cp1251'), request.user.last_name
                         print datetime.datetime.strptime(response_index('bd'), '%Y.%m.%d'), request.user.get_profile().birth_date
-                        
+
                         if response_index('fname') != request.user.first_name and response_index('lname') != request.user.last_name and datetime.datetime.strptime(response_index('bd'), '%Y.%m.%d') != request.user.get_profile().birth_date:
                             messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                             return redirect('person_restruct_contract')
