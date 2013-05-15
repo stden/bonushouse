@@ -242,7 +242,7 @@ def person_restruct_contract(request):
                         'old_user_first_name': request.user.first_name,
                         'old_user_last_name': request.user.last_name,
                         'contract_number': request.session.get('dognumber'),
-                        'club_name': request.session.get('src_club'),
+                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251'),
                         'add_date': request.session['sdate'],
                         'end_date': request.session['edate'],
                         'cancelation_date': transaction.complete_date,  # test
@@ -257,7 +257,7 @@ def person_restruct_contract(request):
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
                         'contract_number': cid,
-                        'club_name': request.session.get('src_club'),
+                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251'),
                         'add_date': request.session['sdate'],
                         'end_date': request.session['edate'],
                         'cancelation_date': transaction.complete_date,  # test
@@ -266,7 +266,7 @@ def person_restruct_contract(request):
                     # Уведомление старому пользователю о расторжении договора
                     send_notification(request.user.email, old_user_notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
                     # Уведомление новому пользователю о переоформленном на него договоре
-                    send_notification(new_user.email, new_user_notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
+                    send_notification(new_user.email, new_user_notification_context, 'NEW_PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
 
                     return render_to_response('contracts/success.html', context)
                 else:
