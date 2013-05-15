@@ -6,8 +6,8 @@ from partners.models import Partner, PartnerAddress
 
 class PersonalContractForm(forms.Form):
     contract_number = forms.CharField(max_length=20, label='Номер договора', widget=forms.TextInput(attrs={'class':'text'}))
-    passport_series = forms.CharField(min_length=4, max_length=4, label='Серия паспорта', widget=forms.TextInput(attrs={'class':'text'}))
-    passport_number = forms.CharField(min_length=6, max_length=6, label='Номер паспорта', widget=forms.TextInput(attrs={'class':'text'}))
+    passport_series = forms.CharField(label='Серия паспорта', widget=forms.TextInput(attrs={'class':'text'}))
+    passport_number = forms.CharField(label='Номер паспорта', widget=forms.TextInput(attrs={'class':'text'}))
 
 
 class ContractProlongationForm(forms.Form):
