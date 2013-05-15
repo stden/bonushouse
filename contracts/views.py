@@ -95,45 +95,45 @@ def person_restruct_contract(request):
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
 
-                    if response_index('?status') == '1' or response_index('?status') == '2':
-                        # Договор найден
-                        if len(response_index('dognumber').split('/')) > 1:
-                            try:
-                                # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
-                                int(response_index('dognumber').split('/')[0])
-                            except ValueError:
-                                # Значит префикс не число
-                                if not (response_index('dognumber').split('/')[0].find('M') != 0 or response_index('dognumber').split('/')[0].find('MB') != 0):
-                                    messages.info(request, 'Данный договор переоформлению не подлежит!')
-                                    return render_to_response('contracts/contract_form.html', context)
+                    # if response['?status'][0] == '1' or response_index('?status') == '2':
+                    # Договор найден
+                    if len(response_index('dognumber').split('/')) > 1:
+                        try:
+                            # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
+                            int(response_index('dognumber').split('/')[0])
+                        except ValueError:
+                            # Значит префикс не число
+                            if not (response_index('dognumber').split('/')[0].find('M') != 0 or response_index('dognumber').split('/')[0].find('MB') != 0):
+                                messages.info(request, 'Данный договор переоформлению не подлежит!')
+                                return render_to_response('contracts/contract_form.html', context)
 
-                        # print response_index('fname').encode('cp1252').decode('cp1251'), request.user.first_name
-                        # print response_index('lname').encode('cp1252').decode('cp1251'), request.user.last_name
+                    # print response_index('fname').encode('cp1252').decode('cp1251'), request.user.first_name
+                    # print response_index('lname').encode('cp1252').decode('cp1251'), request.user.last_name
 
-                        if response_index('fname').encode('cp1252').decode('cp1251') != request.user.first_name and response_index('lname').encode('cp1252').decode('cp1251') != request.user.last_name and datetime.datetime.strptime(response_index('bd'), '%Y.%m.%d') != request.user.get_profile().birth_date:
-                            messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
-                            return redirect('person_restruct_contract')
-                        elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
-                            # Если договор не активен
-                            messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
-                            return render_to_response('contracts/contract_form.html', context)
-                        elif response_index('debt') != '0.00':
-                            # Если по договору имеется задолженность
-                            messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
-                            return render_to_response('contracts/contract_form.html', context)
-                        elif is_exclusive(response_index('sdate'), response_index('edate')):
-                            # Если по договору имеется задолженность
-                            messages.info(request, 'Данный договор переоформлению не подлежит!')
-                            return render_to_response('contracts/contract_form.html', context)
-                        # elif response_index('type').lower().find('мультикарта') != -1:
-                        #     # Мультикарты тоже нельзя переоформлять
-                        #     messages.info(request, 'Это мультикарта! Переоформлению не подлежит.')
-                        #     return render_to_response('contracts/contract_form.html', context)
-
-                        # Всё ок, идём дальше
-                        load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
-                        messages.success(request, 'Теперь введите данные нового клиента.')
+                    if response_index('fname').encode('cp1252').decode('cp1251') != request.user.first_name and response_index('lname').encode('cp1252').decode('cp1251') != request.user.last_name and datetime.datetime.strptime(response_index('bd'), '%Y.%m.%d') != request.user.get_profile().birth_date:
+                        messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                         return redirect('person_restruct_contract')
+                    elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
+                        # Если договор не активен
+                        messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
+                        return render_to_response('contracts/contract_form.html', context)
+                    elif response_index('debt') != '0.00':
+                        # Если по договору имеется задолженность
+                        messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
+                        return render_to_response('contracts/contract_form.html', context)
+                    elif is_exclusive(response_index('sdate'), response_index('edate')):
+                        # Если по договору имеется задолженность
+                        messages.info(request, 'Данный договор переоформлению не подлежит!')
+                        return render_to_response('contracts/contract_form.html', context)
+                    # elif response_index('type').lower().find('мультикарта') != -1:
+                    #     # Мультикарты тоже нельзя переоформлять
+                    #     messages.info(request, 'Это мультикарта! Переоформлению не подлежит.')
+                    #     return render_to_response('contracts/contract_form.html', context)
+
+                    # Всё ок, идём дальше
+                    load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
+                    messages.success(request, 'Теперь введите данные нового клиента.')
+                    return redirect('person_restruct_contract')
                 elif response['?status'][0] == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
