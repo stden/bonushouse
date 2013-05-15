@@ -112,7 +112,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'bonushouse.middleware.ExceptionMiddleware', # Нужно для получения трейсов при DEBUG=False
+    # 'bonushouse.middleware.ExceptionMiddleware', # Нужно для получения трейсов при DEBUG=False
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
