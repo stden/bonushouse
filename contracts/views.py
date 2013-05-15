@@ -314,8 +314,8 @@ def load_data_to_session(request, response, step):
     response_index = lambda key: response[key][contract_index]
     request.session['step'] = step  # Договор валидный, переход на следующий шаг
     request.session['src_id'] = response_index('src_id')
-    request.session['fname'] = response_index('fname')
-    request.session['lname'] = response_index('lname')
+    request.session['fname'] = response_index('fname').encode('ISO-8859-1')
+    request.session['lname'] = response_index('lname').encode('ISO-8859-1')
     request.session['bd'] = response_index('bd')
     request.session['dognumber'] = response_index('dognumber').encode('ISO-8859-1')
     request.session['src_club'] = response_index('src_club').encode('ISO-8859-1')
