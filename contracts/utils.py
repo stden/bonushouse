@@ -13,3 +13,7 @@ def send_notification(email, context, settings_value, subject):
     subject = subject
     to = [email, ]
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, to, True)
+
+
+def is_exclusive(start_date_str, end_date_str):
+    """Проверка на эксклюзивы (срок действия 100 лет (36500 дней)"""

@@ -103,7 +103,7 @@ def person_restruct_contract(request):
                                 int(response_index('dognumber').split('/')[0])
                             except ValueError:
                                 # Значит префикс не число
-                                if response_index('dognumber').split('/')[0].find('M') != 0 or response_index('dognumber').split('/')[0].find('MB') != 0:
+                                if not (response_index('dognumber').split('/')[0].find('M') != 0 or response_index('dognumber').split('/')[0].find('MB') != 0):
                                     messages.info(request, 'Данный договор переоформлению не подлежит!')
                                     return render_to_response('contracts/contract_form.html', context)
 
