@@ -97,15 +97,20 @@ def person_restruct_contract(request):
 
                     if response_index('?status') == '1' or response_index('?status') == '2':
                         # Договор найден
-                        try:
-                            # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
-                            int(response_index('dognumber').split('/')[0])
-                        except ValueError:
-                            # Значит префикс не число
-                            if response_index('dognumber').split('/')[0].find('M') != 0 or response_index('dognumber').split('/')[0].find('MB') != 0:
-                                messages.info(request, 'Данный договор переоформлению не подлежит!')
-                                return render_to_response('contracts/contract_form.html', context)
+                        if len(response_index('dognumber').split('/')) > 1:
+                            try:
+                                # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
+                                int(response_index('dognumber').split('/')[0])
+                            except ValueError:
+                                # Значит префикс не число
+                                if response_index('dognumber').split('/')[0].find('M') != 0 or response_index('dognumber').split('/')[0].find('MB') != 0:
+                                    messages.info(request, 'Данный договор переоформлению не подлежит!')
+                                    return render_to_response('contracts/contract_form.html', context)
 
+                        print response_index('fname'), request.user.first_name
+                        print response_index('lname'), request.user.last_name
+                        print datetime.datetime.strptime(response_index('bd'), '%Y.%m.%d'), request.user.get_profile().birth_date
+                        
                         if response_index('fname') != request.user.first_name and response_index('lname') != request.user.last_name and datetime.datetime.strptime(response_index('bd'), '%Y.%m.%d') != request.user.get_profile().birth_date:
                             messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                             return redirect('person_restruct_contract')
