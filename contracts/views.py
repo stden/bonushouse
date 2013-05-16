@@ -27,7 +27,7 @@ from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
 from offers.models import ProlongationOffers, ContractOrder
 
-from .utils import send_notification, is_exclusive
+from .utils import send_notification, is_exclusive, clean_session
 
 ########################
 # Коды операций:
@@ -274,6 +274,9 @@ def person_restruct_contract(request):
                     # Уведомление новому пользователю о переоформленном на него договоре
                     send_notification(new_user.email, new_user_notification_context, 'NEW_PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
 
+                    #Чистим сессию
+                    clean_session(request)
+                    del request.session['step']
                     return render_to_response('contracts/success.html', context)
                 else:
                     print code, comment
@@ -352,10 +355,6 @@ def calculate_dates(request, response):
 def back_to_1_step(request):
     """Возврат на шаг 1 при переоформлении (поиск договора)"""
     request.session['step'] = 1
-    del request.session['src_id']
-    del request.session['dognumber']
-    del request.session['src_club']
-    del request.session['sdate']
-    del request.session['edate']
-    del request.session['type']
+    clean_session(request)
     return HttpResponse()
+

@@ -25,3 +25,19 @@ def is_exclusive(start_date_str, end_date_str):
         return True
     else:
         return False
+
+
+def clean_session(request):
+    try:
+        del request.session['src_id']
+        del request.session['dognumber']
+        del request.session['src_club']
+        del request.session['src_id']
+        del request.session['fname']
+        del request.session['lname']
+        del request.session['bd']
+        del request.session['sdate']
+        del request.session['edate']
+        del request.session['type']
+    except KeyError as e:
+        print 'ERROR', e
