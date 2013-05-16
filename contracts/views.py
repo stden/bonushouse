@@ -189,7 +189,7 @@ def person_restruct_contract(request):
                 # if settings.DEBUG:
                 #     fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 # else:
-                fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+                fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
 
                 comment = u'Переоформление договора %s на клиента %s %s  ' % (other_info['cid'], new_user.first_name, new_user.last_name)
                 transaction_info = ContractTransactionInfo()
@@ -310,7 +310,7 @@ def get_contract_data(request, form):
     # if settings.DEBUG:
         # fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
     # else:
-    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+    fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
     response = requests.get(fh_url, params=request_params, verify=False)
     response = urlparse.parse_qs(response.text)
     return response
