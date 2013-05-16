@@ -88,13 +88,18 @@ def person_restruct_contract(request):
         if request.method == 'POST':
             form = PersonalContractForm(request.POST)
             if form.is_valid():
+                if ContractOrder.objects.filter(user=request.user, contract_number = form.cleaned_data['contract_number'], is_completed=True).count():
+                    messages.info(request, 'Данный договор уже переоформлен!')
+                    return render_to_response('contracts/contract_form.html', context)
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
-                print response
                 if response['?status'][0] == '1' or response['?status'][0] == '2':
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
 
+                    if ContractOrder.objects.filter(user=request.user, contract_number = response_index('contract_number'), is_completed=False, add_date__lt = now() - timedelta(minutes=10)).count():
+                        messages.info(request, 'С момента прошлой попытки переоформления прошло менее 10 минут! Попробуйте позже.')
+                        return render_to_response('contracts/contract_form.html', context)
                     # if response['?status'][0] == '1' or response_index('?status') == '2':
                     # Договор найден
                     if len(response_index('dognumber').split('/')) > 1:
