@@ -204,6 +204,7 @@ def person_restruct_contract(request):
                 order.user_passport_number = form.cleaned_data['passport_number']
                 order.offer_name = request.session.get('type').decode('ISO-8859-1').encode('cp1252').decode('cp1251')
                 order.club_name = request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251')
+                order.old_start_date = datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d')
                 order.end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
                 order.transaction_object = transaction
                 order.save()

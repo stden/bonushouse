@@ -647,6 +647,7 @@ class ContractOrder(models.Model):
     # coupon_codes = models.ManyToManyField('CouponCodes')
     transaction_object = models.ForeignKey(ContractTransaction)
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
+    old_start_date = models.DateTimeField(editable=False, verbose_name='Дата начала договора')
     end_date = models.DateTimeField(editable=False, verbose_name='Дата окончания')
 
     def get_start_date(self):
