@@ -93,6 +93,7 @@ def person_restruct_contract(request):
                     return render_to_response('contracts/contract_form.html', context)
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
+                print response
                 if response['?status'][0] == '1' or response['?status'][0] == '2':
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
