@@ -104,8 +104,8 @@ def person_restruct_contract(request):
                         except ValueError:
                             # Значит префикс не число
                             if (response_index('dognumber').split('/')[0].find('M') != 0) or (response_index('dognumber').split('/')[0].find('MB') != 0):
-                                print 'DOGNUMBER', response_index('dognumber').split('/')[0]
-                                messages.info(request, 'Данный договор переоформлению не подлежит!')
+
+                                messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                                 return render_to_response('contracts/contract_form.html', context)
 
                     # print response_index('fname').encode('cp1252').decode('cp1251'), request.user.first_name
@@ -124,7 +124,7 @@ def person_restruct_contract(request):
                         return render_to_response('contracts/contract_form.html', context)
                     elif is_exclusive(response_index('sdate'), response_index('edate')):
                         # Если по договору имеется задолженность
-                        messages.info(request, 'Данный договор переоформлению не подлежит!')
+                        messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                         return render_to_response('contracts/contract_form.html', context)
                     # elif response_index('type').lower().find('мультикарта') != -1:
                     #     # Мультикарты тоже нельзя переоформлять
