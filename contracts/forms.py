@@ -34,7 +34,7 @@ class ContractPersonRestructingForm(forms.Form):
 
     def clean(self):
         cleaned_data = super(ContractPersonRestructingForm, self).clean()
-        email = self.cleaned_data['email']
+        email = self.cleaned_data.get('email')
         try:
             user = User.objects.get(email=email)
         except ObjectDoesNotExist:
