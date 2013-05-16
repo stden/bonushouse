@@ -97,7 +97,7 @@ def person_restruct_contract(request):
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
 
-                    if ContractOrder.objects.filter(user=request.user, contract_number = response_index('contract_number'), is_completed=False, add_date__lt = now() - timedelta(minutes=10)).count():
+                    if ContractOrder.objects.filter(user=request.user, contract_number = response_index('contract_number'), is_completed=False, add_date__lt = now() - timedelta(minutes=5)).count():
                         messages.info(request, 'С момента прошлой попытки переоформления прошло менее 10 минут! Попробуйте позже.')
                         return render_to_response('contracts/contract_form.html', context)
                     # if response['?status'][0] == '1' or response_index('?status') == '2':
