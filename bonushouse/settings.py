@@ -202,6 +202,7 @@ LOGIN_URL          = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL    = '/login-error/'
 
+SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 SOCIAL_AUTH_SESSION_EXPIRATION = False
 SOCIAL_AUTH_PIPELINE_RESUME_ENTRY = 'social_auth.backends.pipeline.misc.save_status_to_session'
 SOCIAL_AUTH_PIPELINE = (
