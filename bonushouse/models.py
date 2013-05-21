@@ -33,7 +33,7 @@ class UserProfile(models.Model):
     coupons_bought = models.PositiveIntegerField(editable=False, default=0)
     refered_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='referer')
     referer_checked = models.BooleanField(editable=False, default=False)
-    is_mail_subscribed = models.BooleanField(default=True)
+    is_mail_subscribed = models.BooleanField(default=True, editable=False)
     offers_share = models.ManyToManyField('offers.Offers', related_name='offers_share', verbose_name='Акции, которыми поделился пользователь')
 
     def calculate_age(self):
