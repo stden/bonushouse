@@ -201,12 +201,14 @@ ODNOKLASSNIKI_OAUTH2_CLIENT_SECRET = '864280166FD9DBB2D130978B'
 LOGIN_URL          = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
 LOGIN_ERROR_URL    = '/login-error/'
-SOCIAL_AUTH_SESSION_EXPIRATION = False
 
+SOCIAL_AUTH_SESSION_EXPIRATION = False
+SOCIAL_AUTH_PIPELINE_RESUME_ENTRY = 'social_auth.backends.pipeline.misc.save_status_to_session'
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
     #'social_auth.backends.pipeline.associate.associate_by_email',
     'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.misc.save_status_to_session',
     'pipeline.print_data',
     'social_auth.backends.pipeline.user.create_user',
     'social_auth.backends.pipeline.social.associate_user',
