@@ -5,4 +5,5 @@ def print_data(backend, details, response, user, is_new=False, *args,
     log.write('response   ' + response)
     log.write(details)
     log.write(user)
+    log.close()
 
