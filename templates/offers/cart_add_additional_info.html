@@ -3,6 +3,7 @@
     <div class="container" id="buy_offer_page">
         <form action="" method="post" id="buy_offer_form">{% csrf_token %}
             <h2 class="underline">Для продолжения покупки вы должны указать дополнительную информацию о себе</h2>
+            <h3 style="color: red;">Внимание! данным договором может воспользоваться только лицо, достигшее 14 лет.</h3>
             {% include "_form_errors.html" with form=additional_info_form %}
             <div class="autowrap">
                 <div class="form_left_part">

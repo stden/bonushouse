@@ -956,6 +956,7 @@ def reports_view(request, report_type):
                     'bonuses-spent': reports_bonuses_spent,
                     'bonuses-users': reports_bonuses_users,
                     'fitnesshouse-report': reports_fitnesshouse_report,
+                    'person-restruct-report': reports_person_restruct,
     }
     if report_type in report_types:
         view = report_types[report_type]
@@ -1368,6 +1369,11 @@ def reports_fitnesshouse_report(request, export_csv=False):
         return response
     else:
         return render_to_response('administration/reports/fitnesshouse_report.html', context)
+
+
+@user_passes_test(lambda u: u.is_staff and u.is_superuser)
+def reports_person_restruct(request, export_csv=False):
+    pass
 
 @user_passes_test(lambda u: u.is_staff and u.is_superuser)
 def reports_metaorder_details(request, metaorder_id):
