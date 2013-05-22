@@ -13,4 +13,4 @@ def unsubscribe(request, user_hash):
         context = RequestContext(request)
         return render_to_response('_newsletter_unsubscribe.html',context)
     except UserProfile.DoesNotExist:
-        return redirect('bonushouse.home')
+        return redirect('home')
