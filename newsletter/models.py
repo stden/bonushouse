@@ -104,7 +104,7 @@ class NewsletterEmail(models.Model):
         template = Template(self.text)
         text_content = 'Пожалуйста, включите поддержку HTML для просмотра письма'
         html_content = template.render(context)
-        print html_content
+        # print html_content
         #html_content = self.text
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
