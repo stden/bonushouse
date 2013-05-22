@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # Create your views here.
-import datetime
-import csv
+from bonushouse.models import UserProfile
 
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
@@ -33,4 +32,10 @@ from django.conf import settings
 
 
 def unsubscribe(request, user_hash):
-    return HttpResponse()
+    try:
+        profile = UserProfile.objects.get(subscribe_hash=str(user_hash))
+        profile.subscribe_hash = None
+        context = RequestContext(request)
+        return render_to_response('_newsletter_unsubscribe.html',context)
+    except UserProfile.DoesNotExist:
+        return redirect('bonushouse.home')
