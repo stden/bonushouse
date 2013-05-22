@@ -99,7 +99,7 @@ class NewsletterEmail(models.Model):
         subject = self.subject
         from_email = settings.DEFAULT_FROM_EMAIL
         to = email
-        subscribe_hash = User.objects.get(email=email).get_profile().subscribe_hash
+        subscribe_hash = User.objects.get(email=email)[1].get_profile().subscribe_hash
         context = Context({'hash': subscribe_hash})
         template = Template(self.text)
         text_content = 'Пожалуйста, включите поддержку HTML для просмотра письма'
