@@ -99,6 +99,7 @@ class NewsletterEmail(models.Model):
         to = email
         text_content = 'Пожалуйста, включите поддержку HTML для просмотра письма'
         html_content = self.text
+        unsubscribe_link = '<tr><td height="10" style="text-align:center" width="560"><span style="font-size:10px">Отписаться от рассылки Вы можете, отправивответное письмо на <a href="mailto:bhsasha@yandex.ru" target="_blank">bhsasha@yandex.ru</a></span></td></tr>'
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
