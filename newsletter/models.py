@@ -4,6 +4,8 @@ from ckeditor.fields import RichTextField
 from django.contrib.auth.models import User
 from django.db.models import Q
 from django.core.mail import EmailMultiAlternatives
+from django.template import Context
+from django.template.base import Template
 from django.conf import settings
 from newsletter.sms_gate import Gate
 
@@ -97,8 +99,12 @@ class NewsletterEmail(models.Model):
         subject = self.subject
         from_email = settings.DEFAULT_FROM_EMAIL
         to = email
+        subscribe_hash = User.objects.get(email=email).get_profile().subscribe_hash
+        context = Context({'hash': subscribe_hash})
+        template = Template(self.text)
         text_content = 'Пожалуйста, включите поддержку HTML для просмотра письма'
-        html_content = self.text
+        html_content = template.render(context)
+        #html_content = self.text
         msg = EmailMultiAlternatives(subject, text_content, from_email, [to])
         msg.attach_alternative(html_content, "text/html")
         msg.send()
