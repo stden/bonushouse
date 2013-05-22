@@ -39,7 +39,7 @@ class NewsletterCampaign(models.Model):
     def get_subscribers_queryset(self):
         queryset = User.objects.all()
         queryset = queryset.filter(is_active=True)
-        queryset.exclude(subscribe_hash__isnull=True)
+        queryset = queryset.exclude(subscribe_hash__isnull=True)
         #Возраст
         if self.include_users_with_no_age:
             queryset = queryset.filter(Q(userprofile__age__gte=self.min_age, userprofile__age__lte=self.max_age)|Q(userprofile__age=None))
