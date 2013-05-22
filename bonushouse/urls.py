@@ -36,6 +36,8 @@ urlpatterns = patterns('',
 
     url(r'^news/', include('news.urls')),
 
+    url(r'^newsletter/', include('newsletter.urls')),
+
     url(r'^contact/', include('contact.urls')),
 
     url(r'^advertising/', include('advertising.urls')),
