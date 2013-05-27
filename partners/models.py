@@ -22,7 +22,7 @@ class Partner(ModelWithSeo):
     is_published = models.BooleanField(verbose_name='Опубликовано', default=True)
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     feedbacks = generic.GenericRelation(UserFeedbacks,object_id_field='content_id',content_type_field='content_type')
-    admin_user = models.ForeignKey(User, verbose_name='Пользователь-администратор', blank=True, null=True)
+    admin_user = models.ManyToManyField(User, verbose_name='Пользователь-администратор', blank=True, null=True)
 
     def __unicode__(self):
         return self.title
