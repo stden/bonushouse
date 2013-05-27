@@ -54,7 +54,7 @@
                 </tr>
                 <tr class="underline">
                     <td><span class="title-text">{{ partner_form.admin_user.label_tag }}:</span></td>
-                    <td>
+                    <td id="id_admins">
                         {{ partner_form.admin_user }}
                     </td>
                 </tr>
@@ -65,4 +65,18 @@
             </div>
         </form>
     </div>
+
+    <script type="text/javascript">
+    $(function(){
+            $("#id_title").click(function(){
+            {% if admins %}
+                    {% for admin in admins %}
+                        $('#id_admins input[value={{ admin.pk }}]').attr('checked', 'checked');
+                    {% endfor %}
+            {% endif %}
+            $("#id_admins").customRadioCheckbox();
+        });
+    $("#id_title").click();
+    });
+    </script>
 {% endblock %}

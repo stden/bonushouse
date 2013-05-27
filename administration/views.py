@@ -506,6 +506,7 @@ def partners_edit(request, partner_id):
     context['seo_url_form'] = seo_url_form
     context['page_title'] = u'%s' % (partner.title, )
     context['partner'] = partner
+    context['admins'] = User.objects.filter(is_staff=True, is_superuser=True)
     return render_to_response('administration/partners/form.html', context)
 
 
