@@ -231,8 +231,10 @@ def person_restruct_contract(request):
                 request_params['bh_key'] = md5.new(str('0.00') + str(request.user.id) + str(request_params['paymentid']) + settings.BH_PASSWORD).hexdigest(),  # md5 BH_KEY,
                 #Урлкодируем и переводим в base64
                 other_info_encoded = '&'
+                encoded_list = []
                 for key, value in other_info.items():
-                    other_info_encoded += key + '=' + urllib2.quote(value) + '&'
+                    encoded_list.append(key + '=' + urllib2.quote(value))
+                other_info_encoded = '&' + '&'.join(encoded_list)
                 #other_info_encoded = '&' + urllib2.quote(dict([key, value] for key, value in other_info.items()))
                 other_info_encoded = base64.b64encode(urllib2.unquote(other_info_encoded))
                 request_params['other_info'] = other_info_encoded
