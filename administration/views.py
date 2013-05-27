@@ -11,7 +11,7 @@ from common.forms import CategoriesForm, PhotoForm
 from common.models import Categories
 from seo.forms import SeoModelMetaForm, SeoModelUrlForm
 from offers.forms import OffersForm, ProlongationOffersAdminForm
-from offers.models import Offers, ProlongationOffers, Order, AbonementOrder, AdditionalServicesOrder, MetaOrder, GiftOrder
+from offers.models import Offers, ProlongationOffers, Order, AbonementOrder, ContractOrder, AdditionalServicesOrder, MetaOrder, GiftOrder
 from partners.models import Partner, PartnerAddress, PartnersPage, ClubCardNumbers
 from partners.forms import PartnerForm, PartnerAddressForm, PartnersPageForm, ClubCardNumbersForm
 from flatpages.models import FlatPage
@@ -1373,7 +1373,10 @@ def reports_fitnesshouse_report(request, export_csv=False):
 
 @user_passes_test(lambda u: u.is_staff and u.is_superuser)
 def reports_person_restruct(request, export_csv=False):
-    pass
+    context = RequestContext(request)
+    orders = ContractOrder.objects.filter(is_completed=True)
+    context['orders'] = orders
+    return render_to_response('administration/reports/person_restruct_report.html', context)
 
 @user_passes_test(lambda u: u.is_staff and u.is_superuser)
 def reports_metaorder_details(request, metaorder_id):

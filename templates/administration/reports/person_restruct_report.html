@@ -1,9 +1,55 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "administration/reports/view.html" %}
+{% block report %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_reports_index %}">Отчетность</a></li>
+        <li><span>Переоформление договоров</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        {% include "_form_errors.html" with form=date_range_form %}
+        <div class="select-date">
+            <span class="select-text">Показать  с:</span>
+            {{ date_range_form.date_from }}
+            <span class="select-text">по:</span>
+            {{ date_range_form.date_to }}
+            <input class="admin-button" type="submit" value="Показать" />
+        </div>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <th>
+                        <span><em><strong><b>Дата переоформления</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>ФИ прежнего клиента</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Email прежнего клиента</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Прежний № договора</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>ФИ нового клиента</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Email нового клиента</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Новый № договора</b></strong></em></span>
+                    </th>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.add_date }}</td>
+                            <td>{{ order.old_user.get_fullname }}</td>
+                        </tr>
+                    {% endfor %}
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="footing-area">
+    </div>
+{% endblock %}
