@@ -104,7 +104,7 @@ def person_restruct_contract(request):
                     # if response['?status'][0] == '1' or response_index('?status') == '2':
                     # Договор найден
                     if len(response_index('dognumber').split('/')) > 1:
-                        if response_index('type').lower().find('визиты') or response_index('type').lower().find('визитов'):
+                        if response_index('type').encode('ISO-8859-1').lower().find('визиты') or response_index('type').encode('ISO-8859-1').lower().find('визитов'):
                             messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                             return render_to_response('contracts/contract_form.html', context)
                         try:
