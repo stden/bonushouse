@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 
 class PartnerForm(forms.ModelForm):
 
-    admin_user = forms.ModelMultipleChoiceField(label='Пользователь-администратор',queryset=User.objects.all().order_by('username'), widget=forms.CheckboxSelectMultiple(attrs={'margin-top':'0'}))
+    admin_user = forms.ModelMultipleChoiceField(label='Пользователь-администратор',queryset=User.objects.all().order_by('username'), widget=forms.CheckboxSelectMultiple(attrs={'margin-top':'0px'}))
 
     def save(self, commit=True):
         is_new = False
