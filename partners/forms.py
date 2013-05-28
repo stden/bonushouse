@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 
 class PartnerForm(forms.ModelForm):
 
-    admin_user = forms.ModelMultipleChoiceField(label='Пользователь-администратор',queryset=User.objects.all().order_by('username'))
+    admin_user = forms.ModelMultipleChoiceField(label='Пользователь-администратор',queryset=User.objects.all().order_by('username'), widget=forms.CheckboxSelectMultiple(attrs={'margin-top':'0'}))
 
     def save(self, commit=True):
         is_new = False
@@ -37,7 +37,7 @@ class PartnerForm(forms.ModelForm):
             'title': forms.TextInput(attrs={'class':'text'}),
             'description': forms.Textarea(attrs={'class':'textarea', 'rows':10, 'cols':30}),
             'site': forms.TextInput(attrs={'class':'text'}),
-            'admin_user': forms.CheckboxSelectMultiple(attrs={'margin-top':'0'})
+
         }
 
 class PartnerAddressForm(forms.ModelForm):
