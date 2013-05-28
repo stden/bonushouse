@@ -104,13 +104,15 @@ def person_restruct_contract(request):
                     # if response['?status'][0] == '1' or response_index('?status') == '2':
                     # Договор найден
                     if len(response_index('dognumber').split('/')) > 1:
+                        if response_index('type').lower().find('визиты') or response_index('type').lower().find('визитов'):
+                            messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
+                            return render_to_response('contracts/contract_form.html', context)
                         try:
                             # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
                             int(response_index('dognumber').split('/')[0])
                         except ValueError:
                             # Значит префикс не число
                             if (response_index('dognumber').split('/')[0].find('M') != 0) or (response_index('dognumber').split('/')[0].find('MB') != 0):
-
                                 messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                                 return render_to_response('contracts/contract_form.html', context)
 
