@@ -1,4 +1,11 @@
 {% extends "administration/base.html" %}
+{% block head %}
+    <style>
+    ul{
+        margin: 0px;
+    }
+    </style>
+{% endblock %}
 {% block content %}
     {% if not partner %}
         <script type="text/javascript">
@@ -55,9 +62,7 @@
                 <tr class="underline">
                     <td><span class="title-text">{{ partner_form.admin_user.label_tag }}:</span></td>
                     <td>
-                        <div style="margin: 2px !important;">
                         {{ partner_form.admin_user }}
-                        </div>
                     </td>
                 </tr>
                 {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
