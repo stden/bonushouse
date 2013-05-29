@@ -73,6 +73,7 @@ def home(request, show_login=False):
             if register_form.is_valid():
                 user = register_form.save()
                 login(request, user)
+                user.get_profile().deposit_bonuses(amount=settings.REGISTER_BONUS, comment='50 бонусов при регистрации')
                 return redirect('home')
         else:
             login_form = LoginForm()
