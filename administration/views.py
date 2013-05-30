@@ -958,12 +958,18 @@ def reports_view(request, report_type):
                     'bonuses-users': reports_bonuses_users,
                     'fitnesshouse-report': reports_fitnesshouse_report,
                     'person-restruct-report': reports_person_restruct,
+                    'coupons-report': coupons_report,
     }
     if report_type in report_types:
         view = report_types[report_type]
         return view(request, export_csv)
     else:
         raise Http404
+
+
+@user_passes_test(lambda u: u.get_profile().is_partner())
+def coupons_report(request, export_csv=False):
+    pass
 
 
 @user_passes_test(lambda u: u.is_staff and u.is_superuser)

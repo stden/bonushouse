@@ -97,9 +97,11 @@ class PinCodeForm(forms.Form):
     def clean_pin_code(self):
         pin_code = self.cleaned_data.get('pin_code')
         try:
-            code = CouponCodes.objects.get(code=pin_code, is_used=False, partner__admin_user=self.partner_user)
-            self.pin_code_order = code.get_order()
-            self.pin_code_code = code
+            code = CouponCodes.objects.get(code=pin_code, is_used=False)
+            print code.partner
+            if self.partner_user in code.partner.admin_user.all():
+                self.pin_code_order = code.get_order()
+                self.pin_code_code = code
         except CouponCodes.DoesNotExist:
             raise forms.ValidationError('Пин-код не найден в базе')
         return pin_code

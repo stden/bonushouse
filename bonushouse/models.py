@@ -125,6 +125,24 @@ AUTO_BONUS_COUNTS = (
     (100000000000000000000000000000, 0.99),
 )
 
+
+class PincodeTransaction(models.Model):
+    action_name = models.TextField(verbose_name='Название акции')
+    price = models.BigIntegerField(verbose_name='Стоимость')
+    consumer = models.ForeignKey(User, verbose_name='Покупатель', related_name='consumer')
+    buy_date = models.DateTimeField(verbose_name='Дата покупки')
+    maturity_date = models.DateTimeField(verbose_name='Дата погашения')
+    operator = models.ForeignKey(User, verbose_name='Оператор', related_name='operator')
+    is_gift = models.BooleanField(verbose_name='Куплено в подарок?')
+    recipient = models.ForeignKey(User, verbose_name='Получатель подарка', blank=True, null=True, related_name='recipient')
+    add_date = models.DateTimeField(auto_now_add=True)
+    is_completed = models.BooleanField(default=False)
+
+    def complete(self):
+        self.is_completed = True
+        self.save()
+
+
 class BonusTransactions(models.Model):
     user = models.ForeignKey(User)
     amount = models.IntegerField(verbose_name='Сумма')
