@@ -983,6 +983,7 @@ def coupons_report(request, export_csv=False):
                 date_to = date_range_form.cleaned_data['date_to']
     else:
         date_from = localtime(now()).date() - datetime.timedelta(days=6)
+        date_from = localtime(now()).date() - datetime.timedelta(days=6)
         date_to = localtime(now()).date()
         date_range_form = DateRangeForm(initial={'date_from': date_from, 'date_to': date_to})
     context['date_range_form'] = date_range_form
@@ -992,10 +993,8 @@ def coupons_report(request, export_csv=False):
     date_from = make_aware(date_from, get_current_timezone())
     date_to = make_aware(date_to, get_current_timezone())
     date_to -= datetime.timedelta(seconds=1)
-    print date_from, date_to
     transactions = PincodeTransaction.objects.filter(is_completed=True, add_date__gte=date_from, add_date__lte=date_to)
     context['transactions'] = transactions
-    print transactions
     if export_csv:
         response = HttpResponse(mimetype='text/csv')
         response['Content-Disposition'] = 'attachment; filename="sales_general.csv"'
@@ -1020,13 +1019,13 @@ def coupons_report(request, export_csv=False):
         for transaction in context['transactions']:
             row = [
                 transaction.action_name.encode('cp1251'),
-                transaction.price.sales,
+                transaction.price,
                 '',
-                transaction.consumer.get_full_name(),
+                transaction.consumer.get_full_name().encode('cp1251'),
                 transaction.buy_date,
                 transaction.maturity_date,
-                transaction.operator.get_full_name(),
-                'Да'.encode('cp1251') if transaction.is_gift else 'Нет'.encode('cp1251') ,
+                transaction.operator.get_full_name().encode('cp1251'),
+                u'Да'.encode('cp1251') if transaction.is_gift else u'Нет'.encode('cp1251') ,
                 transaction.recipient
             ]
             writer.writerow(row)
