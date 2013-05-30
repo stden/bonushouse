@@ -46,9 +46,6 @@
                     <th>
                         <span><em><strong><b>Кому подарен ФИО</b></strong></em></span>
                     </th>
-
-
-
                 </tr>
                 {% for transaction in transactions %}
                     <tr>
@@ -59,7 +56,7 @@
                         <td>{{ transaction.buy_date }}</td>
                         <td>{{ transaction.maturity_date }}</td>
                         <td>{{ transaction.operator.get_full_name }}</td>
-                        <td>{{ transaction.operator.is_gift }}</td>
+                        <td>{% if transaction.is_gift %}Да{% else %}Нет{% endif %}</td>
                         <td></td>
                     </tr>
                 {% endfor %}

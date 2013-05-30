@@ -992,8 +992,10 @@ def coupons_report(request, export_csv=False):
     date_from = make_aware(date_from, get_current_timezone())
     date_to = make_aware(date_to, get_current_timezone())
     date_to -= datetime.timedelta(seconds=1)
-    transactions = PincodeTransaction.objects.filter(is_completed=True, buy_date__gte=date_from, buy_date__lte=date_to)
-    context['bonus_transactions'] = transactions
+    print date_from, date_to
+    transactions = PincodeTransaction.objects.filter(is_completed=True, add_date__gte=date_from, add_date__lte=date_to)
+    context['transactions'] = transactions
+    print transactions
     if export_csv:
         response = HttpResponse(mimetype='text/csv')
         response['Content-Disposition'] = 'attachment; filename="sales_general.csv"'
@@ -1030,7 +1032,7 @@ def coupons_report(request, export_csv=False):
             writer.writerow(row)
         return response
     else:
-        return render_to_response('administration/reports/offers_sales_general.html', context)
+        return render_to_response('administration/reports/coupons_report.html', context)
 
 
 @user_passes_test(lambda u: u.is_staff and u.is_superuser)
