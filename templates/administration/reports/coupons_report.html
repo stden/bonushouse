@@ -1,0 +1,71 @@
+{% extends "administration/reports/view.html" %}
+{% block report %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_reports_index %}">Отчетность</a></li>
+        <li><span>Отчёт по погашенным купонам</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        {% include "_form_errors.html" with form=date_range_form %}
+        <div class="select-date">
+            <span class="select-text">Показать  с:</span>
+            {{ date_range_form.date_from }}
+            <span class="select-text">по:</span>
+            {{ date_range_form.date_to }}
+            <input class="admin-button" type="submit" value="Показать" />
+        </div>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <th>
+                        <span><em><strong><b>Наименование акции</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Цена</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Кол-во полученных бонусов</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>ФИО покупателя</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Дата покупки</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Дата гашения</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Кем погашен</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Куплено в подарок</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Кому подарен ФИО</b></strong></em></span>
+                    </th>
+
+
+
+                </tr>
+                {% for transaction in transactions %}
+                    <tr>
+                        <td>{{ transaction.action_name }}</td>
+                        <td>{{ transaction.price }}</td>
+                        <td></td>
+                        <td>{{ transaction.consumer.get_full_name }}</td>
+                        <td>{{ transaction.buy_date }}</td>
+                        <td>{{ transaction.maturity_date }}</td>
+                        <td>{{ transaction.operator.get_full_name }}</td>
+                        <td>{{ transaction.operator.is_gift }}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="footing-area">
+    </div>
+{% endblock %}

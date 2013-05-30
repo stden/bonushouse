@@ -204,6 +204,9 @@ def pin_codes(request):
                                              is_gift=pin_code_form.pin_code_code.is_gift,
                                              add_date=now(),
                                              is_completed=True)
+            #TODO Если купон подарен, то указать User, кому подарен
+            # if pin_code_form.pin_code_code.is_gift:
+
             transaction.save()
             messages.info(request, 'Пин-код помечен, как использованный')
             return redirect('partner_menu_pin_codes')
