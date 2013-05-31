@@ -119,7 +119,7 @@ def person_restruct_contract(request):
                     # print response_index('fname').encode('cp1252').decode('cp1251'), request.user.first_name
                     # print response_index('lname').encode('cp1252').decode('cp1251'), request.user.last_name
 
-                    if response_index('fname').encode('cp1252').decode('cp1251') != request.user.first_name and response_index('lname').encode('cp1252').decode('cp1251') != request.user.last_name and datetime.datetime.strptime(response_index('bd'), '%Y.%m.%d') != request.user.get_profile().birth_date:
+                    if response_index('fname').encode('cp1252').decode('cp1251') != request.user.first_name and response_index('lname').encode('cp1252').decode('cp1251') != request.user.last_name:
                         messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                         return redirect('person_restruct_contract')
                     elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
@@ -313,7 +313,7 @@ def get_contract_data(request, form):
     request_params['bh_key'] = md5.new(str(request.user.id) + settings.BH_PASSWORD).hexdigest()  # md5 BH_KEY
     request_params['userid'] = str(request.user.id)
     request_params['dognumber'] = form.cleaned_data['contract_number']
-    request_params['passport'] = form.cleaned_data['passport_series'] + form.cleaned_data['passport_number']  # test
+    request_params['passport'] = form.cleaned_data.get('passport_series') + form.cleaned_data.get('passport_number')  # test
     request_params['other_info'] = ''
     request_params['sid'] = '300'
 
