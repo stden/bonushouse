@@ -97,7 +97,7 @@ class NewsletterEmail(models.Model):
     is_sent = models.BooleanField(default=False)
     def send(self, email):
         subject = self.subject
-        from_email = settings.DEFAULT_FROM_EMAIL
+        from_email = 'Бонус-Хаус'
         to = email
         subscribe_hash = unicode(User.objects.filter(email=email)[0].get_profile().subscribe_hash)
         context = Context({'hash': subscribe_hash})
