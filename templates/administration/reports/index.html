@@ -26,6 +26,10 @@
                 <h2>Отчеты по купонам</h2>
                 <a href="{% url administration_reports_view 'coupons-report' %}" class="link-report">Погашенные купоны</a>
             </div>
+            <div class="column">
+                <h2>Отчеты по денежным депозитам</h2>
+                <a href="{% url administration_reports_view 'deposit-transactions' %}" class="link-report">Пополнения депозитов</a>
+            </div>
         </div>
     </div>
 {% endblock %}

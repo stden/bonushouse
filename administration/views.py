@@ -31,7 +31,7 @@ from advertising.forms import BannerForm
 from advertising.models import Banner
 from auctions.forms import AuctionForm
 from auctions.models import Auction
-from bonushouse.models import BonusTransactions, PincodeTransaction, BusinessIdea, UserFeedbacks
+from bonushouse.models import BonusTransactions, PincodeTransaction, BusinessIdea, UserFeedbacks, AccountDepositTransactions
 from django.utils import timezone
 from django.utils.timezone import make_aware, get_current_timezone, now, localtime
 from newsletter.forms import NewsletterCampaignForm, NewsletterEmailForm, NewsletterSmsForm
@@ -959,6 +959,7 @@ def reports_view(request, report_type):
                     'fitnesshouse-report': reports_fitnesshouse_report,
                     'person-restruct-report': reports_person_restruct,
                     'coupons-report': coupons_report,
+                    'deposit-transactions': reports_deposit_transactions,
     }
     if report_type in report_types:
         view = report_types[report_type]
@@ -1033,6 +1034,70 @@ def coupons_report(request, export_csv=False):
     else:
         return render_to_response('administration/reports/coupons_report.html', context)
 
+
+@user_passes_test(lambda u: u.is_staff and u.is_superuser)
+def reports_deposit_transactions(request, export_csv=False):
+    context = RequestContext(request)
+    context = load_menu_context(context, request, show_secondary_menu=False)
+    context['ADMIN_MENU_ACTIVE'] = 'REPORTS'
+    if request.method == 'POST':
+        date_from = localtime(now()).date() - datetime.timedelta(days=6)
+        date_to = localtime(now()).date()
+        date_range_form = DateRangeForm(request.POST, initial={'date_from': date_from, 'date_to': date_to})
+        if date_range_form.is_valid():
+            if date_range_form.cleaned_data['date_from']:
+                date_from = date_range_form.cleaned_data['date_from']
+            if date_range_form.cleaned_data['date_to']:
+                date_to = date_range_form.cleaned_data['date_to']
+    else:
+        date_from = localtime(now()).date() - datetime.timedelta(days=6)
+        date_to = localtime(now()).date()
+        date_range_form = DateRangeForm(initial={'date_from': date_from, 'date_to': date_to})
+    context['date_range_form'] = date_range_form
+    users = User.objects.all()
+    date_from = datetime.datetime.fromordinal(date_from.toordinal())
+    date_to += datetime.timedelta(days=1)
+    date_to = datetime.datetime.fromordinal(date_to.toordinal())
+    date_from = make_aware(date_from, get_current_timezone())
+    date_to = make_aware(date_to, get_current_timezone())
+    date_to -= datetime.timedelta(seconds=1)
+    for user in users:
+        transactions = AccountDepositTransactions.objects.select_related('user').filter(amount__gt=0, user=user,
+                                                       add_date__gte=date_from,
+                                                       add_date__lte=date_to,
+                                                       is_completed=True)
+        if transactions:
+            user.transactions = transactions
+        else:
+            user.transactions = None
+    context['users'] = users
+    if export_csv:
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="deposit_transactions.csv"'
+        writer = csv.writer(response, delimiter=';')
+        row = [
+            u'Отчёт по транзакциям'.encode('cp1251'),
+            (u'с %s по %s' % (timezone.localtime(date_from).strftime('%d.%m.%Y'), timezone.localtime(date_to).strftime('%d.%m.%Y'))).encode('cp1251'),
+        ]
+        writer.writerow(row)
+        row = [
+            u'Пользователь'.encode('cp1251'),
+            u'Дата пополнения'.encode('cp1251'),
+            u'Сумма'.encode('cp1251'),
+        ]
+        writer.writerow(row)
+        for user in context['users']:
+            if user.transactions:
+                for transaction in user.transactions:
+                    row = [
+                        ('%s (%s)' % (transaction.user.get_full_name(), user.username)).encode('cp1251'),
+                        transaction.payment_date,
+                        transaction.amount,
+                    ]
+                    writer.writerow(row)
+        return response
+    else:
+        return render_to_response('administration/reports/deposit_transactions_report.html', context)
 
 @user_passes_test(lambda u: u.is_staff and u.is_superuser)
 def reports_bonuses_got(request, export_csv=False):
