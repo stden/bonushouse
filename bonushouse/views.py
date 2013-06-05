@@ -523,7 +523,6 @@ def cron(request):
             emails += campaign.get_subscriber_emails_list()
         emails = list(set(emails))
         for email in emails:
-
             letter.send(email)
         letter.is_sent = True
         letter.save()
