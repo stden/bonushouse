@@ -1561,10 +1561,10 @@ def reports_person_restruct(request, export_csv=False):
         for order in context['orders']:
             row = [
                 order.add_date,
-                order.old_user.get_full_name(),
+                order.old_user.get_full_name().encode('cp1251'),
                 order.old_user.email,
                 order.old_contract_number,
-                order.user.get_full_name(),
+                order.user.get_full_name().encode('cp1251'),
                 order.user.email,
                 order.new_contract_number,
             ]
