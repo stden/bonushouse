@@ -1566,7 +1566,7 @@ def reports_person_restruct(request, export_csv=False):
                 order.old_contract_number,
                 order.user.get_full_name(),
                 order.user.email,
-                order.user.new_contract_number,
+                order.new_contract_number,
             ]
             writer.writerow(row)
         return response
