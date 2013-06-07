@@ -637,7 +637,8 @@ class ContractOrder(models.Model):
        Другая модель, т.к. offers не хранятся в бх"""
     user = models.ForeignKey(User)
     old_user = models.ForeignKey(User, related_name='old_user')
-    contract_number = models.CharField(max_length=255)
+    old_contract_number = models.CharField(max_length=255)
+    new_contract_number = models.CharField(max_length=255)
     offer_name = models.CharField(max_length=255)
     club_name = models.CharField(max_length=255)
     user_passport_series = models.CharField(max_length=20)

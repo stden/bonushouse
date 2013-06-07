@@ -203,7 +203,8 @@ def person_restruct_contract(request):
                 order = ContractOrder()
                 order.user = new_user
                 order.old_user = request.user
-                order.contract_number = cid
+                order.old_contract_number = request.session.get('dognumber')
+                order.new_contract_number = cid
                 order.user_passport_series = form.cleaned_data['passport_series']
                 order.user_passport_number = form.cleaned_data['passport_number']
                 order.offer_name = request.session.get('type').decode('ISO-8859-1').encode('cp1252').decode('cp1251')

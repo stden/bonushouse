@@ -44,6 +44,11 @@
                         <tr>
                             <td>{{ order.add_date }}</td>
                             <td>{{ order.old_user.get_fullname }}</td>
+                            <td>{{ order.old_user.email }}</td>
+                            <td>{{ order.old_contract_number }}</td>
+                            <td>{{ order.user.get_full_name }}</td>
+                            <td>{{ order.user.email }}</td>
+                            <td>{{ order.user.new_contract_number }}</td>
                         </tr>
                     {% endfor %}
                 </tr>
