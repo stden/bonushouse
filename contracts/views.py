@@ -88,7 +88,7 @@ def person_restruct_contract(request):
         if request.method == 'POST':
             form = PersonalContractForm(request.POST)
             if form.is_valid():
-                if ContractOrder.objects.filter(user=request.user, contract_number = form.cleaned_data['contract_number'], is_completed=True).count():
+                if ContractOrder.objects.filter(user=request.user, new_contract_number = form.cleaned_data['contract_number'], is_completed=True).count():
                     messages.info(request, 'Данный договор уже переоформлен!')
                     return render_to_response('contracts/contract_form.html', context)
                 # Достаём данные по договору
@@ -98,7 +98,7 @@ def person_restruct_contract(request):
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
 
-                    if ContractOrder.objects.filter(user=request.user, contract_number = response_index('dognumber'), is_completed=False).count():
+                    if ContractOrder.objects.filter(user=request.user, old_contract_number = response_index('dognumber'), is_completed=False).count():
                         messages.info(request, 'Ваш договор уже находится в обработке!')
                         return render_to_response('contracts/contract_form.html', context)
                     # if response['?status'][0] == '1' or response_index('?status') == '2':
@@ -248,11 +248,6 @@ def person_restruct_contract(request):
                     context['response'] = response
                     transaction.complete()
                     order.complete()
-                    try:
-                        old_order = ContractOrder.objects.get(contract_number=request.session['dognumber'], user=request.user)
-                        old_order.delete()
-                    except ObjectDoesNotExist:
-                        pass
 
                     old_user_notification_context = Context({
                         'old_user_first_name': request.user.first_name,
