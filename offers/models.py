@@ -98,6 +98,7 @@ class Offers(ModelWithSeo):
     end_date = models.DateTimeField(verbose_name='Дата окончания акции')
     is_published = models.BooleanField(verbose_name='Опубликовано', default=True)
     is_deleted = models.BooleanField(editable=False, default=False)
+    can_buy_credit = models.BooleanField(default=False, verbose_name='Можно купить в кредит')
     feedbacks = generic.GenericRelation(UserFeedbacks, object_id_field='content_id', content_type_field='content_type')
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     views_count = models.PositiveIntegerField(default=0, editable=False)

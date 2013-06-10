@@ -148,6 +148,12 @@
                     </td>
                 </tr>
                 <tr>
+                    <td><span class="title-text">{{ offers_form.can_buy_credit.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.can_buy_credit }}
+                    </td>
+                </tr>
+                <tr>
                     <td><span class="title-text">{{ offers_form.type.label_tag }}:</span></td>
                     <td>
                         {% if offers_form.instance.pk %}

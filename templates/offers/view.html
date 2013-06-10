@@ -80,6 +80,7 @@
                 {% if offer.can_buy %}
                     <div class="price-info">
                         <a href="{% url offers_buy offer.pk %}" class="link-button03">Купить</a>
+
                         {% if offer.show_initial_price %}
                             <span class="old-price">{{ offer.initial_price }} р.</span>
                         {% endif %}
@@ -91,8 +92,13 @@
                                 {{ offer.coupon_price_bonuses|rupluralize:'бонус,бонуса,бонусов' }}
                             {% endif %}
                         </span>
+
                     </div>
+                    {% if offer.can_buy_credit %}
+                        <div style="position: relative; margin-top: 30px; margin-right: 10px; text-align: right;"><a href="https://anketa.rsb.ru/applications/pos-credit-tabs/" target="_blank"><img src="{{ STATIC_URL }}images/rs_button.PNG"/></a></div>
+                    {% endif %}
                     <div class="payment_methods_link"><a href="/instruction/" target="_blank">Способы оплаты</a></div>
+
                 {% else %}
                     <ul class="add-info">
                         <li class="number-info">
