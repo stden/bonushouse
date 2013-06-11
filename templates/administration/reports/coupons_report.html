@@ -57,7 +57,7 @@
                         <td>{{ transaction.maturity_date }}</td>
                         <td>{{ transaction.operator.get_full_name }}</td>
                         <td>{% if transaction.is_gift %}Да{% else %}Нет{% endif %}</td>
-                        <td></td>
+                        <td>{% if transaction.is_gift %}{{ transaction.recipient }}{% endif %}</td>
                     </tr>
                 {% endfor %}
             </table>
