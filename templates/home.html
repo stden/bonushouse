@@ -73,131 +73,16 @@
             <div class="blocks-frame">
                 <ul class="blocks">
                     {% for offer in category.offers_set.all|slice:':4' %}
-                        {% include "offers/_offers_home_item.html" with offer=offer %}
+                        {% if offer.can_buy %}
+                            {% include "offers/_offers_home_item.html" with offer=offer %}
+                        {% endif %}
                     {% endfor %}
 
                 </ul>
             </div>
         </div>
         {% endif %}
-{#    {% getcategory 19 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{#    {% getcategory 20 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{#    {% getcategory 21 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{#    {% getcategory 22 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{#    {% getcategory 25 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{#    {% getcategory 17 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{#    {% getcategory 18 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{##}
-{#    {% getcategory 23 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
-{#    {% getcategory 24 as category %}#}
-{#        <h2><a href="{{ category.get_url }}">{{ category.title }}</a></h2>#}
-{#        <div class="blocks-holder">#}
-{#            <div class="blocks-frame">#}
-{#                <ul class="blocks">#}
-{#                    {% for offer in category.offers_set.all|slice:':4' %}#}
-{#                        {% include "offers/_offers_home_item.html" with offer=offer %}#}
-{#                    {% endfor %}#}
-{##}
-{#                </ul>#}
-{#            </div>#}
-{#        </div>#}
-{#    {% endgetcategory %}#}
+
     {% endfor %}
 
     <div class="orange-block">

@@ -32,7 +32,4 @@ def process_request(request):
 
 def get_categories(request):
     categories = Categories.objects.all()
-    for category in categories:
-        if len(category.offers_set.all()) > 0:
-            category.not_emapty = True
     return {'get_categories': categories}
