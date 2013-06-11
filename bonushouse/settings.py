@@ -268,6 +268,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "dbsettings.context_processors.process_request",
     "offers.context_processors.get_last_viewed_offers",
     'partners.context_processors.process_request',
+    'bonushouse.context_processors.get_categories',
 )
 HAYSTACK_CONNECTIONS = {
     'default': {

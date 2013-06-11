@@ -1,7 +1,8 @@
 from django.conf import settings
-from bonushouse.forms import LoginForm, RegisterForm, CallMeForm, ShareLinkForm
 from django.utils.timezone import now
 
+from bonushouse.forms import LoginForm, RegisterForm, CallMeForm, ShareLinkForm
+from common.models import Categories
 
 def process_request(request):
     result = {}
@@ -27,3 +28,11 @@ def process_request(request):
 
     result['share_link_form'] = ShareLinkForm()
     return result
+
+
+def get_categories(request):
+    categories = Categories.objects.all()
+    for category in categories:
+        if len(category.offers_set.all()) > 0:
+            category.not_emapty = True
+    return {'get_categories': categories}

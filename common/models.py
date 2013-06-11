@@ -20,7 +20,6 @@ class MetroStations(models.Model):
 class CategoriesManager(models.Manager):
     def get_query_set(self):
         qs = super(CategoriesManager, self).get_query_set().filter(is_published=True)
-        temp = qs
         return qs
 
 class Categories(ModelWithSeo):
