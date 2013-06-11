@@ -968,7 +968,7 @@ def reports_view(request, report_type):
         raise Http404
 
 
-@user_passes_test(lambda u: u.get_profile().is_partner())
+@user_passes_test(lambda u: u.is_staff and u.is_superuser)
 def coupons_report(request, export_csv=False):
     context = RequestContext(request)
     context = load_menu_context(context, request, show_secondary_menu=False)
