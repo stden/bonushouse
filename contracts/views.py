@@ -24,10 +24,10 @@ from datetime import timedelta
 from django.contrib import messages
 
 from contracts.models import ContractTransaction, ContractTransactionInfo
-from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm
+from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm, GetContractNumberForm
 from offers.models import ProlongationOffers, ContractOrder
 
-from .utils import send_notification, is_exclusive, clean_session
+from .utils import send_notification, is_exclusive, clean_session, load_data_to_session, get_contract_data, calculate_dates
 
 ########################
 # Коды операций:
@@ -41,7 +41,10 @@ from .utils import send_notification, is_exclusive, clean_session
 #@TODO: Рефакторинг этого говна
 # С кодировками полный бардак
 
+
+# Префиксы, доступные для переоформления
 ALLOWED_PREFIXES = ('M', 'MB')
+
 
 @login_required
 def prolongate_contract(request):
@@ -295,66 +298,20 @@ def person_restruct_contract(request):
 
 
 @login_required
+def get_contract_number(request):
+    context = RequestContext(request)
+    form = GetContractNumberForm()
+    context['form'] = form
+    return render_to_response('contracts/get_number.html', context)
+
+
+
+@login_required
 def club_restruct_contract(request):
     pass
 
 
-def get_contract_data(request, form):
-    """Достаёт данные по договору, возвращает словарь с ответом"""
-    request_params = {}
-    request_params['bh_key'] = md5.new(str(request.user.id) + settings.BH_PASSWORD).hexdigest()  # md5 BH_KEY
-    request_params['userid'] = str(request.user.id)
-    request_params['dognumber'] = form.cleaned_data['contract_number']
-    request_params['passport'] = form.cleaned_data.get('passport_series') + form.cleaned_data.get('passport_number')  # test
-    request_params['other_info'] = ''
-    request_params['sid'] = '300'
 
-
-    request.session['user_contract_number'] = form.cleaned_data['contract_number']
-    # Переводим все в cp1251
-    for key in request_params.keys():
-        request_params[key] = request_params[key]
-        # Шлем запрос
-    # if settings.DEBUG:
-        # fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-    # else:
-    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
-    response = requests.get(fh_url, params=request_params, verify=False)
-    response = urlparse.parse_qs(response.text)
-    return response
-
-
-def load_data_to_session(request, response, step):
-    """Данные с сервера FH записываем в сессию"""
-    contract_index = response['dognumber'].index(request.session['user_contract_number'])
-    response_index = lambda key: response[key][contract_index]
-    request.session['step'] = step  # Договор валидный, переход на следующий шаг
-    request.session['src_id'] = response_index('src_id')
-    request.session['fname'] = response_index('fname').encode('ISO-8859-1')
-    request.session['lname'] = response_index('lname').encode('ISO-8859-1')
-    request.session['bd'] = response_index('bd')
-    request.session['dognumber'] = response_index('dognumber').encode('ISO-8859-1')
-    request.session['src_club'] = response_index('src_club').encode('ISO-8859-1')
-    request.session['sdate'] = response_index('sdate')
-    request.session['edate'] = response_index('edate')
-    request.session['type'] = response_index('type').encode('ISO-8859-1')# + '~ё+*&'
-
-
-def calculate_dates(request, response):
-    i = 0
-    total_time = 0
-    print response
-    while i < len(response['sdate']):
-        start_date = lambda i: datetime.datetime.strptime(response['sdate'][i], '%Y.%m.%d')
-        end_date = lambda i: datetime.datetime.strptime(response['edate'][i], '%Y.%m.%d')
-        if end_date(i) < start_date(i + 1):
-            print 'PARALLEL'
-        i += 1
-    # end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
-    # new_date = datetime.datetime.strptime(request.POST.get('new_date'), '%d.%m.%Y')
-    # print (end_date-new_date).days
-    #prolongation_term = new_date - end_date
-    return total_time
 
 @csrf_exempt
 def back_to_1_step(request):
