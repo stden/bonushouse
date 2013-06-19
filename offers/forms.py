@@ -291,8 +291,8 @@ class AbonementsAdditionalInfoForm(forms.ModelForm):
             'email': forms.TextInput(attrs={'class':'text'}),
         }
 
-
 class AbonementsAdditionalInfoFormGift(forms.ModelForm):
+    agree_club_rules = forms.BooleanField(label=mark_safe(u'Я прочитал и согласен с <a href="%s" target="_blank">правилами клубов</a>' % (settings.MEDIA_URL+'misc/'+get_settings_value('CLUB_RULES_FILE'),)))
 
     def __init__(self, *args, **kwargs):
         offer = kwargs.get('offer')
@@ -302,6 +302,9 @@ class AbonementsAdditionalInfoFormGift(forms.ModelForm):
         else:
             raise Exception('Offer is not set')
         result = super(AbonementsAdditionalInfoFormGift, self).__init__(*args, **kwargs)
+        self.fields['address'] = forms.ModelChoiceField(queryset=self.offer.addresses, label='Выберите клуб')
+        if offer.abonements_is_multicard:
+            self.fields['address'].label = 'Выберите основной клуб'
         return result
 
     def clean_birth_date(self):
@@ -309,20 +312,30 @@ class AbonementsAdditionalInfoFormGift(forms.ModelForm):
         cur_date = now().date()
         birth_delta = cur_date - birth_date
         years = total_seconds(birth_delta) / (365.25*24*60*60)
-
+        # if years < 18:
+        #     raise forms.ValidationError('Вам еще не исполнилось 18 лет.')
+        # if years > 90:
+        #     raise forms.ValidationError('Вы правда старше 90 лет? Проверьте правильность даты рождения')
         return birth_date
+
+    def clean_address(self):
+        address = self.cleaned_data.get('address')
+        if not address:
+            raise forms.ValidationError('Вы не выбрали клуб')
+        return address
 
     class Meta:
         model = AbonementsAdditionalInfo
-        exclude = ('address', 'passport_code', 'passport_number')
         widgets = {
             'first_name': forms.TextInput(attrs={'class':'text'}),
             'last_name': forms.TextInput(attrs={'class':'text'}),
             'father_name': forms.TextInput(attrs={'class':'text'}),
+            'passport_code': forms.TextInput(attrs={'class':'text'}),
+            'passport_number': forms.TextInput(attrs={'class':'text'}),
             'birth_date': forms.DateInput(attrs={'class':'text mask_date', 'placeholder':'дд.мм.гггг'}),
             'phone': forms.TextInput(attrs={'class':'text mask_phone'}),
             'email': forms.TextInput(attrs={'class':'text'}),
-            }
+        }
 
 
 class SimpleActionAdditionalInfoForm(forms.ModelForm):
