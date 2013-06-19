@@ -292,6 +292,39 @@ class AbonementsAdditionalInfoForm(forms.ModelForm):
         }
 
 
+class AbonementsAdditionalInfoFormGift(forms.ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        offer = kwargs.get('offer')
+        if offer:
+            self.offer = offer
+            del(kwargs['offer'])
+        else:
+            raise Exception('Offer is not set')
+        result = super(AbonementsAdditionalInfoFormGift, self).__init__(*args, **kwargs)
+        return result
+
+    def clean_birth_date(self):
+        birth_date = self.cleaned_data.get('birth_date')
+        cur_date = now().date()
+        birth_delta = cur_date - birth_date
+        years = total_seconds(birth_delta) / (365.25*24*60*60)
+
+        return birth_date
+
+    class Meta:
+        model = AbonementsAdditionalInfo
+        exclude = ('address', 'passport_code', 'passport_number')
+        widgets = {
+            'first_name': forms.TextInput(attrs={'class':'text'}),
+            'last_name': forms.TextInput(attrs={'class':'text'}),
+            'father_name': forms.TextInput(attrs={'class':'text'}),
+            'birth_date': forms.DateInput(attrs={'class':'text mask_date', 'placeholder':'дд.мм.гггг'}),
+            'phone': forms.TextInput(attrs={'class':'text mask_phone'}),
+            'email': forms.TextInput(attrs={'class':'text'}),
+            }
+
+
 class SimpleActionAdditionalInfoForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
@@ -326,7 +359,6 @@ class SimpleActionAdditionalInfoForm(forms.ModelForm):
             'phone': forms.TextInput(attrs={'class':'text mask_phone'}),
             'email': forms.TextInput(attrs={'class':'text'}),
             }
-
 
 
 class AdditionalServicesAddressSelect(forms.Select):
