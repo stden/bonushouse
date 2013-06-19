@@ -46,3 +46,10 @@ class ContractPersonRestructingForm(forms.Form):
 
 class ContractClubRestructingForm(forms.Form):
     pass
+
+
+class GetContractNumberForm(forms.Form):
+    passport_series = forms.CharField(label='Серия паспорта', widget=forms.TextInput(attrs={'class':'text'}))
+    passport_number = forms.CharField(label='Номер паспорта', widget=forms.TextInput(attrs={'class':'text'}))
+    clubcard_number = forms.CharField(label='Номер клубной карты', widget=forms.TextInput(attrs={'class':'text'}))
+    search_type = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'text'}), choices=((1,''), (2,'')))

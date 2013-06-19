@@ -24,7 +24,7 @@ from django.core.urlresolvers import reverse_lazy
 from offers.models import Offers
 from bonushouse.utils import total_seconds
 import math
-from offers.forms import GiftCodeForm, AbonementsClubCardForm, AbonementsAdditionalInfoForm
+from offers.forms import GiftCodeForm, AbonementsClubCardForm, AbonementsAdditionalInfoForm, AbonementsAdditionalInfoFormGift
 from django.contrib import messages
 from django.contrib.auth import REDIRECT_FIELD_NAME, login as auth_login, logout as auth_logout
 import urlparse
@@ -572,14 +572,14 @@ def cabinet_gift_code_form(request):
                 additional_info_form_active = False
             if code_form.gift_order.offer.is_abonement():
                 if additional_info_form_active:
-                    additional_info_form = AbonementsAdditionalInfoForm(request.POST, offer=code_form.gift_order.offer)
+                    additional_info_form = AbonementsAdditionalInfoFormGift(request.POST, offer=code_form.gift_order.offer)
                     if additional_info_form.is_valid():
                         additional_info_form.save()
                         code_form.gift_order.create_real_order(request.user, request.session['visitor_info'], additional_info=additional_info_form.instance)
                         messages.info(request, (u'Поздравляем! Вы получили в подарок договор %s' % (code_form.gift_order.offer.title)))
                         return redirect('cabinet_additional_services')
                 else:
-                    additional_info_form = AbonementsAdditionalInfoForm(offer=code_form.gift_order.offer)
+                    additional_info_form = AbonementsAdditionalInfoFormGift(offer=code_form.gift_order.offer)
                 context['additional_info_form'] = additional_info_form
             elif code_form.gift_order.offer.is_additional_service():
                 if additional_info_form_active:

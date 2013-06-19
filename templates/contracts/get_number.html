@@ -1,0 +1,65 @@
+{% extends "users/cabinet.html" %}
+{% block bigtitle %}
+    <h2>Узнать номер договора</h2>
+{% endblock %}
+{% block content_cabinet %}
+    <style>
+        .form_block {
+            border: groove;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+    </style>
+    <div class="content">
+    <h2>Чтобы узнать номер договора заполните поля ниже</h2>
+        <form id="id_form" action="" method="post">{% csrf_token %}
+            {% include "_form_errors.html" with form=form %}
+            <div id="passports" class="form_block">
+                <input name="search_type" type="radio" value="1">
+                <div class="form_row">
+                        {{ form.passport_series.label_tag }}
+                        {{ form.passport_series }}<br/>
+                        <i>{{ form.passport_series.help_text }}</i>
+                </div>
+                <div class="form_row">
+                        {{ form.passport_number.label_tag }}
+                        {{ form.passport_number }}<br/>
+                        <i>{{ form.passport_number.help_text }}</i>
+                </div>
+            </div>
+            <div id="clubcard" class="form_block">
+                <input name="search_type" type="radio" value="2">
+                <div class="form_row">
+                        {{ form.clubcard_number.label_tag }}
+                        {{ form.clubcard_number }}<br/>
+                        <i>{{ form.clubcard_number.help_text }}</i>
+                </div>
+            </div>
+                <p><input type="submit" value="Продолжить" class="orange_button" /></p>
+        </form>
+    </div>
+    <script type="text/javascript">
+     $(function(){
+         $($('input[name=search_type]')[0]).attr('checked', 'checked');
+
+         $('input[name=search_type]').click(function(){
+                 console.log($('input[name=search_type]:checked').val());
+             });
+         $('.form_block').click(function(){
+            var element = $(this).find('input[name=search_type]');
+            element.attr('checked', 'checked');
+
+         });
+         $(this).find('input[name=search_type]');
+
+{#        $('#id_form div[class=form_block]').each(function(id, elem){#}
+{#           $(elem).append($('<input type="radio" name="select'+id+'">'))#}
+{#        });#}
+     });
+
+    function setChecked(element){
+        
+    }
+    </script>
+{% endblock %}
