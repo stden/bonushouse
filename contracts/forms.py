@@ -49,7 +49,13 @@ class ContractClubRestructingForm(forms.Form):
 
 
 class GetContractNumberForm(forms.Form):
-    passport_series = forms.CharField(label='Серия паспорта', widget=forms.TextInput(attrs={'class':'text'}))
-    passport_number = forms.CharField(label='Номер паспорта', widget=forms.TextInput(attrs={'class':'text'}))
-    clubcard_number = forms.CharField(label='Номер клубной карты', widget=forms.TextInput(attrs={'class':'text'}))
+    passport_series = forms.CharField(label='Серия паспорта', widget=forms.TextInput(attrs={'class':'text'}), required=False)
+    passport_number = forms.CharField(label='Номер паспорта', widget=forms.TextInput(attrs={'class':'text'}), required=False)
+    clubcard_number = forms.CharField(label='Номер клубной карты', widget=forms.TextInput(attrs={'class':'text'}), required=False)
     search_type = forms.ChoiceField(widget=forms.RadioSelect(attrs={'class':'text'}), choices=((1,''), (2,'')))
+
+    def clean(self):
+        cleaned_data = super(GetContractNumberForm, self).clean()
+        if not ((cleaned_data.get('clubcard_number')) or (cleaned_data.get('passport_series') and cleaned_data.get('passport_number'))):
+            raise forms.ValidationError(u'Пожалуйста, заполните все поля')
+        return cleaned_data

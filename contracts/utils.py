@@ -55,8 +55,6 @@ def get_contract_data(request, form):
     request_params['passport'] = form.cleaned_data.get('passport_series') + form.cleaned_data.get('passport_number')  # test
     request_params['other_info'] = ''
     request_params['sid'] = '300'
-
-
     request.session['user_contract_number'] = form.cleaned_data['contract_number']
     # Переводим все в cp1251
     for key in request_params.keys():

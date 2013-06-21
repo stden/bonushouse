@@ -16,7 +16,7 @@
         <form id="id_form" action="" method="post">{% csrf_token %}
             {% include "_form_errors.html" with form=form %}
             <div id="passports" class="form_block">
-                <input name="search_type" type="radio" value="1">
+                <input id="type1" name="search_type" type="radio" value="1">
                 <div class="form_row">
                         {{ form.passport_series.label_tag }}
                         {{ form.passport_series }}<br/>
@@ -29,7 +29,7 @@
                 </div>
             </div>
             <div id="clubcard" class="form_block">
-                <input name="search_type" type="radio" value="2">
+                <input id="type2" name="search_type" type="radio" value="2">
                 <div class="form_row">
                         {{ form.clubcard_number.label_tag }}
                         {{ form.clubcard_number }}<br/>
@@ -42,13 +42,32 @@
     <script type="text/javascript">
      $(function(){
          $($('input[name=search_type]')[0]).attr('checked', 'checked');
+         $($('input[name=search_type]')[1]).parent().find('input[name!=search_type]').each(function(id, elem){
+                 $(elem).attr('disabled', 'disabled');
+             });
 
          $('input[name=search_type]').click(function(){
-                 console.log($('input[name=search_type]:checked').val());
+             $('.form_block').find('input[name!=search_type]').each(function(id, elem){
+                $(elem).attr('disabled', 'disabled');
+             });
+             $(this).parent().find('input[name!=search_type]').each(function(id, elem){
+                 $(elem).attr('disabled', false);
+             });
              });
          $('.form_block').click(function(){
             var element = $(this).find('input[name=search_type]');
             element.attr('checked', 'checked');
+            $(this).find('input[name!=search_type]').each(function(id, elem){
+                $(elem).attr('disabled', false);
+            });
+            $(this).parent()
+                    .find('.form_block[id!='+ this.id +']')
+                    .find('input[name!=search_type]')
+                    .each(function(id, elem){
+                        $(elem).attr('disabled', 'disabled');
+
+
+            });
 
          });
          $(this).find('input[name=search_type]');
@@ -59,7 +78,7 @@
      });
 
     function setChecked(element){
-        
+
     }
     </script>
 {% endblock %}
