@@ -96,7 +96,6 @@ def person_restruct_contract(request):
                     return render_to_response('contracts/contract_form.html', context)
                 # Достаём данные по договору
                 response = get_contract_data(request, form)
-                print response
                 if response['?status'][0] == '1' or response['?status'][0] == '2':
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
@@ -302,6 +301,26 @@ def get_contract_number(request):
     context = RequestContext(request)
     form = GetContractNumberForm()
     context['form'] = form
+    if request.method == 'POST' and request.POST:
+        form = GetContractNumberForm(request.POST)
+        if form.is_valid():
+            request_params = dict(
+                passport=form.cleaned_data.get('passport_series', '') + form.cleaned_data.get('passport_number', ''),
+                cardnumber=form.cleaned_data.get('clubcard_number', ''),
+                other_info='',
+                sid='300',
+                bh_key=md5.new(str(request.user.id) + settings.BH_PASSWORD).hexdigest(),
+                userid=str(request.user.id),
+            )
+            print request_params
+            fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+            response = requests.get(fh_url, params=request_params, verify=False)
+            response = urlparse.parse_qs(response.text)
+            # if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
+            #     print response['dognumber']
+            context['response'] = response
+            return render_to_response('contracts/get_number_success.html', context)
+        context['form'] = form
     return render_to_response('contracts/get_number.html', context)
 
 
