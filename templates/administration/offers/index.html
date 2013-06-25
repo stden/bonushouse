@@ -42,6 +42,9 @@
         <th class="period-cell">
             <span><em><strong><b>период</b></strong></em></span>
         </th>
+        <th class="activate-cell last">
+            <span><em><strong><b>Дата<br /> активации</b></strong></em></span>
+        </th>
         <th class="cost-cell">
             <span><em><strong><b>{% anchor coupon_price_money 'стоим. рубли' %}</b></strong></em></span>
         </th>
@@ -72,6 +75,11 @@
             <td>{{ offer.partner.title }}</td>
             <td>{{ offer.add_date|date:'d.m.Y' }}</td>
             <td>c {{ offer.start_date|date:'d.m.Y' }}<br /> по {{ offer.end_date|date:'d.m.Y' }}</td>
+        {% if offer.is_simple_offer %}
+            <td>до {{ offer.activation_due_date|date:'d.m.Y' }}</td>
+            {% else %}
+            <td></td>
+        {% endif %}
             <td>{{ offer.coupon_price_money }} руб.</td>
             <td>{{ offer.coupon_price_bonuses }}</td>
         </tr>

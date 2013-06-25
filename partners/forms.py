@@ -13,6 +13,7 @@ from django.core.mail import send_mail
 from django.conf import settings
 import re
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 class PartnerForm(forms.ModelForm):
 
@@ -98,10 +99,11 @@ class PinCodeForm(forms.Form):
         pin_code = self.cleaned_data.get('pin_code')
         try:
             code = CouponCodes.objects.get(code=pin_code, is_used=False)
-            print code.partner
             if self.partner_user in code.partner.admin_user.all():
                 self.pin_code_order = code.get_order()
                 self.pin_code_code = code
+            else:
+                raise forms.ValidationError('Недостаточно прав на совершение данного действия!')
         except CouponCodes.DoesNotExist:
             raise forms.ValidationError('Пин-код не найден в базе')
         return pin_code

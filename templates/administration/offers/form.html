@@ -147,6 +147,14 @@
                         {{ offers_form.end_date }}
                     </td>
                 </tr>
+                {% if offer.is_simple_offer %}
+                <tr>
+                    <td><span class="title-text">{{ offers_form.activation_due_date.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.activation_due_date }}
+                    </td>
+                </tr>
+                {% endif %}
                 <tr>
                     <td><span class="title-text">{{ offers_form.can_buy_credit.label_tag }}:</span></td>
                     <td>

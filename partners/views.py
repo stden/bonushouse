@@ -5,6 +5,7 @@ from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from bonushouse.forms import FeedbacksForm
 from bonushouse.models import UserFeedbacks, UserRatings, PincodeTransaction
+from offers.models import CouponCodes
 from django.contrib import messages
 from django.views.generic import TemplateView, ListView
 from django.utils.decorators import method_decorator
@@ -192,24 +193,30 @@ def pin_codes(request):
     if request.method == 'POST':
         pin_code_form = PinCodeForm(request.POST, partner_user=request.user)
         use_pin_code = request.POST.get('use_pin_code')
-        if pin_code_form.is_valid() and use_pin_code is not None:
-            pin_code_form.pin_code_code.set_used()
-            order = pin_code_form.pin_code_code.order_set.all()[0]
-            transaction = PincodeTransaction(action_name=order.offer.title,
-                                             price=order.price,
-                                             consumer=order.user,
-                                             buy_date=order.add_date,
-                                             maturity_date=now(),
-                                             operator=request.user,
-                                             is_gift=pin_code_form.pin_code_code.is_gift,
-                                             add_date=now(),
-                                             is_completed=True)
-            #TODO Если купон подарен, то указать User, кому подарен
-            # if pin_code_form.pin_code_code.is_gift:
 
-            transaction.save()
-            messages.info(request, 'Пин-код помечен, как использованный')
-            return redirect('partner_menu_pin_codes')
+        if pin_code_form.is_valid():
+            code = CouponCodes.objects.get(code=pin_code_form.cleaned_data['pin_code'], is_used=False)
+            if code.get_order().offer.activation_due_date.date() < now().date():
+                messages.info(request, 'Невозможно погасить! Истёк срок действия купона!')
+                return redirect('partner_menu_pin_codes')
+            elif use_pin_code is not None:
+                pin_code_form.pin_code_code.set_used()
+                order = pin_code_form.pin_code_code.order_set.all()[0]
+                transaction = PincodeTransaction(action_name=order.offer.title,
+                                                 price=order.price,
+                                                 consumer=order.user,
+                                                 buy_date=order.add_date,
+                                                 maturity_date=now(),
+                                                 operator=request.user,
+                                                 is_gift=pin_code_form.pin_code_code.is_gift,
+                                                 add_date=now(),
+                                                 is_completed=True)
+                #TODO Если купон подарен, то указать User, кому подарен
+                # if pin_code_form.pin_code_code.is_gift:
+
+                transaction.save()
+                messages.info(request, 'Пин-код помечен, как использованный')
+                return redirect('partner_menu_pin_codes')
     else:
         pin_code_form = PinCodeForm(partner_user=request.user)
     context['pin_code_form'] = pin_code_form

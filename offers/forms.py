@@ -145,6 +145,7 @@ class OffersForm(forms.ModelForm):
             'money_bonuses_count': forms.TextInput(attrs={'class': 'text'}),
             'start_date': forms.DateTimeInput(attrs={'class':'datetimepicker text'}, format='%d.%m.%Y %H:%M'),
             'end_date': forms.DateTimeInput(attrs={'class':'datetimepicker text'}, format='%d.%m.%Y %H:%M'),
+            'activation_due_date': forms.DateTimeInput(attrs={'class':'datetimepicker text'}, format='%d.%m.%Y %H:%M'),
             'additional_services_term': forms.TextInput(attrs={'class':'text float_left', 'style':'width:60px;margin-right:20px;'}),
             'abonements_term': forms.TextInput(attrs={'class':'text float_left', 'style':'width:60px;margin-right:20px;'}),
             'fh_inner_title': forms.TextInput(attrs={'class': 'text'}),
