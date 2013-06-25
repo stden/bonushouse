@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from itertools import chain
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
@@ -42,6 +44,8 @@ from django.contrib.sites.models import Site
 from django import forms
 from offers.models import ContractOrder
 from partners.models import Partner
+
+
 
 class LoginRequiredView(object):
     @method_decorator(login_required)
@@ -200,7 +204,10 @@ def cabinet(request):
     elif filter == 'used':
         my_coupons = my_coupons.filter(is_used=True)
     elif filter == 'expired':
-        my_coupons = my_coupons.filter(order__offer__end_date__lt=now(), is_gift=False)  # Подарочные купоны не попадают в истекшие
+        # Подарочные купоны не попадают в истекшие
+        my_coupons_simple = my_coupons.filter(order__offer__activation_due_date__lt=now(), is_gift=False, type=1)
+        my_coupons = my_coupons.filter(order__offer__end_date__lt=now(), is_gift=False, type__in=[2,3])
+        my_coupons = list(chain(my_coupons_simple, my_coupons))
     else:
         my_coupons = my_coupons.filter(order__offer__end_date__gt=now(),is_used=False)
     context['coupons_filter'] = filter

@@ -102,6 +102,7 @@ class Offers(ModelWithSeo):
     feedbacks = generic.GenericRelation(UserFeedbacks, object_id_field='content_id', content_type_field='content_type')
     add_date = models.DateTimeField(editable=False, verbose_name='Дата добавления', auto_now_add=True)
     views_count = models.PositiveIntegerField(default=0, editable=False)
+    activation_due_date = models.DateTimeField(verbose_name='Срок активации купонов', blank=True, null=True)
 
     #Менеджеры
     objects = ActiveOffersManager()
@@ -112,6 +113,9 @@ class Offers(ModelWithSeo):
 
     def get_views_count(self):
         return self.views_count
+
+    def is_simple_offer(self):
+        return True if self.type == 1 else False
 
     def is_abonement(self):
         if self.type == 2:
