@@ -196,30 +196,31 @@ def pin_codes(request):
 
         if pin_code_form.is_valid():
             code = CouponCodes.objects.get(code=pin_code_form.cleaned_data['pin_code'], is_used=False)
-            if not code.get_order().offer.activation_due_date:
+            if code.get_order().offer.type == 1 and not code.get_order().offer.activation_due_date:
                 messages.info(request, 'У акции не указан срок активации! Акция %s' % code.get_order().offer.get_administration_edit_url())
                 return redirect('partner_menu_pin_codes')
-            if code.get_order().offer.activation_due_date.date() < now().date():
-                messages.info(request, 'Невозможно погасить! Истёк срок действия купона!')
-                return redirect('partner_menu_pin_codes')
-            elif use_pin_code is not None:
-                pin_code_form.pin_code_code.set_used()
-                order = pin_code_form.pin_code_code.order_set.all()[0]
-                transaction = PincodeTransaction(action_name=order.offer.title,
-                                                 price=order.price,
-                                                 consumer=order.user,
-                                                 buy_date=order.add_date,
-                                                 maturity_date=now(),
-                                                 operator=request.user,
-                                                 is_gift=pin_code_form.pin_code_code.is_gift,
-                                                 add_date=now(),
-                                                 is_completed=True)
-                #TODO Если купон подарен, то указать User, кому подарен
-                # if pin_code_form.pin_code_code.is_gift:
+            else:
+                if code.get_order().offer.activation_due_date.date() < now().date():
+                    messages.info(request, 'Невозможно погасить! Истёк срок действия купона!')
+                    return redirect('partner_menu_pin_codes')
+                elif use_pin_code is not None:
+                    pin_code_form.pin_code_code.set_used()
+                    order = pin_code_form.pin_code_code.order_set.all()[0]
+                    transaction = PincodeTransaction(action_name=order.offer.title,
+                                                     price=order.price,
+                                                     consumer=order.user,
+                                                     buy_date=order.add_date,
+                                                     maturity_date=now(),
+                                                     operator=request.user,
+                                                     is_gift=pin_code_form.pin_code_code.is_gift,
+                                                     add_date=now(),
+                                                     is_completed=True)
+                    #TODO Если купон подарен, то указать User, кому подарен
+                    # if pin_code_form.pin_code_code.is_gift:
 
-                transaction.save()
-                messages.info(request, 'Пин-код помечен, как использованный')
-                return redirect('partner_menu_pin_codes')
+                    transaction.save()
+                    messages.info(request, 'Пин-код помечен, как использованный')
+                    return redirect('partner_menu_pin_codes')
     else:
         pin_code_form = PinCodeForm(partner_user=request.user)
     context['pin_code_form'] = pin_code_form
