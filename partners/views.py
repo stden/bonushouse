@@ -198,6 +198,7 @@ def pin_codes(request):
             code = CouponCodes.objects.get(code=pin_code_form.cleaned_data['pin_code'], is_used=False)
             if not code.get_order().offer.activation_due_date:
                 messages.info(request, 'У акции не указан срок активации! Акция %s' % code.get_order().offer.get_administration_edit_url())
+                return redirect('partner_menu_pin_codes')
             if code.get_order().offer.activation_due_date.date() < now().date():
                 messages.info(request, 'Невозможно погасить! Истёк срок действия купона!')
                 return redirect('partner_menu_pin_codes')
