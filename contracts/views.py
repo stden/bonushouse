@@ -328,6 +328,7 @@ def get_contract_number(request):
             context['request'] = request_params
             context['url'] = fh_url
             context['response'] = response
+            context['status'] = 'status'
             return render_to_response('contracts/get_number_success.html', context)
         context['form'] = form
     return render_to_response('contracts/get_number.html', context)
