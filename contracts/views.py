@@ -255,10 +255,11 @@ def person_restruct_contract(request):
                         'old_user_first_name': request.user.first_name,
                         'old_user_last_name': request.user.last_name,
                         'contract_number': request.session.get('dognumber'),
-                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251'),
+                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode(
+                            'cp1251'),
                         'add_date': datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d'),
                         'end_date': datetime.datetime.strptime(request.session['edate'], '%Y.%m.%d'),
-                        'cancelation_date': transaction.complete_date,  # test
+                        'cancelation_date': transaction.complete_date, # test
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
                         'new_passport_series': order.user_passport_series,
@@ -266,20 +267,23 @@ def person_restruct_contract(request):
                     })
 
                     new_user_notification_context = Context({
-                        'LINK':settings.BASE_URL + str(reverse_lazy('bonushouse.views.cabinet_abonements')),
+                        'LINK': settings.BASE_URL + str(reverse_lazy('bonushouse.views.cabinet_abonements')),
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
                         'contract_number': cid,
-                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251'),
+                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode(
+                            'cp1251'),
                         'start_date': datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d'),
                         'end_date': datetime.datetime.strptime(request.session['edate'], '%Y.%m.%d'),
-                        'cancelation_date': transaction.complete_date,  # test
-                        })
+                        'cancelation_date': transaction.complete_date, # test
+                    })
 
                     # Уведомление старому пользователю о расторжении договора
-                    send_notification(request.user.email, old_user_notification_context, 'PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
+                    send_notification(request.user.email, old_user_notification_context, 'PERSON_RESTRUCT_TEMPLATE',
+                                      settings.CONTRACT_RESTRUCT_SUBJECT)
                     # Уведомление новому пользователю о переоформленном на него договоре
-                    send_notification(new_user.email, new_user_notification_context, 'NEW_PERSON_RESTRUCT_TEMPLATE', settings.CONTRACT_RESTRUCT_SUBJECT)
+                    send_notification(new_user.email, new_user_notification_context, 'NEW_PERSON_RESTRUCT_TEMPLATE',
+                                      settings.CONTRACT_RESTRUCT_SUBJECT)
 
                     #Чистим сессию
                     clean_session(request)
@@ -289,9 +293,9 @@ def person_restruct_contract(request):
                     print code, comment
                     messages.info(request, 'Произошла ошибка!')
                     return render_to_response('contracts/contract_form.html', context)
-                # else:
-                #     messages.warning(request, 'Произошла ошибка')
-                #     return redirect('person_restruct_contract')
+                    # else:
+                    #     messages.warning(request, 'Произошла ошибка')
+                    #     return redirect('person_restruct_contract')
 
     return render_to_response('contracts/contract_form.html', context)
 
@@ -305,7 +309,10 @@ def get_contract_number(request):
         form = GetContractNumberForm(request.POST)
         if form.is_valid():
             request_params = dict(
-                passport=form.cleaned_data.get('passport_series', '') + form.cleaned_data.get('passport_number', ''),
+                # чтобы найти договор по паспорту,вместо параметра &dognumber или &cardnumber
+                # надо указать серию и номер паспорта в полях &pserial &pnumber
+                pserial=form.cleaned_data.get('passport_series', ''),
+                pnumber=form.cleaned_data.get('passport_number', ''),
                 cardnumber=form.cleaned_data.get('clubcard_number', ''),
                 other_info='',
                 sid='300',
@@ -324,12 +331,9 @@ def get_contract_number(request):
     return render_to_response('contracts/get_number.html', context)
 
 
-
 @login_required
 def club_restruct_contract(request):
     pass
-
-
 
 
 @csrf_exempt
