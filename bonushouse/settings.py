@@ -26,6 +26,7 @@ DOL_SECRET_KEY = 'dolPWD9965x98'
 
 ADMINS = (
     ('Dan', 'dangusev92@gmail.com'),
+    ('Denis', 'super.denis@gmail.com'),
 )
 
 MANAGERS = ADMINS
