@@ -325,6 +325,8 @@ def get_contract_number(request):
             response = urlparse.parse_qs(response.text)
             # if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
             #     print response['dognumber']
+            context['request'] = request_params
+            context['url'] = fh_url
             context['response'] = response
             return render_to_response('contracts/get_number_success.html', context)
         context['form'] = form

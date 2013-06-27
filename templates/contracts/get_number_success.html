@@ -1,10 +1,10 @@
 {% extends 'users/cabinet.html' %}
 {% block content_cabinet %}
-    Ваш номер договора: {{ response }}
+    Ваш номер договора: {{ url }}<br>{{ request }}<br>{{ response }}
 
     {% if response.get('?status')[0] == '0': %}
         На ваше имя не зарегистрировано ни одного активного договора.
     {% else if(response.get('?status')[0] == '1'): %}
         Ваш номер договора не найден.
-    {% endif %}
+    {% endif %}    
 {% endblock %}
