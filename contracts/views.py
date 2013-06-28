@@ -345,9 +345,10 @@ def get_contract_number(request):
             context['request'] = request_params
             context['url'] = fh_url
             context['response'] = response
-	    context['status'] = 'OK'
-	    s = response['lname'][0] + " " + response['fname'][0] + " " + response['sname'][0]
-	    context['client'] = s.decode('cp1251')
+            context['status'] = 'OK'
+            # Отправляем данные в context для отображения
+            for key in response:
+                context[key] = response[key][0].decode('cp1251')
             return render_to_response('contracts/get_number_success.html', context)
         context['form'] = form
     return render_to_response('contracts/get_number.html', context)
