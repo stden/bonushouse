@@ -1,14 +1,11 @@
+# -*- coding: utf-8 -*-
 """
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
+Модульные тесты для модуля Контракты
 """
+import unittest
 
-from django.test import TestCase
 
-
-class SimpleTest(TestCase):
+class FHTest(unittest.TestCase):
     def test_basic_addition(self):
         """
         Tests that 1 + 1 always equals 2.

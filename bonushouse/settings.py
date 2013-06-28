@@ -3,6 +3,7 @@
 import os
 import re
 import socket
+import sys
 
 
 def rel(*x):
@@ -43,6 +44,8 @@ DATABASES = {
         'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }
 }
+if 'test' in sys.argv:
+    TEST_RUNNER = 'testrunner.NoDbTestRunner'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

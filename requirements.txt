@@ -13,3 +13,4 @@ Whoosh
 django-sorting
 django-pagination
 django-social-auth
+mock
