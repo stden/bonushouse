@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-import logging
 import datetime
-import urllib, urllib2, base64, md5
-import requests
+import urllib2
+import base64
+import md5
 import urlparse
-
 import xml.etree.ElementTree as ElementTree
 
-from django.shortcuts import render_to_response, get_object_or_404
+import requests
+from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.contrib.auth.decorators import login_required
 from django.template.context import Context
@@ -15,19 +15,16 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect
 from django.conf import settings
 from django.utils.timezone import now
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.urlresolvers import reverse_lazy
-from django.core.exceptions import ObjectDoesNotExist
-
-from datetime import timedelta
 from django.contrib import messages
 
 from contracts.models import ContractTransaction, ContractTransactionInfo
-from contracts.forms import ContractClubRestructingForm, ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm, GetContractNumberForm
+from contracts.forms import ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm, GetContractNumberForm
 from offers.models import ProlongationOffers, ContractOrder
-
 from .utils import send_notification, is_exclusive, clean_session, load_data_to_session, get_contract_data, calculate_dates
+
 
 ########################
 # Коды операций:
@@ -65,11 +62,13 @@ def prolongate_contract(request):
                 response = get_contract_data(request, form)
                 total_time = calculate_dates(request, response)
                 print total_time
-                if response['?status'][0] == '1' or response['?status'][0] == '2': # status=1 и status=2 - успех, всё остальное - ошибки
+                if response['?status'][0] == '1' or response['?status'][
+                    0] == '2': # status=1 и status=2 - успех, всё остальное - ошибки
                     #Грузим данные в сессию
                     load_data_to_session(request, response, 2)
                     messages.success(request, 'Теперь выберите новый договор.')
-                    return redirect('prolongate_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
+                    return redirect(
+                        'prolongate_contract')  # Редирект на эту же страницу, форма будет уже для нового клиента
     else:
         form = ContractProlongationForm(queryset=ProlongationOffers.all_objects.all())
         context['form'] = form
@@ -91,38 +90,50 @@ def person_restruct_contract(request):
         if request.method == 'POST':
             form = PersonalContractForm(request.POST)
             if form.is_valid():
-                if ContractOrder.objects.filter(user=request.user, new_contract_number = form.cleaned_data['contract_number'], is_completed=True).count():
+                if ContractOrder.objects.filter(user=request.user,
+                                                new_contract_number=form.cleaned_data['contract_number'],
+                                                is_completed=True).count():
                     messages.info(request, 'Данный договор уже переоформлен!')
                     return render_to_response('contracts/contract_form.html', context)
-                # Достаём данные по договору
+                    # Достаём данные по договору
                 response = get_contract_data(request, form)
                 if response['?status'][0] == '1' or response['?status'][0] == '2':
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
-                    response_index = lambda key: response[key][contract_index]  # Чтобы каждый раз не писать [contract_index]
+                    response_index = lambda key: response[key][
+                        contract_index]  # Чтобы каждый раз не писать [contract_index]
 
-                    if ContractOrder.objects.filter(user=request.user, old_contract_number = response_index('dognumber'), is_completed=False).count():
+                    if ContractOrder.objects.filter(user=request.user, old_contract_number=response_index('dognumber'),
+                                                    is_completed=False).count():
                         messages.info(request, 'Ваш договор уже находится в обработке!')
                         return render_to_response('contracts/contract_form.html', context)
-                    # if response['?status'][0] == '1' or response_index('?status') == '2':
+                        # if response['?status'][0] == '1' or response_index('?status') == '2':
                     # Договор найден
                     if len(response_index('dognumber').split('/')) > 1:
-                        if response_index('type').encode('ISO-8859-1').decode('cp1251').lower().find(u'визиты') != -1 or response_index('type').encode('ISO-8859-1').decode('cp1251').lower().find(u'визитов') != -1:
-                            messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
+                        if response_index('type').encode('ISO-8859-1').decode('cp1251').lower().find(
+                                u'визиты') != -1 or response_index('type').encode('ISO-8859-1').decode(
+                                'cp1251').lower().find(u'визитов') != -1:
+                            messages.info(request,
+                                          'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                             return render_to_response('contracts/contract_form.html', context)
                         try:
                             # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
                             int(response_index('dognumber').split('/')[0])
                         except ValueError:
                             # Значит префикс не число
-                            if (response_index('dognumber').split('/')[0].find('M') != 0) or (response_index('dognumber').split('/')[0].find('MB') != 0):
-                                messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
+                            if (response_index('dognumber').split('/')[0].find('M') != 0) or (
+                                    response_index('dognumber').split('/')[0].find('MB') != 0):
+                                messages.info(request,
+                                              'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                                 return render_to_response('contracts/contract_form.html', context)
 
                     # print response_index('fname').encode('cp1252').decode('cp1251'), request.user.first_name
                     # print response_index('lname').encode('cp1252').decode('cp1251'), request.user.last_name
 
-                    if response_index('fname').encode('cp1252').decode('cp1251') != request.user.first_name and response_index('lname').encode('cp1252').decode('cp1251') != request.user.last_name:
-                        messages.info(request, 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
+                    if response_index('fname').encode('cp1252').decode(
+                            'cp1251') != request.user.first_name and response_index('lname').encode('cp1252').decode(
+                            'cp1251') != request.user.last_name:
+                        messages.info(request,
+                                      'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                         return redirect('person_restruct_contract')
                     elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
                         # Если договор не активен
@@ -134,7 +145,8 @@ def person_restruct_contract(request):
                         return render_to_response('contracts/contract_form.html', context)
                     elif is_exclusive(response_index('sdate'), response_index('edate')):
                         # Если по договору имеется задолженность
-                        messages.info(request, 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
+                        messages.info(request,
+                                      'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                         return render_to_response('contracts/contract_form.html', context)
 
                     # Всё ок, идём дальше
@@ -179,7 +191,8 @@ def person_restruct_contract(request):
                     'dognumber': request.session.get('dognumber'),
                     'pserial': form.cleaned_data['passport_series'],
                     'pnumber': form.cleaned_data['passport_number'],
-                    'shash': md5.new('0.00' + cid + request.session.get('src_club') + request.session.get('type') + settings.FH_SALT).hexdigest(),
+                    'shash': md5.new('0.00' + cid + request.session.get('src_club') + request.session.get(
+                        'type') + settings.FH_SALT).hexdigest(),
                     'sid': '301',
                     'sdate': request.session['sdate'],
                     'edate': request.session['edate'],
@@ -197,10 +210,13 @@ def person_restruct_contract(request):
                 # else:
                 fh_url = settings.FITNESSHOUSE_NOTIFY_URL
 
-                comment = u'Переоформление договора %s на клиента %s %s  ' % (other_info['cid'], new_user.first_name, new_user.last_name)
+                comment = u'Переоформление договора %s на клиента %s %s  ' % (
+                    other_info['cid'], new_user.first_name, new_user.last_name)
                 transaction_info = ContractTransactionInfo()
                 transaction_info.save()
-                transaction = ContractTransaction(operation_type=1, user=request.user, amount=0, transaction_date=now(), comment=comment, transaction_object=transaction_info) #@TODO: Допилить транзакции
+                transaction = ContractTransaction(operation_type=1, user=request.user, amount=0, transaction_date=now(),
+                                                  comment=comment,
+                                                  transaction_object=transaction_info) #@TODO: Допилить транзакции
                 transaction.save()
                 order = ContractOrder()
                 order.user = new_user
@@ -219,7 +235,7 @@ def person_restruct_contract(request):
                     'userid': str(request.user.id),
                     'amount': '0.00',
                     'paymode': '1',
-                    }
+                }
 
                 # Переводим все в cp1251
                 for key in request_params.keys():
@@ -229,7 +245,8 @@ def person_restruct_contract(request):
                 else:
                     request_params['paymentid'] = transaction.transaction_id
 
-                request_params['bh_key'] = md5.new(str('0.00') + str(request.user.id) + str(request_params['paymentid']) + settings.BH_PASSWORD).hexdigest(),  # md5 BH_KEY,
+                request_params['bh_key'] = md5.new(str('0.00') + str(request.user.id) + str(
+                    request_params['paymentid']) + settings.BH_PASSWORD).hexdigest(),  # md5 BH_KEY,
                 #Урлкодируем и переводим в base64
                 other_info_encoded = '&'
                 encoded_list = []
@@ -320,7 +337,7 @@ def get_contract_number(request):
                 userid=str(request.user.id),
             )
             print request_params
-            fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+            fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
             response = requests.get(fh_url, params=request_params, verify=False)
             response = urlparse.parse_qs(response.text)
             # if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
