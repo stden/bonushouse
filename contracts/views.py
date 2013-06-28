@@ -338,42 +338,16 @@ def get_contract_number(request):
             )
             print request_params
             fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-            if settings.DEBUG:
-                response = {u'bd': [u'1985.05.22', u'1985.05.22', u'1985.05.22'],
-                            u'sdate': [u'2011.12.15', u'2011.12.29', u'2012.12.29'],
-                            u'sname': [u'\xc2\xe0\xe4\xe8\xec\xee\xe2\xed\xe0', u'\xc2\xe0\xe4\xe8\xec\xee\xe2\xed\xe0',
-                                       u'\xc2\xe0\xe4\xe8\xec\xee\xe2\xed\xe0'],
-                            u'src_id': [u'4508304', u'4509409', u'6131182'],
-                            u'passport': [u'4005 916417', u'4005 916417', u'4005 916417'],
-                            u'edate': [u'2011.12.16', u'2012.12.28', u'2013.12.29'],
-                            u'price': [u'0.00', u'7500.00', u'8900.00'],
-                            u'lname': [u'\xcc\xe0\xff\xea\xe8\xed\xe0', u'\xcc\xe0\xff\xea\xe8\xed\xe0',
-                                       u'\xcc\xe0\xff\xea\xe8\xed\xe0'],
-                            u'src_club': [u'FH \xed\xe0 \xcf\xf0\xee\xf1\xe2\xe5\xf9\xe5\xed\xe8\xff',
-                                          u'FH \xed\xe0 \xcf\xf0\xee\xf1\xe2\xe5\xf9\xe5\xed\xe8\xff',
-                                          u'FH \xed\xe0 \xcf\xf0\xee\xf1\xe2\xe5\xf9\xe5\xed\xe8\xff'],
-                            u'cardnumber': [u'2007102', u'2007102'],
-                            u'fname': [u'\xdf\xed\xe0', u'\xdf\xed\xe0', u'\xdf\xed\xe0'],
-                            u'activity': [u'0\r\n?status=1', u'0\r\n?status=1', u'1\r\n?status=2'],
-                            u'dognumber': [u'20/11121505', u'20/11121509', u'20/12121300'], u'?status': [u'1'],
-                            u'debt': [u'0.00', u'0.00', u'0.00'],
-                            u'type': [u'"\xc3\xee\xf1\xf2\xe5\xe2\xee\xe9 \xe2\xe8\xe7\xe8\xf2"',
-                                      u'"1 \xe3\xee\xe4 (\xd3\xf2\xf0\xee)"',
-                                      u'"\xcf\xf0\xee\xe4\xeb\xe5\xed\xe8\xe5 1 \xe3\xee\xe4"'],
-                            u'email': [u'\xed\xe5 \xef\xf0\xe5\xe4\xee\xf1\xf2',
-                                       u'\xed\xe5 \xef\xf0\xe5\xe4\xee\xf1\xf2',
-                                       u'\xed\xe5 \xef\xf0\xe5\xe4\xee\xf1\xf2']}
-            else:
-                response = requests.get(fh_url, params=request_params, verify=False)
-                response = urlparse.parse_qs(response.text)
-                # if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
+            response = requests.get(fh_url, params=request_params, verify=False)
+            response = urlparse.parse_qs(response.text.encode('ASCII'))
+            # if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
             #     print response['dognumber']
             context['request'] = request_params
             context['url'] = fh_url
             context['response'] = response
-            context['status'] = 'OK'
-            s = response['sname'][0]
-            context['name'] = s.decode('cp1251')
+	    context['status'] = 'OK'
+	    s = response['lname'][0] + " " + response['fname'][0] + " " + response['sname'][0]
+	    context['client'] = s.decode('cp1251')
             return render_to_response('contracts/get_number_success.html', context)
         context['form'] = form
     return render_to_response('contracts/get_number.html', context)
