@@ -2,12 +2,13 @@
 {% block content_cabinet %}
     Ваш номер договора: {{ url }}<br>{{ request }}<br>{{ response }}<br>
     <b>{{ status }}</b><br>
-    
+
     {% if status == 'not_active' %}
         На ваше имя не зарегистрировано ни одного активного договора.
     {% elif status == 'not_found' %}
-	Ваш номер договора не найден.
-    {% elif status == 'OK'%}
-        Ваш номер договора: {{ result }}
+        Ваш номер договора не найден.
+    {% elif status == 'OK' %}
+        Ваш номер договора: {{ name }}
+        {{ result }}
     {% endif %}
 {% endblock %}
