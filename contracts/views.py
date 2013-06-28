@@ -338,17 +338,22 @@ def get_contract_number(request):
             )
             print request_params
             fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-            response = requests.get(fh_url, params=request_params, verify=False)
-            response = urlparse.parse_qs(response.text.encode('ASCII'))
-            # if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
-            #     print response['dognumber']
+            if settings.DEBUG:
+                response = {'?status': ['0']}
+            else:
+                response = requests.get(fh_url, params=request_params, verify=False)
+                response = urlparse.parse_qs(response.text.encode('ASCII'))
+            if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
+                context['status'] = 'OK'
+            else:
+                context['status'] = 'not_found'
             context['request'] = request_params
             context['url'] = fh_url
             context['response'] = response
-            context['status'] = 'OK'
             # Отправляем данные в context для отображения
             for key in response:
-                context[key] = response[key][0].decode('cp1251')
+                data = response[key]
+                context[key] = data[len(data) - 1].decode('cp1251')
             return render_to_response('contracts/get_number_success.html', context)
         context['form'] = form
     return render_to_response('contracts/get_number.html', context)

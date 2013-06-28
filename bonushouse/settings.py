@@ -2,10 +2,12 @@
 # Django settings for bonushouse project.
 import os
 import re
+import socket
 
 
 def rel(*x):
     return os.path.join(os.path.abspath(os.path.dirname(__file__)), *x)
+
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -34,11 +36,11 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'bonushouse',                      # Or path to database file if using sqlite3.
-        'USER': 'root',                      # Not used with sqlite3.
-        'PASSWORD': '123',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'NAME': 'bonushouse', # Or path to database file if using sqlite3.
+        'USER': 'root', # Not used with sqlite3.
+        'PASSWORD': '' if socket.gethostname() == 'xxx' else '123', # Not used with sqlite3.
+        'HOST': '', # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '', # Set to empty string for default. Not used with sqlite3.
     }
 }
 
@@ -89,9 +91,9 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+# Put strings here, like "/home/html/static" or "C:/www/django/static".
+# Always use forward slashes, even on Windows.
+# Don't forget to use absolute paths, not relative paths.
 )
 
 # List of finder classes that know how to find static files in
@@ -99,7 +101,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -109,7 +111,7 @@ SECRET_KEY = '_kwqs1_kcr1x+i_!cea0mj)lynw9*ukjhw*r9brsuny#zopuy9'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
+    #     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -151,7 +153,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
-    'haystack','bonushouse',
+    'haystack', 'bonushouse',
     'offers',
     'seo',
     'common',
@@ -187,21 +189,21 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 AUTH_PROFILE_MODULE = 'bonushouse.UserProfile'
-TWITTER_CONSUMER_KEY         = '78ShOnu6wchh4JO7LvR9JQ'
-TWITTER_CONSUMER_SECRET      = 'V7ZXP6O1rUFY7ZRFZTjD31SMJ6Lq5AhWa6X4X1tdI'
-FACEBOOK_APP_ID              = '259131294209220'
-FACEBOOK_API_SECRET          = 'c39ec2a802983381584cc4121f21231a'
-FACEBOOK_EXTENDED_PERMISSIONS = ['email',]
-VK_APP_ID                    = '3180084'
-VKONTAKTE_APP_ID             = VK_APP_ID
-VK_API_SECRET                = 'V7YYoc5B3yutn0vPwp8M'
-VKONTAKTE_APP_SECRET         = VK_API_SECRET
+TWITTER_CONSUMER_KEY = '78ShOnu6wchh4JO7LvR9JQ'
+TWITTER_CONSUMER_SECRET = 'V7ZXP6O1rUFY7ZRFZTjD31SMJ6Lq5AhWa6X4X1tdI'
+FACEBOOK_APP_ID = '259131294209220'
+FACEBOOK_API_SECRET = 'c39ec2a802983381584cc4121f21231a'
+FACEBOOK_EXTENDED_PERMISSIONS = ['email', ]
+VK_APP_ID = '3180084'
+VKONTAKTE_APP_ID = VK_APP_ID
+VK_API_SECRET = 'V7YYoc5B3yutn0vPwp8M'
+VKONTAKTE_APP_SECRET = VK_API_SECRET
 ODNOKLASSNIKI_OAUTH2_CLIENT_KEY = '93481728'
 ODNOKLASSNIKI_OAUTH2_APP_KEY = 'CBAMGDJGABABABABA'
 ODNOKLASSNIKI_OAUTH2_CLIENT_SECRET = '864280166FD9DBB2D130978B'
-LOGIN_URL          = '/accounts/login/'
+LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
-LOGIN_ERROR_URL    = '/login-error/'
+LOGIN_ERROR_URL = '/login-error/'
 
 SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 SOCIAL_AUTH_SESSION_EXPIRATION = False
@@ -248,8 +250,8 @@ LOGGING = {
 }
 CKEDITOR_UPLOAD_PATH = rel('../media/upload/')
 CKEDITOR_CONFIGS = {
-    'default' : {
-        'skin' : 'kama',
+    'default': {
+        'skin': 'kama',
         'width': 700,
         'height': 300,
         'toolbar': 'Full'
@@ -281,10 +283,10 @@ REQEST_LOG_PATH = rel('../requests.log')
 HOME_PAGE_ID = 5
 
 #Параметры для отправки уведомлений в базу FH
-FITNESSHOUSE_SID_MONEY =120
-FITNESSHOUSE_SID_BONUSES =121
-ADDITIONAL_SERVICES_SID_MONEY =130
-ADDITIONAL_SERVICES_SID_BONUSES =131
+FITNESSHOUSE_SID_MONEY = 120
+FITNESSHOUSE_SID_BONUSES = 121
+ADDITIONAL_SERVICES_SID_MONEY = 130
+ADDITIONAL_SERVICES_SID_BONUSES = 131
 FITNESSHOUSE_NOTIFY_URL_DEBUG = 'https://80.247.186.195/'
 #FITNESSHOUSE_NOTIFY_URL = FITNESSHOUSE_NOTIFY_URL_DEBUG  #'https://80.247.186.193/'
 FITNESSHOUSE_NOTIFY_URL = 'https://80.247.186.193/'
