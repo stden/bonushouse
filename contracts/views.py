@@ -344,16 +344,22 @@ def get_contract_number(request):
                 response = requests.get(fh_url, params=request_params, verify=False)
                 response = urlparse.parse_qs(response.text.encode('ASCII'))
             if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
-                context['status'] = 'OK'
+                context['status'] = 'not_active'
+                # Ищем активный договор
+                index = 0
+                for activity in response['activity']:
+                    if activity.startswith('1\r\n'):  # '0\r\n?status=2' '1\r\n?status=2'
+                        context['status'] = 'OK'  # Нашли активный договор
+                        # Отправляем данные в context для отображения
+                        for key in response:
+                            data = response[key] # Массив данных для разных договоров
+                            context[key] = data[index if len(data) > index else 0].decode('cp1251')
+                    index += 1
             else:
                 context['status'] = 'not_found'
             context['request'] = request_params
             context['url'] = fh_url
             context['response'] = response
-            # Отправляем данные в context для отображения
-            for key in response:
-                data = response[key]
-                context[key] = data[len(data) - 1].decode('cp1251')
             return render_to_response('contracts/get_number_success.html', context)
         context['form'] = form
     return render_to_response('contracts/get_number.html', context)
