@@ -107,25 +107,26 @@ def person_restruct_contract(request):
                     response_index = lambda key: response[key][
                         contract_index]   # Чтобы каждый раз не писать [contract_index]
 
-                    if ContractOrder.objects.filter(user=request.user, old_contract_number=response_index('dognumber'),
+                    dognumber = response_index('dognumber')
+                    if ContractOrder.objects.filter(user=request.user, old_contract_number=dognumber,
                                                     is_completed=False).count():
                         messages.info(request, 'Ваш договор уже находится в обработке!')
                         return render_to_response('contracts/contract_form.html', context)
 
                     # Договор найден
-                    if len(response_index('dognumber').split('/')) > 1:
+                    if len(dognumber.split('/')) > 1:
                         type_lower = response_index('type').decode('cp1251').lower()
                         if type_lower.find(u'визиты') != -1 or type_lower.find(u'визитов') != -1:
                             messages.info(request,
                                           'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                             return render_to_response('contracts/contract_form.html', context)
+                        prefix = dognumber.split('/')[0]
                         try:
                             # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
-                            int(response_index('dognumber').split('/')[0])
+                            int(prefix)
                         except ValueError:
                             # Значит префикс не число
-                            if (response_index('dognumber').split('/')[0].find('M') != 0) or (
-                                    response_index('dognumber').split('/')[0].find('MB') != 0):
+                            if (prefix.find('M') != 0) or (prefix.find('MB') != 0):
                                 messages.info(request,
                                               'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                                 return render_to_response('contracts/contract_form.html', context)
@@ -139,6 +140,8 @@ def person_restruct_contract(request):
                     elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
                         # Если договор не активен
                         messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
+                        context['header'] = u'Договор ' + unicode(
+                            dognumber) + u' не активен! Переоформлению не подлежит.'
                         return render_to_response('contracts/contract_form.html', context)
                     elif response_index('debt') != '0.00':
                         # Если по договору имеется задолженность
