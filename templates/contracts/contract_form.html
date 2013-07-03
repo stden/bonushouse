@@ -5,29 +5,37 @@
 {% block content_cabinet %}
     {{ response }}
     <div class="content">
-    <h2>Для переоформления вы должны указать информацию о себе.</h2>
-    <h3><a href="/pereoformlenie/">Инструкции по переоформлению</a></h3>
-    <h3 style="color: red;">
-        Внимание! Данным договором может воспользоваться только лицо, достигшее 14 лет!
-    </h3>
+        {% if header %}
+            <h2>{{ header }}</h2>
+        {% else: %}
+            <h2>Для переоформления вы должны указать информацию о себе.</h2>
+        {% endif %}
+
+        <h3><a href="/pereoformlenie/">Инструкции по переоформлению</a></h3>
+
+        <h3 style="color: red;">
+            Внимание! Данным договором может воспользоваться только лицо, достигшее 14 лет!
+        </h3>
+
         <form action="" method="post">{% csrf_token %}
             {% include "_form_errors.html" with form=form %}
             {% include "_form.html" with form=form %}
-                <p><input type="submit" value="Продолжить" class="orange_button" /></p>
+            <p><input type="submit" value="Продолжить" class="orange_button"/></p>
         </form>
-    {% if request.session.step == 2 %}<button type="button" class="orange_button" id="back_to_1_step">Назад</button>{% endif %}
+        {% if request.session.step == 2 %}
+            <button type="button" class="orange_button" id="back_to_1_step">Назад</button>{% endif %}
     </div>
     <script type="text/javascript">
-    $(function(){
-        $("#back_to_1_step").click(function(){
-            $.ajax({
-                type:'post',
-                url:'{% url person_restruct_contract %}step1/',
-                success: function(response, status){
-                    window.location.reload(true);
-                }
+        $(function () {
+            $("#back_to_1_step").click(function () {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url person_restruct_contract %}step1/',
+                    success: function (response, status) {
+                        window.location.reload(true);
+                    }
+                });
             });
         });
-    });
     </script>
 {% endblock %}

@@ -111,7 +111,7 @@ def person_restruct_contract(request):
                                                     is_completed=False).count():
                         messages.info(request, 'Ваш договор уже находится в обработке!')
                         return render_to_response('contracts/contract_form.html', context)
-                        # if response['?status'][0] == '1' or response_index('?status') == '2':
+
                     # Договор найден
                     if len(response_index('dognumber').split('/')) > 1:
                         type_lower = response_index('type').decode('cp1251').lower()
@@ -153,6 +153,7 @@ def person_restruct_contract(request):
                     # Всё ок, идём дальше
                     load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
                     messages.success(request, 'Теперь введите данные нового клиента.')
+                    context['header'] = u'Теперь введите данные нового клиента.'
                     return redirect('person_restruct_contract')
                 elif status == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
