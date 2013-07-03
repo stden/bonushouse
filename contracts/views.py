@@ -156,7 +156,6 @@ def person_restruct_contract(request):
                     # Всё ок, идём дальше
                     load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
                     messages.success(request, 'Теперь введите данные нового клиента.')
-                    context['header'] = u'Теперь введите данные нового клиента.'
                     return redirect('person_restruct_contract')
                 elif status == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
@@ -168,10 +167,13 @@ def person_restruct_contract(request):
         # Договор валидный и его можно переоформлять
         form = ContractPersonRestructingForm(request.user)
         context['form'] = form
+        context['header'] = u'Теперь введите данные нового клиента.'
+
         if request.method == 'POST':
             form = ContractPersonRestructingForm(request.user, request.POST)
             context = RequestContext(request)
             context['form'] = form
+
             if form.is_valid():
                 cid = ''
                 new_user = User.objects.get(email=form.cleaned_data['email'])
