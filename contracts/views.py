@@ -62,8 +62,8 @@ def prolongate_contract(request):
                 response = get_contract_data(request, form)
                 total_time = calculate_dates(request, response)
                 print total_time
-                if response['?status'][0] == '1' or response['?status'][
-                    0] == '2': # status=1 и status=2 - успех, всё остальное - ошибки
+                status = response['?status'][0]
+                if status == '1' or status == '2':  # status=1 и status=2 - успех, всё остальное - ошибки
                     #Грузим данные в сессию
                     load_data_to_session(request, response, 2)
                     messages.success(request, 'Теперь выберите новый договор.')
@@ -83,7 +83,10 @@ def person_restruct_contract(request):
     context = RequestContext(request)
     form = PersonalContractForm()
     context['form'] = form
-    if not request.session.get('step') or request.session.get('step') == 1:
+    step = request.session.get('step')
+    if not step:
+        step = 1
+    if step == 1:
         form = PersonalContractForm()
         context['form'] = form
         #  Получение данных по договору
@@ -95,17 +98,14 @@ def person_restruct_contract(request):
                                                 is_completed=True).count():
                     messages.info(request, 'Данный договор уже переоформлен!')
                     return render_to_response('contracts/contract_form.html', context)
-                    # Достаём данные по договору
-                response = get_contract_data(request, form)
-                try:
-                    g = response['?status'][0]
-                except KeyError:
-                    raise Exception(response)
 
-                if response['?status'][0] == '1' or response['?status'][0] == '2':
+                # Достаём данные по договору
+                response = get_contract_data(request, form)
+                status = response['?status'][0]
+                if status == '1' or status == '2':
                     contract_index = response['dognumber'].index(request.session['user_contract_number'])
                     response_index = lambda key: response[key][
-                        contract_index]  # Чтобы каждый раз не писать [contract_index]
+                        contract_index]   # Чтобы каждый раз не писать [contract_index]
 
                     if ContractOrder.objects.filter(user=request.user, old_contract_number=response_index('dognumber'),
                                                     is_completed=False).count():
@@ -114,9 +114,8 @@ def person_restruct_contract(request):
                         # if response['?status'][0] == '1' or response_index('?status') == '2':
                     # Договор найден
                     if len(response_index('dognumber').split('/')) > 1:
-                        if response_index('type').encode('ISO-8859-1').decode('cp1251').lower().find(
-                                u'визиты') != -1 or response_index('type').encode('ISO-8859-1').decode(
-                                'cp1251').lower().find(u'визитов') != -1:
+                        type_lower = response_index('type').decode('cp1251').lower()
+                        if type_lower.find(u'визиты') != -1 or type_lower.find(u'визитов') != -1:
                             messages.info(request,
                                           'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                             return render_to_response('contracts/contract_form.html', context)
@@ -131,12 +130,9 @@ def person_restruct_contract(request):
                                               'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                                 return render_to_response('contracts/contract_form.html', context)
 
-                    # print response_index('fname').encode('cp1252').decode('cp1251'), request.user.first_name
-                    # print response_index('lname').encode('cp1252').decode('cp1251'), request.user.last_name
-
-                    if response_index('fname').encode('cp1252').decode(
-                            'cp1251') != request.user.first_name and response_index('lname').encode('cp1252').decode(
-                            'cp1251') != request.user.last_name:
+                    first_name = response_index('fname').decode('cp1251').lower()
+                    last_name = response_index('lname').decode('cp1251').lower()
+                    if first_name != request.user.first_name.lower() and last_name != request.user.last_name.lower():
                         messages.info(request,
                                       'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
                         return redirect('person_restruct_contract')
@@ -158,13 +154,13 @@ def person_restruct_contract(request):
                     load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
                     messages.success(request, 'Теперь введите данные нового клиента.')
                     return redirect('person_restruct_contract')
-                elif response['?status'][0] == '3':
+                elif status == '3':
                     messages.info(request, 'Ваш договор уже находится в обработке.')
                     return render_to_response('contracts/contract_form.html', context)
-                elif response['?status'][0] == '-2' or response['?status'][0] == '0':
+                elif status == '-2' or status == '0':
                     messages.info(request, 'Договор не найден или данные неверны!')
                     return render_to_response('contracts/contract_form.html', context)
-    elif request.session.get('step') == 2:
+    elif step == 2:
         # Договор валидный и его можно переоформлять
         form = ContractPersonRestructingForm(request.user)
         context['form'] = form
@@ -176,14 +172,15 @@ def person_restruct_contract(request):
                 cid = ''
                 new_user = User.objects.get(email=form.cleaned_data['email'])
 
-                if len(request.session.get('dognumber').split('/')) == 2:
-                    cid = request.session.get('dognumber') + '/1'
-                elif len(request.session.get('dognumber').split('/')) == 3:
-                    old_number = request.session.get('dognumber').split('/')
+                dognumber = request.session.get('dognumber')
+                if len(dognumber.split('/')) == 2:
+                    cid = dognumber + '/1'
+                elif len(dognumber.split('/')) == 3:
+                    old_number = dognumber.split('/')
                     old_number[-1] = str(int(old_number[-1]) + 1)
                     cid = '/'.join(old_number)
-                elif len(request.session.get('dognumber').split('/')) == 1:
-                    cid = request.session.get('dognumber') + '/1'
+                elif len(dognumber.split('/')) == 1:
+                    cid = dognumber + '/1'
 
                 other_info = {
                     'fname': new_user.first_name,
@@ -193,7 +190,7 @@ def person_restruct_contract(request):
                     'phone': new_user.get_profile().phone.replace('(', ' ').replace(')', ' '),
                     'sex': u'жен.' if new_user.get_profile().gender == 0 else u'муж.',
                     'bd': new_user.get_profile().birth_date.strftime('%Y-%m-%d'),
-                    'dognumber': request.session.get('dognumber'),
+                    'dognumber': dognumber,
                     'pserial': form.cleaned_data['passport_series'],
                     'pnumber': form.cleaned_data['passport_number'],
                     'shash': md5.new('0.00' + cid + request.session.get('src_club') + request.session.get(
@@ -210,10 +207,10 @@ def person_restruct_contract(request):
                     if key != 'src_club':
                         other_info[key] = unicode(other_info[key]).encode('cp1251')
                 other_info['type'] = request.session['type']
-                # if settings.DEBUG:
-                #     fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-                # else:
-                fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+                if settings.DEBUG:
+                    fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
+                else:
+                    fh_url = settings.FITNESSHOUSE_NOTIFY_URL
 
                 comment = u'Переоформление договора %s на клиента %s %s  ' % (
                     other_info['cid'], new_user.first_name, new_user.last_name)
@@ -226,12 +223,12 @@ def person_restruct_contract(request):
                 order = ContractOrder()
                 order.user = new_user
                 order.old_user = request.user
-                order.old_contract_number = request.session.get('dognumber')
+                order.old_contract_number = dognumber
                 order.new_contract_number = cid
                 order.user_passport_series = form.cleaned_data['passport_series']
                 order.user_passport_number = form.cleaned_data['passport_number']
-                order.offer_name = request.session.get('type').decode('ISO-8859-1').encode('cp1252').decode('cp1251')
-                order.club_name = request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode('cp1251')
+                order.offer_name = request.session.get('type').decode('cp1251')
+                order.club_name = request.session.get('src_club').decode('cp1251')
                 order.old_start_date = datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d')
                 order.end_date = datetime.datetime.strptime(request.session.get('edate'), '%Y.%m.%d')
                 order.transaction_object = transaction
@@ -276,9 +273,8 @@ def person_restruct_contract(request):
                     old_user_notification_context = Context({
                         'old_user_first_name': request.user.first_name,
                         'old_user_last_name': request.user.last_name,
-                        'contract_number': request.session.get('dognumber'),
-                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode(
-                            'cp1251'),
+                        'contract_number': dognumber,
+                        'club_name': request.session.get('src_club').decode('cp1251'),
                         'add_date': datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d'),
                         'end_date': datetime.datetime.strptime(request.session['edate'], '%Y.%m.%d'),
                         'cancelation_date': transaction.complete_date, # test
@@ -293,8 +289,7 @@ def person_restruct_contract(request):
                         'new_user_first_name': new_user.first_name,
                         'new_user_last_name': new_user.last_name,
                         'contract_number': cid,
-                        'club_name': request.session.get('src_club').decode('ISO-8859-1').encode('cp1252').decode(
-                            'cp1251'),
+                        'club_name': request.session.get('src_club').decode('cp1251'),
                         'start_date': datetime.datetime.strptime(request.session['sdate'], '%Y.%m.%d'),
                         'end_date': datetime.datetime.strptime(request.session['edate'], '%Y.%m.%d'),
                         'cancelation_date': transaction.complete_date, # test

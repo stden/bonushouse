@@ -62,7 +62,7 @@ def get_contract_data(request, form):
     else:
         fh_url = settings.FITNESSHOUSE_NOTIFY_URL
     response = requests.get(fh_url, params=request_params, verify=False)   # Шлем запрос
-    response = urlparse.parse_qs(response.text)
+    response = urlparse.parse_qs(response.text.encode('ASCII'))
     return response
 
 
@@ -72,14 +72,14 @@ def load_data_to_session(request, response, step):
     response_index = lambda key: response[key][contract_index]
     request.session['step'] = step  # Договор валидный, переход на следующий шаг
     request.session['src_id'] = response_index('src_id')
-    request.session['fname'] = response_index('fname').encode('ISO-8859-1')
-    request.session['lname'] = response_index('lname').encode('ISO-8859-1')
+    request.session['fname'] = response_index('fname')
+    request.session['lname'] = response_index('lname')
     request.session['bd'] = response_index('bd')
-    request.session['dognumber'] = response_index('dognumber').encode('ISO-8859-1')
-    request.session['src_club'] = response_index('src_club').encode('ISO-8859-1')
+    request.session['dognumber'] = response_index('dognumber')
+    request.session['src_club'] = response_index('src_club')
     request.session['sdate'] = response_index('sdate')
     request.session['edate'] = response_index('edate')
-    request.session['type'] = response_index('type').encode('ISO-8859-1')# + '~ё+*&'
+    request.session['type'] = response_index('type')
 
 
 def calculate_dates(request, response):

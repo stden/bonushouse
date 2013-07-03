@@ -29,13 +29,12 @@ class FHTest(unittest.TestCase):
         self.assertEqual(1 + 1, 2)
 
     def test_Result(self):
-        result = Result("""<?xml version="1.0" encoding="UTF-8"?>
-<result>
-<id>0</id>
-<code>YES</code>
-<comment>0 </comment>
-</result>
-""")
+        result = Result("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
+                        "<result>\n"
+                        "<id>0</id>\n"
+                        "<code>YES</code>\n"
+                        "<comment>0 </comment>\n"
+                        "</result>\n")
         self.assertEqual(result.id, "0")
         self.assertEqual(result.code, "YES")
         self.assertEqual(result.comment, "0 ")
