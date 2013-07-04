@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import collections
 import datetime
 import urllib2
 import base64
@@ -41,6 +42,23 @@ from .utils import send_notification, is_exclusive, clean_session, load_data_to_
 
 # Префиксы, доступные для переоформления
 ALLOWED_PREFIXES = ('M', 'MB')
+
+
+def convert(data):
+    """ Перевод из кодировки ответа cp1251 в Unicode """
+    if isinstance(data, str):
+        return data.decode("cp1251")
+    elif isinstance(data, collections.Mapping):
+        return dict(map(convert, data.iteritems()))
+    elif isinstance(data, collections.Iterable):
+        return type(data)(map(convert, data))
+    else:
+        return data
+
+
+def response_to_str(data):
+    """ Ответ от FH в пригодный для печати вид """
+    return repr(convert(data)).decode("unicode-escape")
 
 
 @login_required
@@ -350,10 +368,16 @@ def get_contract_number(request):
             print request_params
             fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
             if settings.DEBUG:
-                response = {'?status': ['0']}
+                response = {'bd': ['1986.05.18'], 'sdate': ['2013.02.21'], 'sname': ['24000.00'], 'src_id': ['7475248'],
+                            'edate': ['\xca\xf1\xfe'], 'price': ['1'],
+                            'src_club': ['FH \xed\xe0 \xca\xf0\xe5\xf1\xf2\xee\xe2\xf1\xea\xee\xec'],
+                            'passport': ['24000.00'], 'activity': ['1\r\n?status=2'], 'dognumber': ['13022136'],
+                            '?status': ['1'], 'debt': ['0.00'], 'type': ['"1 \xe3\xee\xe4"'],
+                            'email': ['\xc3\xee\xf0\xff\xe8\xed\xee\xe2\xe0']}
             else:
                 response = requests.get(fh_url, params=request_params, verify=False)
                 response = urlparse.parse_qs(response.text.encode('ASCII'))
+            print response_to_str(response)
             if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
                 context['status'] = 'not_active'
                 # Ищем активный договор
@@ -370,7 +394,7 @@ def get_contract_number(request):
                 context['status'] = 'not_found'
             context['request'] = request_params
             context['url'] = fh_url
-            context['response'] = response
+            context['response'] = response_to_str(response)
             return render_to_response('contracts/get_number_success.html', context)
         context['form'] = form
     return render_to_response('contracts/get_number.html', context)

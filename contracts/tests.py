@@ -2,6 +2,7 @@
 """
 Модульные тесты для модуля Контракты
 """
+import collections
 import unittest
 
 import xml.etree.ElementTree as ET
@@ -19,6 +20,23 @@ class Result:
             self.comment_id = int(x[0])
         if len(x) > 1:
             self.comment_str = x[1]
+
+
+def convert(data):
+    """ Перевод из кодировки ответа cp1251 в Unicode """
+    if isinstance(data, str):
+        return data.decode("cp1251")
+    elif isinstance(data, collections.Mapping):
+        return dict(map(convert, data.iteritems()))
+    elif isinstance(data, collections.Iterable):
+        return type(data)(map(convert, data))
+    else:
+        return data
+
+
+def response_to_str(data):
+    """ Ответ от FH в пригодный для печати вид """
+    return repr(convert(data)).decode("unicode-escape")
 
 
 class FHTest(unittest.TestCase):
