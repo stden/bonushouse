@@ -131,8 +131,13 @@ def person_restruct_contract(request):
                                               'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
                                 return render_to_response('contracts/contract_form.html', context)
 
-                    first_name = response_index('fname').decode('cp1251').lower()
-                    last_name = response_index('lname').decode('cp1251').lower()
+                    try:
+                        first_name = response_index('fname').decode('cp1251').lower()
+                        last_name = response_index('lname').decode('cp1251').lower()
+                    except KeyError:
+                        first_name = ''
+                        last_name = ''
+
                     if first_name != request.user.first_name.lower() and last_name != request.user.last_name.lower():
                         messages.info(request,
                                       'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
