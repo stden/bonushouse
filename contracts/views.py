@@ -24,7 +24,7 @@ from django.contrib import messages
 from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm, GetContractNumberForm
 from offers.models import ProlongationOffers, ContractOrder
-from .utils import send_notification, is_exclusive, clean_session, load_data_to_session, get_contract_data, calculate_dates
+from .utils import send_notification, clean_session, load_data_to_session, get_contract_data, calculate_dates, restructure_contract_1
 
 
 ########################
@@ -107,90 +107,43 @@ def person_restruct_contract(request):
     if step == 1:
         form = PersonalContractForm()
         context['form'] = form
-        #  Получение данных по договору
-        if request.method == 'POST':
+        MESSAGE = 'Внимание! Для переоформления договора на другое лицо оба пользователя должны быть зарегистрированы на сайте.'
+
+        if request.method == 'GET':
+            messages.info(request, MESSAGE)
+
+        if request.method == 'POST':  # Получение данных по договору
             form = PersonalContractForm(request.POST)
-            if form.is_valid():
-                if ContractOrder.objects.filter(user=request.user,
-                                                new_contract_number=form.cleaned_data['contract_number'],
-                                                is_completed=True).count():
-                    messages.info(request, 'Данный договор уже переоформлен!')
-                    return render_to_response('contracts/contract_form.html', context)
+            if not form.is_valid():
+                context['form'] = form
+                messages.info(request, MESSAGE)
+                return render_to_response('contracts/contract_form.html', context)
 
-                # Достаём данные по договору
-                response = get_contract_data(request, form)
-                status = response['?status'][0]
-                if status == '1' or status == '2':
-                    contract_index = response['dognumber'].index(request.session['user_contract_number'])
-                    response_index = lambda key: response[key][
-                        contract_index]   # Чтобы каждый раз не писать [contract_index]
+            contract = form.cleaned_data['contract_number']
+            if ContractOrder.objects.filter(user=request.user, new_contract_number=contract, is_completed=True).count():
+                messages.info(request, 'Договор ' + contract + ' уже переоформлен!')
+                return render_to_response('contracts/contract_form.html', context)
 
-                    dognumber = response_index('dognumber')
-                    if ContractOrder.objects.filter(user=request.user, old_contract_number=dognumber,
-                                                    is_completed=False).count():
-                        messages.info(request, 'Ваш договор уже находится в обработке!')
-                        return render_to_response('contracts/contract_form.html', context)
 
-                    # Договор найден
-                    if len(dognumber.split('/')) > 1:
-                        type_lower = response_index('type').decode('cp1251').lower()
-                        if type_lower.find(u'визиты') != -1 or type_lower.find(u'визитов') != -1:
-                            messages.info(request,
-                                          'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
-                            return render_to_response('contracts/contract_form.html', context)
-                        prefix = dognumber.split('/')[0]
-                        try:
-                            # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
-                            int(prefix)
-                        except ValueError:
-                            # Значит префикс не число
-                            if (prefix.find('M') != 0) or (prefix.find('MB') != 0):
-                                messages.info(request,
-                                              'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
-                                return render_to_response('contracts/contract_form.html', context)
 
-                    try:
-                        first_name = response_index('fname').decode('cp1251').lower()
-                        last_name = response_index('lname').decode('cp1251').lower()
-                    except KeyError:
-                        first_name = ''
-                        last_name = ''
+            # Достаём данные по договору
+            response = get_contract_data(request, form)
 
-                    if first_name != request.user.first_name.lower() and last_name != request.user.last_name.lower():
-                        messages.info(request,
-                                      'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!')
-                        return redirect('person_restruct_contract')
-                    elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
-                        # Если договор не активен
-                        messages.info(request, 'Договор не активен! Переоформлению не подлежит.')
-                        context['header'] = u'Договор ' + unicode(
-                            dognumber) + u' не активен! Переоформлению не подлежит.'
-                        return render_to_response('contracts/contract_form.html', context)
-                    elif response_index('debt') != '0.00':
-                        # Если по договору имеется задолженность
-                        messages.info(request, 'Имеется задолженность по договору! Переоформлению не подлежит.')
-                        return render_to_response('contracts/contract_form.html', context)
-                    elif is_exclusive(response_index('sdate'), response_index('edate')):
-                        # Если по договору имеется задолженность
-                        messages.info(request,
-                                      'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06')
-                        return render_to_response('contracts/contract_form.html', context)
+            res = restructure_contract_1(response, request)
+            if res:
+                messages.info(request, res)
+                context['header'] = res
+                return render_to_response('contracts/contract_form.html', context)
 
-                    # Всё ок, идём дальше
-                    load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
-                    messages.success(request, 'Теперь введите данные нового клиента.')
-                    return redirect('person_restruct_contract')
-                elif status == '3':
-                    messages.info(request, 'Ваш договор уже находится в обработке.')
-                    return render_to_response('contracts/contract_form.html', context)
-                elif status == '-2' or status == '0':
-                    messages.info(request, 'Договор не найден или данные неверны!')
-                    return render_to_response('contracts/contract_form.html', context)
+            # Всё ок, идём дальше
+            load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
+            messages.success(request, 'Теперь введите данные нового клиента.')
+            return redirect('person_restruct_contract')
     elif step == 2:
         # Договор валидный и его можно переоформлять
         form = ContractPersonRestructingForm(request.user)
         context['form'] = form
-        context['header'] = u'Теперь введите данные нового клиента.'
+        context['header'] = u'Данные нового владельца договора:'
 
         if request.method == 'POST':
             form = ContractPersonRestructingForm(request.user, request.POST)
@@ -339,9 +292,6 @@ def person_restruct_contract(request):
                     print code, comment
                     messages.info(request, 'Произошла ошибка!')
                     return render_to_response('contracts/contract_form.html', context)
-                    # else:
-                    #     messages.warning(request, 'Произошла ошибка')
-                    #     return redirect('person_restruct_contract')
 
     return render_to_response('contracts/contract_form.html', context)
 
@@ -378,7 +328,8 @@ def get_contract_number(request):
                 response = requests.get(fh_url, params=request_params, verify=False)
                 response = urlparse.parse_qs(response.text.encode('ASCII'))
             print response_to_str(response)
-            if response.get('?status')[0] == '1' or response.get('?status')[0] == '2':
+            status = response.get('?status')[0]
+            if status == '1' or status == '2':
                 context['status'] = 'not_active'
                 # Ищем активный договор
                 index = 0

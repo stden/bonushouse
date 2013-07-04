@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
+import collections
 import datetime
 import md5
 import urlparse
+import xml.etree.ElementTree as ET
 
 import requests
 from django.template.base import Template
@@ -9,6 +11,7 @@ from django.conf import settings
 from django.core.mail import send_mail
 
 from dbsettings.utils import get_settings_value
+from offers.models import ContractOrder
 
 
 def send_notification(email, context, settings_value, subject):
@@ -97,3 +100,104 @@ def calculate_dates(request, response):
     # print (end_date-new_date).days
     #prolongation_term = new_date - end_date
     return total_time
+
+
+def can_restructure_contract(contract):
+    """ Переоформить можно только «клубные» номера договоров (например, 13/12121201)
+    с любым кол-вом цифр после префикса.
+    Список префиксов по клубам в приложении «префиксы договоров».
+    И интернет договоры с латинской буквой M и МВ перед префиксом (пример M13/12121201).
+    Также переоформленные договоры (например, 13/12121201/1).
+    Договоры с другими буквами перед префиксом (К/, Г/, A/, Z/  и т.д.)
+    переводу через сайт не подлежат, необходимо выводить надпись «Данный договор нельзя перевести через интернет-сайт,
+    обратитесь за информацией в отдел продаж 610-06-06»"""
+    prefix = contract.split('/')[0]
+    try:
+        # Проверка на префиксы договоров. Префиксом может быть число и латинские M, MB
+        int(prefix)
+    except ValueError:
+        # Значит префикс не число
+        if (prefix.find('M') == 0) or (prefix.find('MB') == 0):
+            return None
+        return 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06'
+    return None
+
+
+def restructure_contract_1(response, request):
+    print response
+
+    status = response['?status'][0]
+    if status == '1' or status == '2':
+        contract_index = response['dognumber'].index(request.session['user_contract_number'])
+        response_index = lambda key: response[key][
+            contract_index]   # Чтобы каждый раз не писать [contract_index]
+
+        dognumber = response_index('dognumber')
+        if ContractOrder.objects.filter(user=request.user, old_contract_number=dognumber,
+                                        is_completed=False).count():
+            return 'Ваш договор уже находится в обработке!'
+
+        # Договор найден
+        if len(dognumber.split('/')) > 1:
+            type_lower = response_index('type').decode('cp1251').lower()
+            if type_lower.find(u'визиты') != -1 or type_lower.find(u'визитов') != -1:
+                return 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06'
+            res = can_restructure_contract(dognumber)
+            if res:
+                return res
+
+        try:
+            first_name = response_index('fname').decode('cp1251').lower()
+            last_name = response_index('lname').decode('cp1251').lower()
+        except KeyError:
+            first_name = ''
+            last_name = ''
+
+        if first_name != request.user.first_name.lower() and last_name != request.user.last_name.lower():
+            return 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!'
+
+        elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
+            # Если договор не активен
+            return u'Договор ' + unicode(dognumber) + u' не активен! Переоформлению не подлежит.'
+        elif response_index('debt') != '0.00':
+            # Если по договору имеется задолженность
+            return 'Имеется задолженность по договору! Переоформлению не подлежит.'
+        elif is_exclusive(response_index('sdate'), response_index('edate')):
+            # Если по договору имеется задолженность
+            return 'Данный договор нельзя перевести через интернет-сайт, обратитесь за информацией в отдел продаж 610-06-06'
+    elif status == '3':
+        return 'Ваш договор уже находится в обработке.'
+    elif status == '-2' or status == '0':
+        return 'Договор не найден или данные неверны!'
+    return None
+
+
+class Result:
+    id, code, comment, comment_id, comment_str = None, None, None, None, None
+
+    def __init__(self, xml):
+        """ Разбор XML """
+        for child in ET.fromstring(xml):
+            setattr(self, child.tag, child.text)
+        x = str.split(str(self.comment))
+        if len(x) > 0:
+            self.comment_id = int(x[0])
+        if len(x) > 1:
+            self.comment_str = x[1]
+
+
+def convert(data):
+    """ Перевод из кодировки ответа cp1251 в Unicode """
+    if isinstance(data, str):
+        return data.decode("cp1251")
+    elif isinstance(data, collections.Mapping):
+        return dict(map(convert, data.iteritems()))
+    elif isinstance(data, collections.Iterable):
+        return type(data)(map(convert, data))
+    else:
+        return data
+
+
+def response_to_str(data):
+    """ Ответ от FH в пригодный для печати вид """
+    return repr(convert(data)).decode("unicode-escape")
