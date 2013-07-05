@@ -6,13 +6,14 @@
         {% elif status == 'not_found' %}
             Ваш номер договора не найден.
         {% elif status == 'OK' %}
-            Ваш номер договора: {{ dognumber }} - {{ lname }} {{ fname }} {{ sname }}<br>
-            Дата заключения договора: {{ sdate }}<br>
+            Ваш номер договора: {{ dognumber }} - {{ type }} ({{ sdate }} - {{ edate }})<br>
+            Цена: {{ price }}<br>
+            Паспорт: {{ passport }}<br>
+            Фамилия имя отчество: {{ lname }} {{ fname }} {{ sname }}<br>
+            Дата рождения: {{ bd }} <br>
             Номер карты: {{ cardnumber }}<br>
-            Дата рождения: {{ edate }}<br>
             E-mail: {{ email }}<br>
             {{ src_club }}
         {% endif %}
-        <!-- {{ url }} {{ request }} {{ response }} {{ status }} -->
     </div>
 {% endblock %}

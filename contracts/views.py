@@ -165,8 +165,6 @@ def person_restruct_contract(request):
                 return render_to_response('contracts/contract_form.html', context)
 
             # Достаём данные по договору
-
-
             response = get_contract_data(request, form)
 
             passport = form.cleaned_data['passport_series'] + " " + form.cleaned_data['passport_number']
@@ -297,6 +295,8 @@ def person_restruct_contract(request):
                     messages.info(request, 'Произошла ошибка!')
                     return render_to_response('contracts/contract_form.html', context)
     elif step == 3:
+
+
         #Чистим сессию
         clean_session(request)
         del request.session['step']
@@ -324,18 +324,10 @@ def get_contract_number(request):
                 bh_key=md5.new(str(request.user.id) + settings.BH_PASSWORD).hexdigest(),
                 userid=str(request.user.id),
             )
-            print request_params
-            fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
-            if settings.DEBUG:
-                response = {'bd': ['1986.05.18'], 'sdate': ['2013.02.21'], 'sname': ['24000.00'], 'src_id': ['7475248'],
-                            'edate': ['\xca\xf1\xfe'], 'price': ['1'],
-                            'src_club': ['FH \xed\xe0 \xca\xf0\xe5\xf1\xf2\xee\xe2\xf1\xea\xee\xec'],
-                            'passport': ['24000.00'], 'activity': ['1\r\n?status=2'], 'dognumber': ['13022136'],
-                            '?status': ['1'], 'debt': ['0.00'], 'type': ['"1 \xe3\xee\xe4"'],
-                            'email': ['\xc3\xee\xf0\xff\xe8\xed\xee\xe2\xe0']}
-            else:
-                response = requests.get(fh_url, params=request_params, verify=False)
-                response = urlparse.parse_qs(response.text.encode('ASCII'))
+
+            fh_url = settings.FITNESSHOUSE_NOTIFY_URL
+            response = requests.get(fh_url, params=request_params, verify=False)
+            response = urlparse.parse_qs(response.text.encode('ASCII'))
 
             # print response_to_str(response)
             status = response.get('?status')[0]
