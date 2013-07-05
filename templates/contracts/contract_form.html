@@ -23,7 +23,11 @@
             <p><input type="submit" value="Продолжить" class="orange_button"/></p>
         </form>
         {% if request.session.step == 2 %}
-            <button type="button" class="orange_button" id="back_to_1_step">Назад</button>{% endif %}
+            <button type="button" class="orange_button" id="back_to_1_step">Назад</button>
+        {% endif %}
+        {% if request.session.step == 3 %}
+            <button type="button" class="orange_button" id="back_to_2_step">Назад</button>
+        {% endif %}
     </div>
     <script type="text/javascript">
         $(function () {
@@ -31,6 +35,15 @@
                 $.ajax({
                     type: 'post',
                     url: '{% url person_restruct_contract %}step1/',
+                    success: function (response, status) {
+                        window.location.reload(true);
+                    }
+                });
+            });
+            $("#back_to_2_step").click(function () {
+                $.ajax({
+                    type: 'post',
+                    url: '{% url person_restruct_contract %}step2/',
                     success: function (response, status) {
                         window.location.reload(true);
                     }

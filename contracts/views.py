@@ -5,7 +5,6 @@ import urllib2
 import base64
 import md5
 import urlparse
-import xml.etree.ElementTree as ElementTree
 
 import requests
 from django.shortcuts import render_to_response
@@ -24,7 +23,7 @@ from django.contrib import messages
 from contracts.models import ContractTransaction, ContractTransactionInfo
 from contracts.forms import ContractPersonRestructingForm, ContractProlongationForm, PersonalContractForm, GetContractNumberForm
 from offers.models import ProlongationOffers, ContractOrder
-from .utils import send_notification, clean_session, load_data_to_session, get_contract_data, calculate_dates, restructure_contract_1
+from .utils import send_notification, clean_session, load_data_to_session, get_contract_data, calculate_dates, restructure_contract_1, Result
 
 
 ########################
@@ -165,7 +164,15 @@ def person_restruct_contract(request):
                 return render_to_response('contracts/contract_form.html', context)
 
             # Достаём данные по договору
-            response = get_contract_data(request, form)
+            if settings.DEBUG:
+                response = {'bd': ['1986.05.18'], 'sdate': ['2013.02.21'], 'src_id': ['7475248'],
+                            'passport': ['4400 123456'], 'edate': ['2014.02.21'], 'price': ['24000.00'],
+                            'lname': ['\xc3\xee\xf0\xff\xe8\xed\xee\xe2\xe0'],
+                            'src_club': ['FH \xed\xe0 \xca\xf0\xe5\xf1\xf2\xee\xe2\xf1\xea\xee\xec'],
+                            'fname': ['\xca\xf1\xfe'], 'activity': ['1\r\n?status=2'], 'dognumber': ['13022136'],
+                            '?status': ['1'], 'debt': ['0.00'], 'type': ['"1 \xe3\xee\xe4"']}
+            else:
+                response = get_contract_data(request, form)
 
             passport = form.cleaned_data['passport_series'] + " " + form.cleaned_data['passport_number']
 
@@ -182,6 +189,16 @@ def person_restruct_contract(request):
         form = ContractPersonRestructingForm(request.user)
         context['form'] = form
         context['header'] = u'Данные нового владельца договора:'
+
+        if request.method == 'POST':
+            form = ContractPersonRestructingForm(request.user, request.POST)
+            context = RequestContext(request)
+            context['form'] = form
+            if form.is_valid():
+                # Всё ок, идём дальше
+                load_data_to_session(request, None, 3)  # Грузим данные в сессию, переход на шаг 2
+                return redirect('person_restruct_contract')
+    elif step == 3:
 
         if request.method == 'POST':
             form = ContractPersonRestructingForm(request.user, request.POST)
@@ -243,13 +260,8 @@ def person_restruct_contract(request):
                 request_params['other_info'] = other_info_encoded
                 # Шлем запрос
                 response = requests.get(fh_url, params=request_params, verify=False)
-
-                # response = urlparse.parse_qs(response.text)
-                xml_response = ElementTree.fromstring(response.text)
-                code = xml_response.find('code').text
-                comment = xml_response.find('comment').text
-                if code == 'YES':
-                    context['response'] = response
+                res = Result(response.text)
+                if res.code == 'YES':
                     transaction.complete()
                     order.complete()
 
@@ -285,21 +297,14 @@ def person_restruct_contract(request):
                     send_notification(new_user.email, new_user_notification_context, 'NEW_PERSON_RESTRUCT_TEMPLATE',
                                       settings.CONTRACT_RESTRUCT_SUBJECT)
 
-                    # Всё ок, идём на шаг 3
-                    load_data_to_session(request, response, 3)  # Грузим данные в сессию, переход на шаг 3
-                    messages.success(request, 'Теперь введите данные нового клиента.')
-                    return redirect('person_restruct_contract')
+                    #Чистим сессию
+                    clean_session(request)
+                    del request.session['step']
+                    return render_to_response('contracts/success.html', context)
                 else:
-                    print code, comment
+                    print res.code, res.comment
                     messages.info(request, 'Произошла ошибка!')
                     return render_to_response('contracts/contract_form.html', context)
-    elif step == 3:
-
-
-        #Чистим сессию
-        clean_session(request)
-        del request.session['step']
-        return render_to_response('contracts/success.html', context)
 
     return render_to_response('contracts/contract_form.html', context)
 
