@@ -12,7 +12,6 @@ from django.contrib.contenttypes import generic
 from django.utils.timezone import now
 from social_auth.signals import pre_update
 from django.dispatch import receiver
-from caching.base import CachingManager, CachingMixin
 
 
 GENDER_CHOICES = (
@@ -21,7 +20,7 @@ GENDER_CHOICES = (
 )
 
 
-class UserProfile(CachingMixin, models.Model):
+class UserProfile(models.Model):
     # This field is required.
     user = models.OneToOneField(User)
     gender = models.IntegerField(verbose_name='Пол', choices=GENDER_CHOICES, blank=True, null=True)
@@ -39,8 +38,6 @@ class UserProfile(CachingMixin, models.Model):
     subscribe_hash = models.CharField(max_length=255, editable=False, blank=True, null=True)
     offers_share = models.ManyToManyField('offers.Offers', related_name='offers_share',
                                           verbose_name='Акции, которыми поделился пользователь')
-
-    objects = CachingManager()  # Кеширование
 
     def calculate_age(self):
         if self.birth_date:
@@ -367,4 +364,3 @@ post_save.connect(create_user_profile, sender=User)
 post_save.connect(calculate_age, sender=UserProfile)
 post_save.connect(update_bonuses_ballance, sender=BonusTransactions)
 post_save.connect(update_partner_user, sender=UserFeedbacks)
-    

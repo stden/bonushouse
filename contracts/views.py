@@ -176,7 +176,6 @@ def person_restruct_contract(request):
 
             # Всё ок, идём дальше
             load_data_to_session(request, response, 2)  # Грузим данные в сессию, переход на шаг 2
-            messages.success(request, 'Теперь введите данные нового клиента.')
             return redirect('person_restruct_contract')
     elif step == 2:
         # Договор валидный и его можно переоформлять
