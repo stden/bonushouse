@@ -1,4 +1,5 @@
-PIL
+#PIL
+Pillow
 South
 pytz
 sorl-thumbnail
@@ -14,3 +15,4 @@ django-sorting
 django-pagination
 django-social-auth
 mock
+python-memcached

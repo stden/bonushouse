@@ -58,8 +58,8 @@ def get_contract_data(request, form):
                       'sid': '300'}
     request.session['user_contract_number'] = form.cleaned_data['contract_number']
     # Переводим все в cp1251
-    for key in request_params.keys():
-        request_params[key] = request_params[key]
+    #for key in request_params.keys():
+    #    request_params[key] = request_params[key]
     if settings.DEBUG:
         fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
     else:
@@ -123,18 +123,17 @@ def can_restructure_contract(contract):
     return None
 
 
-def restructure_contract_1(response, request):
+def restructure_contract_1(response, user_contract_number, user, passport):
     print response
 
     status = response['?status'][0]
     if status == '1' or status == '2':
-        contract_index = response['dognumber'].index(request.session['user_contract_number'])
+        contract_index = response['dognumber'].index(user_contract_number)
         response_index = lambda key: response[key][
             contract_index]   # Чтобы каждый раз не писать [contract_index]
 
         dognumber = response_index('dognumber')
-        if ContractOrder.objects.filter(user=request.user, old_contract_number=dognumber,
-                                        is_completed=False).count():
+        if ContractOrder.objects.filter(user=user, old_contract_number=dognumber, is_completed=False).count():
             return 'Ваш договор уже находится в обработке!'
 
         # Договор найден
@@ -146,19 +145,13 @@ def restructure_contract_1(response, request):
             if res:
                 return res
 
-        try:
-            first_name = response_index('fname').decode('cp1251').lower()
-            last_name = response_index('lname').decode('cp1251').lower()
-        except KeyError:
-            first_name = ''
-            last_name = ''
-
-        if first_name != request.user.first_name.lower() and last_name != request.user.last_name.lower():
-            return 'Переоформление договоров доступно только с личного аккаунта Бонус-Хаус!'
+        passport_dog = response_index('passport').decode('cp1251').lower()
+        if passport != passport_dog:
+            return "Договор не найден или неверные данные!"
 
         elif response_index('activity').split('?')[0].replace('\r\n', '') != '1':
             # Если договор не активен
-            return u'Договор ' + unicode(dognumber) + u' не активен! Переоформлению не подлежит.'
+            return 'Договор ' + dognumber + ' не активен! Переоформлению не подлежит.'
         elif response_index('debt') != '0.00':
             # Если по договору имеется задолженность
             return 'Имеется задолженность по договору! Переоформлению не подлежит.'

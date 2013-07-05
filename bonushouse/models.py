@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import datetime
+from urllib import urlopen
+
 from django.core.files.storage import default_storage
 from django.core.files.base import ContentFile
 from django.contrib.auth.models import User
@@ -7,18 +10,18 @@ from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.utils.timezone import now
-import datetime
 from social_auth.signals import pre_update
 from django.dispatch import receiver
-from urllib import urlopen
-from django.conf import settings
+from caching.base import CachingManager, CachingMixin
+
 
 GENDER_CHOICES = (
     (0, 'жен.'),
     (1, 'муж.'),
 )
 
-class UserProfile(models.Model):
+
+class UserProfile(CachingMixin, models.Model):
     # This field is required.
     user = models.OneToOneField(User)
     gender = models.IntegerField(verbose_name='Пол', choices=GENDER_CHOICES, blank=True, null=True)
@@ -34,7 +37,10 @@ class UserProfile(models.Model):
     refered_by = models.ForeignKey(User, editable=False, blank=True, null=True, related_name='referer')
     referer_checked = models.BooleanField(editable=False, default=False)
     subscribe_hash = models.CharField(max_length=255, editable=False, blank=True, null=True)
-    offers_share = models.ManyToManyField('offers.Offers', related_name='offers_share', verbose_name='Акции, которыми поделился пользователь')
+    offers_share = models.ManyToManyField('offers.Offers', related_name='offers_share',
+                                          verbose_name='Акции, которыми поделился пользователь')
+
+    objects = CachingManager()  # Кеширование
 
     def calculate_age(self):
         if self.birth_date:
@@ -64,7 +70,8 @@ class UserProfile(models.Model):
         """
         Возвращает количество неиспользованных бонусов у данного пользователя.
         """
-        transactions = BonusTransactions.objects.filter(user=self.user, is_completed=True).aggregate(models.Sum('amount'))
+        transactions = BonusTransactions.objects.filter(user=self.user, is_completed=True).aggregate(
+            models.Sum('amount'))
         if transactions['amount__sum']:
             transactions_sum = transactions['amount__sum']
         else:
@@ -75,7 +82,8 @@ class UserProfile(models.Model):
         """
         Возвращает количество неиспользованных денег на счету у данного пользователя.
         """
-        deposits = AccountDepositTransactions.objects.filter(user=self.user, is_completed=True).aggregate(models.Sum('amount'))
+        deposits = AccountDepositTransactions.objects.filter(user=self.user, is_completed=True).aggregate(
+            models.Sum('amount'))
         if deposits['amount__sum']:
             transactions_sum = deposits['amount__sum']
         else:
@@ -134,7 +142,8 @@ class PincodeTransaction(models.Model):
     maturity_date = models.DateTimeField(verbose_name='Дата погашения')
     operator = models.ForeignKey(User, verbose_name='Оператор', related_name='operator')
     is_gift = models.BooleanField(verbose_name='Куплено в подарок?')
-    recipient = models.ForeignKey(User, verbose_name='Получатель подарка', blank=True, null=True, related_name='recipient')
+    recipient = models.ForeignKey(User, verbose_name='Получатель подарка', blank=True, null=True,
+                                  related_name='recipient')
     add_date = models.DateTimeField(auto_now_add=True)
     is_completed = models.BooleanField(default=False)
 
@@ -171,6 +180,7 @@ class AccountDepositTransactions(models.Model):
     payment_date = models.DateTimeField(verbose_name='Дата оплаты', blank=True, null=True)
     comment = models.TextField(verbose_name='Комментарий', blank=True, null=True)
     add_date = models.DateTimeField(verbose_name='Дата добавления', editable=False, auto_now_add=True)
+
     def complete(self, payment_info):
         self.payment_object = payment_info
         self.is_completed = True
@@ -196,10 +206,11 @@ class UserFeedbacks(models.Model):
     admin_reply = models.TextField(verbose_name='Ответ администрации', blank=True, null=True)
     user = models.ForeignKey(User, verbose_name='Автор', editable=False)
     add_date = models.DateTimeField(editable=False, auto_now_add=True, verbose_name='Дата добавления')
-    ratings = generic.GenericRelation('UserRatings',object_id_field='content_id',content_type_field='content_type')
+    ratings = generic.GenericRelation('UserRatings', object_id_field='content_id', content_type_field='content_type')
     is_approved = models.BooleanField(editable=False, default=False)
     #Поля для ускорения выборки
-    partner_user = models.ForeignKey(User, blank=True, null=True, related_name='moderated_feedbacks') #Служит для модерации отзывов в меню партнера. Обновляется по post_save
+    partner_user = models.ForeignKey(User, blank=True, null=True,
+                                     related_name='moderated_feedbacks') #Служит для модерации отзывов в меню партнера. Обновляется по post_save
     #Менеджеры
     objects = ApprovedFeedbacksManager()
     moderation_objects = NotApprovedFeedbacksManager()
@@ -251,11 +262,11 @@ class BusinessIdea(models.Model):
 
     @models.permalink
     def get_administration_edit_url(self):
-        return ('administration.views.ideas_edit', (), {'idea_id':self.pk})
+        return ('administration.views.ideas_edit', (), {'idea_id': self.pk})
 
     @models.permalink
     def get_administration_delete_url(self):
-        return ('administration.views.ideas_delete', (), {'idea_id':self.pk})
+        return ('administration.views.ideas_delete', (), {'idea_id': self.pk})
 
 
 class CronFitnesshouseNotifications(models.Model):
@@ -341,13 +352,16 @@ def load_person_avatar(sender, person, info):
         # Facebook default image check
         if sender.name == 'facebook' and 'image/gif' in str(image_content.info()):
             return
-        image_name = default_storage.get_available_name(person.avatar.field.upload_to + '/' + str(person.id) + '.' + image_content.headers.subtype)
+        image_name = default_storage.get_available_name(
+            person.avatar.field.upload_to + '/' + str(person.id) + '.' + image_content.headers.subtype)
         person.avatar.save(image_name, ContentFile(image_content.read()))
         person.save()
+
 
 def schedule_fitnesshouse_notification(subject):
     cron_task = CronFitnesshouseNotifications(content_object=subject)
     cron_task.save()
+
 
 post_save.connect(create_user_profile, sender=User)
 post_save.connect(calculate_age, sender=UserProfile)

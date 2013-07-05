@@ -95,6 +95,46 @@ def prolongate_contract(request):
     return render_to_response('contracts/contract_form.html', context)
 
 
+def restuct_step_2_fill_request(form, request):
+    cid = ''
+    new_user = User.objects.get(email=form.cleaned_data['email'])
+    dognumber = request.session.get('dognumber')
+    if len(dognumber.split('/')) == 2:
+        cid = dognumber + '/1'
+    elif len(dognumber.split('/')) == 3:
+        old_number = dognumber.split('/')
+        old_number[-1] = str(int(old_number[-1]) + 1)
+        cid = '/'.join(old_number)
+    elif len(dognumber.split('/')) == 1:
+        cid = dognumber + '/1'
+    other_info = {
+        'fname': new_user.first_name,
+        'lname': new_user.last_name,
+        'sname': '',
+        'email': new_user.email,
+        'phone': new_user.get_profile().phone.replace('(', ' ').replace(')', ' '),
+        'sex': u'жен.' if new_user.get_profile().gender == 0 else u'муж.',
+        'bd': new_user.get_profile().birth_date.strftime('%Y-%m-%d'),
+        'dognumber': dognumber,
+        'pserial': form.cleaned_data['passport_series'],
+        'pnumber': form.cleaned_data['passport_number'],
+        'shash': md5.new('0.00' + cid + request.session.get('src_club') + request.session.get(
+            'type') + settings.FH_SALT).hexdigest(),
+        'sid': '301',
+        'sdate': request.session['sdate'],
+        'edate': request.session['edate'],
+        'cid': cid,
+        'src_id': request.session['src_id'],
+        'src_club': request.session['src_club'],
+    }
+    # Всё в cp1251
+    for key in other_info.keys():
+        if key != 'src_club':
+            other_info[key] = unicode(other_info[key]).encode('cp1251')
+    other_info['type'] = request.session['type']
+    return cid, dognumber, new_user, other_info
+
+
 @login_required
 def person_restruct_contract(request):
     """Переоформление договора на другого человека"""
@@ -121,17 +161,18 @@ def person_restruct_contract(request):
 
             contract = form.cleaned_data['contract_number']
             if ContractOrder.objects.filter(user=request.user, new_contract_number=contract, is_completed=True).count():
-                messages.info(request, 'Договор ' + contract + ' уже переоформлен!')
+                context['header'] = 'Договор ' + contract + ' уже переоформлен!'
                 return render_to_response('contracts/contract_form.html', context)
 
-
-
             # Достаём данные по договору
+
+
             response = get_contract_data(request, form)
 
-            res = restructure_contract_1(response, request)
+            passport = form.cleaned_data['passport_series'] + " " + form.cleaned_data['passport_number']
+
+            res = restructure_contract_1(response, request.session['user_contract_number'], request.user, passport)
             if res:
-                messages.info(request, res)
                 context['header'] = res
                 return render_to_response('contracts/contract_form.html', context)
 
@@ -151,44 +192,7 @@ def person_restruct_contract(request):
             context['form'] = form
 
             if form.is_valid():
-                cid = ''
-                new_user = User.objects.get(email=form.cleaned_data['email'])
-
-                dognumber = request.session.get('dognumber')
-                if len(dognumber.split('/')) == 2:
-                    cid = dognumber + '/1'
-                elif len(dognumber.split('/')) == 3:
-                    old_number = dognumber.split('/')
-                    old_number[-1] = str(int(old_number[-1]) + 1)
-                    cid = '/'.join(old_number)
-                elif len(dognumber.split('/')) == 1:
-                    cid = dognumber + '/1'
-
-                other_info = {
-                    'fname': new_user.first_name,
-                    'lname': new_user.last_name,
-                    'sname': '',
-                    'email': new_user.email,
-                    'phone': new_user.get_profile().phone.replace('(', ' ').replace(')', ' '),
-                    'sex': u'жен.' if new_user.get_profile().gender == 0 else u'муж.',
-                    'bd': new_user.get_profile().birth_date.strftime('%Y-%m-%d'),
-                    'dognumber': dognumber,
-                    'pserial': form.cleaned_data['passport_series'],
-                    'pnumber': form.cleaned_data['passport_number'],
-                    'shash': md5.new('0.00' + cid + request.session.get('src_club') + request.session.get(
-                        'type') + settings.FH_SALT).hexdigest(),
-                    'sid': '301',
-                    'sdate': request.session['sdate'],
-                    'edate': request.session['edate'],
-                    'cid': cid,
-                    'src_id': request.session['src_id'],
-                    'src_club': request.session['src_club'],
-                }
-                # Всё в cp1251
-                for key in other_info.keys():
-                    if key != 'src_club':
-                        other_info[key] = unicode(other_info[key]).encode('cp1251')
-                other_info['type'] = request.session['type']
+                cid, dognumber, new_user, other_info = restuct_step_2_fill_request(form, request)
                 if settings.DEBUG:
                     fh_url = settings.FITNESSHOUSE_NOTIFY_URL_DEBUG
                 else:
@@ -284,14 +288,19 @@ def person_restruct_contract(request):
                     send_notification(new_user.email, new_user_notification_context, 'NEW_PERSON_RESTRUCT_TEMPLATE',
                                       settings.CONTRACT_RESTRUCT_SUBJECT)
 
-                    #Чистим сессию
-                    clean_session(request)
-                    del request.session['step']
-                    return render_to_response('contracts/success.html', context)
+                    # Всё ок, идём на шаг 3
+                    load_data_to_session(request, response, 3)  # Грузим данные в сессию, переход на шаг 3
+                    messages.success(request, 'Теперь введите данные нового клиента.')
+                    return redirect('person_restruct_contract')
                 else:
                     print code, comment
                     messages.info(request, 'Произошла ошибка!')
                     return render_to_response('contracts/contract_form.html', context)
+    elif step == 3:
+        #Чистим сессию
+        clean_session(request)
+        del request.session['step']
+        return render_to_response('contracts/success.html', context)
 
     return render_to_response('contracts/contract_form.html', context)
 
