@@ -327,7 +327,8 @@ def get_contract_number(request):
             else:
                 response = requests.get(fh_url, params=request_params, verify=False)
                 response = urlparse.parse_qs(response.text.encode('ASCII'))
-            print response_to_str(response)
+
+            # print response_to_str(response)
             status = response.get('?status')[0]
             if status == '1' or status == '2':
                 context['status'] = 'not_active'
