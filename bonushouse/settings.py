@@ -28,7 +28,6 @@ DOL_PROJECT_ID = 2612
 DOL_SECRET_KEY = 'dolPWD9965x98'
 
 ADMINS = (
-    ('Dan', 'dangusev92@gmail.com'),
     ('Denis', 'super.denis@gmail.com'),
 )
 
