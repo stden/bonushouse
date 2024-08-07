@@ -5,7 +5,7 @@ pytz
 sorl-thumbnail
 python-openid
 oauth2
-django==1.4.3
+django==4.2.15
 reportlab
 django_debug_toolbar
 mysql-python
