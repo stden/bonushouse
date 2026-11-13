@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Купить бонусы</h2>
+    <form action="" method="post">{% csrf_token %}
+        {% include "_form_errors.html" with form=deposit_form %}
+        <p>{{ deposit_form.amount.label_tag }} - {{ deposit_form.amount }} руб.</p>
+        <p class="you_get_bonuses" style="font-size: 18px;">Вы получите <span style="font-weight: bold;"></span> бонусов.</p>
+        <input type="hidden" name="bonus_price" value="{{ BONUS_PRICE }}" />
+        <p><input type="submit" class="orange_button" value="Продолжить" /></p>
+    </form>
+    <script type="text/javascript">
+    $(function() {
+        $('#id_amount').numeric();
+        $('#id_amount').keyup(function() {
+            bonus_price = parseFloat($('input[name=bonus_price]').val());
+            money = parseFloat($(this).val());
+            bonuses_count = money / bonus_price;
+            $('.you_get_bonuses span').text(bonuses_count);
+        });
+        $('#id_amount').keyup();
+    });
+    </script>
+{% endblock %}

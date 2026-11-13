@@ -1,0 +1,5 @@
+Бонусов получено; с {{ date_from }} по {{ date_to }};
+Пользователь;Бонусов получено;
+{% for user in users %}
+{{ user.get_full_name }} ({{ user.username }});{{ user.bonuses_got }};
+{% endfor %}

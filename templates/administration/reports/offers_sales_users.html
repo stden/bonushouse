@@ -1,0 +1,96 @@
+{% extends "administration/reports/view.html" %}
+{% block report %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_reports_index %}">Отчетность</a></li>
+        <li><span>Продажи по пользователям</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        {% include "_form_errors.html" with form=date_range_form %}
+        <div class="select-date">
+            <span class="select-text">Показать  с:</span>
+            {{ date_range_form.date_from }}
+            <span class="select-text">по:</span>
+            {{ date_range_form.date_to }}
+            <input class="admin-button" type="submit" value="Показать" />
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <th>
+                        <span><em><strong><b>пользователь</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>акция</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>куплено в подарок</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>цена</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>время</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>откуда пришел</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>действия</b></strong></em></span>
+                    </th>
+                </tr>
+                {% for order in orders %}
+                    <tr>
+                        <td>
+                            <span class="action-name">
+                                <a href="#">{{ order.user.get_full_name }} ({{ order.user.username }})</a>
+                            </span>
+                        </td>
+                        <td>
+                            <span class="action-name">
+                                <a href="{{ order.order_object.offer.get_url }}">{{ order.order_object.offer.title }}</a>
+                            </span>
+                        </td>
+                        <td>
+                            {% if order.is_gift_order %}
+                                Да
+                                (
+                                {% if  order.order_object.gift_code_used %}
+                                    Получатель: {{ order.order_object.get_real_order.user.get_profile.get_name }}
+                                {% else %}
+                                    Код еще не использован
+                                {% endif %}
+                                )
+                            {% else %}
+                                Нет
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.is_gift_suborder %}
+                                Получен в подарок
+                            {% else %}
+                                {% if order.order_object.price_type == 1 %}
+                                    {{ order.order_object.price }} руб.
+                                {% elif order.order_object.price_type == 2 %}
+                                    {{ order.order_object.price }} бонусов
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ order.add_date }}
+                        </td>
+                        <td>
+                            {{ order.order_object.visitor_info.referer|slice:':30' }}...
+                        </td>
+                        <td>
+                            <a href="{% url administration_reports_order_details order.pk %}">Подробнее</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Пользователи</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        <a href="{% url administration_users_add %}" class="add-button"><span>Добавить пользователя</span></a>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <form action="" method="post" id="bulk_action_form">{% csrf_token %}
+                <table class="list-table">
+                    <tr>
+                        <th class="check-cell">
+                            <span><em><input id="check-all" class="check" type="checkbox" /></em></span>
+                        </th>
+                        <th class="post-cell">
+                            <span><em><strong><b>Логин</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>E-mail</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>Имя</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>Фамилия</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>Последний вход</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>Администратор</b></strong></em></span>
+                        </th>
+                    </tr>
+                    {% for user_item in users_list %}
+                        <tr>
+                            <td>
+                                <input id="check-{{ user_item.pk }}" class="check-bulk" type="checkbox" name="selected_items" value="{{ user_item.pk }}" />
+                            </td>
+                            <td>
+                                <span class="action-name"><a href="{% url administration_users_edit user_item.pk %}">{{ user_item.username }}</a></span>
+                            </td>
+                            <td>
+                                {{ user_item.email }}
+                            </td>
+                            <td>
+                                {{ user_item.first_name }}
+                            </td>
+                            <td>
+                                {{ user_item.last_name }}
+                            </td>
+                            <td>
+                                {{ user_item.last_login }}
+                            </td>
+                            <td>
+                                {% if user_item.is_superuser %}
+                                    Да
+                                {% else %}
+                                    Нет
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+
+                </table>
+                <input type="hidden" name="action" value="" />
+            </form>
+        </div>
+    </div>
+    <div class="footing-area">
+        {% if is_paginated %}
+            {% include "_paginator.html" with page=page_obj paginator=paginator %}
+        {% endif %}
+        <div class="check-action">
+            <select name="actions" id="bulk-actions-select">
+                <option value="">Действия с выбранными</option>
+                <option value="activate">Активировать</option>
+                <option value="disable">Отключить</option>
+            </select>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_reports_index %}">Отчетность</a></li>
+        <li><a href="{% url administration_reports_view 'offers-sales-users' %}">Продажи по пользователям</a></li>
+        <li><span>Заказ #Мета{{ metaorder.pk }}</span></li>
+    </ul>
+    <div class="container">
+        <h2>Заказ #Мета{{ metaorder.pk }}</h2>
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <td>Тип</td>
+                    <td>{{ metaorder.get_type_display }}</td>
+                </tr>
+                <tr>
+                    <td>Заголовок</td>
+                    <td>{{ metaorder.order_object.offer.title }}</td>
+                </tr>
+                <tr>
+                    <td>Дата</td>
+                    <td>{{ metaorder.add_date }}</td>
+                </tr>
+                <tr>
+                    <td>Завершен</td>
+                    <td>
+                        {% if metaorder.order_object.is_completed %}
+                            Да
+                        {% else %}
+                            Нет
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Пользователь</td>
+                    <td>{{ metaorder.order_object.user.get_profile.get_name }}(ID {{ metaorder.order_object.user.pk }})</td>
+                </tr>
+                <tr>
+                    <td>Уплачено</td>
+                    <td>
+                        {{ metaorder.get_paid_amount_display }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Источник платежа</td>
+                    <td>
+                        {{ metaorder.get_paid_source_display }}
+                    </td>
+                </tr>
+                {% if metaorder.order_object.offer.is_abonement or metaorder.order_object.offer.is_additional_service %}
+                    {% if not metaorder.is_gift_order %}
+                        <tr>
+                            <td><h2>Информация о договоре</h2></td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td>ID Договора</td>
+                            <td>{{ metaorder.order_object.get_agreement_id }}</td>
+                        </tr>
+                        <tr>
+                            <td>Имя</td>
+                            <td>{{ metaorder.order_object.additional_info.first_name }}</td>
+                        </tr>
+                        <tr>
+                            <td>Фамилия</td>
+                            <td>{{ metaorder.order_object.additional_info.last_name }}</td>
+                        </tr>
+                    {% endif %}
+                {% endif %}
+                {% if metaorder.get_dol_payment_info %}
+                    <tr>
+                        <td><h2>Информация из ДОЛ</h2></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>ID платежа в ДОЛ</td>
+                        <td>{{ metaorder.get_dol_payment_info.paymentid }}</td>
+                    </tr>
+                {% endif %}
+                {% if metaorder.get_fitnesshouse_notifications %}
+                    <tr>
+                        <td><h2>Информация из оповещения FH</h2></td>
+                        <td></td>
+                    </tr>
+                    {% for notification in metaorder.get_fitnesshouse_notifications %}
+                    <tr>
+                        <td>Ответ</td>
+                        <td>{{ notification.fitnesshouse_reply }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

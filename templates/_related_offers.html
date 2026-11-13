@@ -1,0 +1,12 @@
+{% if last_viewed_offers|length %}
+<h2>Вы недавно смотрели</h2>
+<div class="blocks-holder">
+    <div class="blocks-frame">
+        <ul class="blocks">
+            {% for offer in last_viewed_offers %}
+                {% include "offers/_offers_home_item.html" with offer=offer %}
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endif %}

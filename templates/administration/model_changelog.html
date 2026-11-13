@@ -1,0 +1,45 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>История изменений</span></li>
+    </ul>
+    <div class="container">
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <th class="post-cell">
+                        <span><em><strong><b>Дата</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Пользователь</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Действие</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Тип</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Заголовок</b></strong></em></span>
+                    </th>
+                </tr>
+                {% for log_message in object_list %}
+                    <tr>
+                        <td>{{ log_message.add_date }}</td>
+                        <td>{{ log_message.get_user_display }}</td>
+                        <td>{{ log_message.get_type_display }}</td>
+                        <td>{{ log_message.get_content_type_display }}</td>
+                        <td>{{ log_message.get_content_title }}</td>
+                    </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+    </div>
+    <div class="footing-area">
+        {% if is_paginated %}
+            {% include "_paginator.html" with page=page_obj paginator=paginator %}
+        {% endif %}
+    </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_offers_index %}">Акции</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        {% include "_form_errors.html" with form=form %}
+        <div>
+            <a href="#" onclick="window.close()" class="orange_button">Вернуться</a>
+        </div>
+    </div>
+{% endblock %}

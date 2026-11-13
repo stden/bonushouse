@@ -1,0 +1,50 @@
+{% extends "administration/reports/view.html" %}
+{% block report %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_reports_index %}">Отчетность</a></li>
+        <li><span>Бонусы по пользователям</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        {% include "_form_errors.html" with form=date_range_form %}
+        <div class="select-date">
+            <span class="select-text">Показать  с:</span>
+            {{ date_range_form.date_from }}
+            <span class="select-text">по:</span>
+            {{ date_range_form.date_to }}
+            <input class="admin-button" type="submit" value="Показать" />
+        </div>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <th>
+                        <span><em><strong><b>пользователь</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>дата</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>cумма</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>описание</b></strong></em></span>
+                    </th>
+                </tr>
+                {% for transaction in bonus_transactions %}
+                    <tr>
+                        <td>
+                            <span class="action-name"><a href="#">{{ transaction.user.get_full_name }} ({{ transaction.user.username }})</a></span>
+                        </td>
+                        <td>{{ transaction.add_date }}</td>
+                        <td>{{ transaction.amount }}</td>
+                        <td>{{ transaction.comment }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="footing-area">
+    </div>
+{% endblock %}

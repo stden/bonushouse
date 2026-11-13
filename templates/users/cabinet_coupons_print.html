@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <title>Бонус-Хаус</title>
+    <link rel="shortcut icon" href="http://bonus-house.ru/static/images/favicon.ico" />
+    <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/coupon-print.css" />
+    <!--
+       Подключаем API карт 2.x
+       Параметры:
+         - load=package.full - полная сборка;
+         - lang=ru-RU - язык русский.
+   -->
+    <script src="http://api-maps.yandex.ru/2.0/?load=package.full&lang=ru-RU" type="text/javascript"></script>
+    <script type="text/javascript">
+        // Как только будет загружен API и готов DOM, выполняем инициализацию
+        ymaps.ready(init);
+
+        function init () {
+            {% for address in addresses %}
+                var mymap_{{ address.pk }} = new ymaps.Map('map-{{ address.pk }}', {
+                    center: [{{ address.get_geocode_longitude }}, {{ address.get_geocode_latitude }}],
+                    zoom: 14
+                });
+            {% endfor %}
+        }
+    </script>
+</head>
+<body>
+<div id="bodywrap">
+    <img src="{{ STATIC_URL }}images/abonement_print_header.png" alt="Бонус-Хаус" />
+    <div id="content">
+        <div class="barcode_wrap autowrap">
+            <div class="left">
+                <h2>Номер купона</h2>
+                {{ coupon_code }}
+            </div>
+            <div class="right">
+                <img src="{{ barcode.url }}" alt="{{ coupon_code }}" />
+            </div>
+        </div>
+        <h2 class="offer_title">{{ offer_title }}</h2>
+        <h2 class="end_date">Срок действия купона до {{ end_date|date:'d.m.y' }}</h2>
+        <ul class="addresses">
+            {% for address in addresses %}
+                <li class="autowrap">
+                    <div class="map" id="map-{{ address.pk }}"></div>
+                    <div class="map_overlay"><img src="{{ STATIC_URL }}images/map_marker.png" alt="" /></div>
+                    <dl>
+                        <dt>Адрес:</dt>
+                        <dd>{{ address.address }}</dd>
+                        {% if address.schedule %}
+                            <dt>Время работы:</dt>
+                            <dd>{{ address.schedule }}</dd>
+                        {% endif %}
+                        {% if address.phone %}
+                            <dt>Телефон:</dt>
+                            <dd>{{ address.phone }}</dd>
+                        {% endif %}
+                    </dl>
+                </li>
+            {% endfor %}
+        </ul>
+        <h2 class="terms">Условия</h2>
+        {{ terms|safe }}
+        <div style="text-align: center; padding-bottom: 20px;"><input type="submit" style="font-size: 28px;" value="Печать" onclick="javascript:(print())"></div>
+    </div>
+    <div id="footer" class="autowrap">
+
+        <img src="{{ STATIC_URL }}images/abonement_print_footer.png" alt="Бонус-Хаус" />
+        <div class="left">
+            www.bonus-house.ru
+        </div>
+        <div class="right">
+            Телефон службы поддержкки - (812) 610-06-06
+        </div>
+    </div>
+</div>
+</body>
+</html>

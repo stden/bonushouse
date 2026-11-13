@@ -1,0 +1,86 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_advertising_index %}">Реклама</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            {{ banner_form.media }}
+            {% include "_form_errors.html" with form=banner_form %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ banner_form.title.label_tag }}:</span></td>
+                    <td>{{ banner_form.title }}</td>
+                </tr>
+                <tr>
+                    <td>
+                        <span class="title-text">{{ banner_form.region.label_tag }}:</span>
+                    </td>
+                    <td>
+                        {{ banner_form.region }}
+                    </td>
+                </tr>
+                <tr class="spacer">
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ banner_form.code.label_tag }}:</span></td>
+                    <td>
+                        {{ banner_form.code }}<br/>
+                        {{ banner_form.code.help_text }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ banner_form.url.label_tag }}:</span></td>
+                    <td>
+                        {{ banner_form.url }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td></td>
+                    <td>
+                        <div class="info-col">
+                            <span class="info-text">{{ banner_form.show_start_date.label_tag }}:</span>
+                            {{ banner_form.show_start_date }}
+                        </div>
+                        <div class="info-col">
+                            <span class="info-text">{{ banner_form.show_end_date.label_tag }}:</span>
+                            {{ banner_form.show_end_date }}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="info-col">
+                            <span class="info-text">{{ banner_form.show_max_count.label_tag }}:</span>
+                            {{ banner_form.show_max_count }}
+                        </div>
+                        <div class="info-col">
+                            <span class="info-text">{{ banner_form.click_max_count.label_tag }}:</span>
+                            {{ banner_form.click_max_count }}
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="check-post">
+                            {{ banner_form.is_published }} {{ banner_form.is_published.label_tag }}
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-banner">
+                {% if banner %}
+                    <input class="button del" type="button" value="Удалить" onclick="if(confirm('Удалить этот баннер? Вы уверены?')) {window.location='{{ banner.get_administration_delete_url }}';}" />
+                {% endif %}
+                <input class="button post" type="button" value="Опубликовать" />
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

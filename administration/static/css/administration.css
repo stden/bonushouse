@@ -1,0 +1,13 @@
+form p {
+    padding-bottom: 20px;
+}
+form p label {
+    display: inline-block;
+    width: 120px;
+}
+form input[type=text] {
+    width: 240px;
+}
+.autowrap {
+    overflow: hidden;
+}

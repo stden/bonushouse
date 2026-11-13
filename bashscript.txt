@@ -1,0 +1,7 @@
+
+#Применить изменения в схеме бд(
+python manage.py migrate --all --settings=bonushouse.settings_production
+#Обновить статические файлы(
+python manage.py collectstatic
+#Перезапустить apache 
+/etc/init.d/apache2 restart

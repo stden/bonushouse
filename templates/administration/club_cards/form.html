@@ -1,0 +1,45 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_club_card_numbers_index %}">Шаблоны номеров клубных карт</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="container">
+            {% include "_form_errors.html" with form=form %}
+            <table class="info-table">
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.title.label_tag }}:</span></td>
+                    <td>{{ form.title }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.clubs.label_tag }}:</span></td>
+                    <td>{{ form.clubs }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.first_chars.label_tag }}:</span></td>
+                    <td>{{ form.first_chars }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.total_chars.label_tag }}:</span></td>
+                    <td>
+                        {{ form.total_chars_sign }}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                        {{ form.total_chars }}
+                    </td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.is_multicard.label_tag }}:</span></td>
+                    <td>{{ form.is_multicard }}</td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <div class="btns-holder">
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </div>
+    </form>
+{% endblock %}

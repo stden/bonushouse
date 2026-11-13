@@ -1,0 +1,35 @@
+{% extends "users/cabinet.html" %}
+{% load thumbnail %}
+{% block content_cabinet %}
+    <div class="content">
+        <h2>Услуги от Fitness House</h2>
+        <table class="info-table">
+            <tr>
+                <th><span><em>дата<br/>покупки</em></span></th>
+                <th><span><em>дата<br/>окончания</em></span></th>
+                <th><span><em>номер<br/>купона</em></span></th>
+            </tr>
+            {% for abonement in my_abonements %}
+                <tr>
+                    <td>{{ abonement.transaction_object.add_date.date }}</td>
+                    <td>{{ abonement.get_end_date }}</td>
+                    <td>{{ abonement.get_agreement_id }}</td>
+                </tr>
+                <tr>
+                    <td class="underline" colspan="3">
+                        {% thumbnail abonement.offer.get_photos_list.0.file '215x147' crop='center' as im %}
+                            <img class="alignleft" src="{{ im.url }}" width="215" height="147">
+                        {% endthumbnail %}
+                        <div class="text-holder">
+                            <p>{{ abonement.offer.title }}</p>
+                            <div class="link-holder">
+                                <a href="{% url cabinet_additional_services_print abonement.pk %}" target="_blank" class="link-button04">Распечатать купон</a>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tr>
+        </table>
+    </div>
+{% endblock %}

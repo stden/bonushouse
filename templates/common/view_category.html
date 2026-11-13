@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <h2>{{ category.title }}</h2>
+        <ul class="results-list">
+            {% for offer in category.offers_set.all %}
+                {% include "offers/_offers_search_item.html" with offer=offer %}
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="twocolumns">
+        <div class="twocolumns-holder">
+            <div class="twocolumns-frame">
+                <div class="content">
+                    <h2 class="underline">Обратная связь</h2>
+                    <div class="feedback-form">
+                        <h2>Спасибо. Мы получили ваше сообщение.</h2>
+                    </div>
+                </div>
+                <div class="sidebar">
+                    <h2 class="underline">Контакты</h2>
+                    <ul class="item-info">
+                        <li style="background: none">
+                            {{ contacts_text|safe }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

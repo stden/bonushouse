@@ -1,0 +1,50 @@
+{% extends "partners/menu_base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url partner_menu %}">Главная</a></li>
+        <li>Проверка пин-кодов</li>
+    </ul>
+    <div class="container">
+        {% include "_form_errors.html" with form=pin_code_form %}
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ pin_code_form.pin_code.label_tag }}:</span></td>
+                    <td>
+                        {{ pin_code_form.pin_code }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <div class="btns-area">
+                            <input class="button save" type="submit" value="Проверить" />
+                        </div>
+                    </td>
+                </tr>
+                {% if pin_code_form.pin_code_order %}
+                    <tr>
+                        <td colspan="2"><h2>Пин-код найден</h2></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <h2><a href="{{ pin_code_form.pin_code_order.offer.get_url }}" target="_blank">{{ pin_code_form.pin_code_order.offer.title }}</a></h2>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span class="title-text">Дата покупки:</span></td>
+                        <td><span class="title-text">{{ pin_code_form.pin_code_order.transaction_object.add_date }}</span></td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="btns-area">
+                                <input class="button save" type="submit" name="use_pin_code" value="Погасить" onclick="return confirm('Этот код больше нельзя будет использовать. Вы уверены?');" />
+                            </div>
+                        </td>
+                    </tr>
+                {% endif %}
+
+            </table>
+        </form>
+    </div>
+    </form>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "administration/base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Партнеры</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        <a href="{% url administration_partners_add %}" class="add-button"><span>Добавить партнера</span></a>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <form action="" method="post" id="bulk_action_form">{% csrf_token %}
+                <table class="list-table banner-table">
+                    <tr class="check-yes">
+                        <th class="check-cell">
+                            <span><em><input id="check-all" class="check" type="checkbox" /></em></span>
+                        </th>
+                        <th class="post-cell">
+                            <span><em><strong><b>опублик.</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>название партнера</b></strong></em></span>
+                        </th>
+                        <th class="img-cell">
+                            <span><em><strong><b>Акции</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>Управление</b></strong></em></span>
+                        </th>
+                    </tr>
+                    {% for partner in partners_list %}
+                        <tr class="{% if partner.is_published %}check-yes{% endif %}">
+                            <td>
+                                <input id="check-{{ partner.pk }}" class="check-bulk" type="checkbox" name="selected_items" value="{{ partner.pk }}" />
+                            </td>
+                            <td>
+                                <span class="checked-mark">&nbsp;</span>
+                            </td>
+                            <td>
+                                <span class="action-name"><a href="{{ partner.get_administration_edit_url }}">{{ partner.title }}</a></span>
+                            </td>
+                            <td class="img-cells">
+                                <div class="img-frame">
+                                    {% for offer in partner.offers_set.all %}
+                                        <div class="img-area">
+                                            <span class="img-title">{{ offer.title }}</span>
+                                            <div class="img-holder">
+                                                {% thumbnail offer.get_photos_list.0.file '157x99' crop='center' as im %}
+                                                    <img src="{{ im.url }}" width="157" height="99" alt="">
+                                                {% endthumbnail %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <a href="{% url administration_partners_address_index partner.pk %}">Управление адресами</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <input type="hidden" name="action" value="" />
+            </form>
+        </div>
+    </div>
+    <div class="footing-area">
+        {% include "_paginator.html" with page=partners_list paginator=partners_list.paginator %}
+        {% include "administration/_bulk_action_select.html" %}
+    </div>
+{% endblock %}

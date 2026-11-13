@@ -1,0 +1,55 @@
+{% extends "partners/menu_base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url partner_menu %}">Главная</a></li>
+        <li><span>Отчеты</span></li>
+    </ul>
+    <div class="container">
+    <div class="list-table-holder">
+    <table class="list-table">
+    <tr>
+        <th class="new-cell">
+            <span><em><strong><b>акция</b></strong></em></span>
+        </th>
+        <th class="post-cell">
+            <span><em><strong><b>дата начала</b></strong></em></span>
+        </th>
+        <th>
+            <span><em><strong><b>дата окончания</b></strong></em></span>
+        </th>
+        <th class="cat-cell">
+            <span><em><strong><b>количество просмотров</b></strong></em></span>
+        </th>
+        <th class="partner-cell">
+            <span><em><strong><b>купонов куплено</b></strong></em></span>
+        </th>
+        <th class="date-cell">
+            <span><em><strong><b>купонов погашено</b></strong></em></span>
+        </th>
+    </tr>
+    {% for offer in offers_list %}
+        <tr class="{% if not offer.is_moderated %}new {% endif %}{% if offer.is_published %}check-yes {% else %}check-no {% endif %}">
+            <td>
+                <span class="action-name"><a href="{{ offer.get_url }}">{{ offer.title }}</a></span>
+            </td>
+            <td>
+                {{ offer.start_date|date:'d M. Y' }}
+            </td>
+            <td>
+                {{ offer.end_date|date:'d M. Y' }}
+            </td>
+            <td>
+                {{ offer.get_views_count }}
+            </td>
+            <td>
+                {{ offer.get_bought_count }}
+            </td>
+            <td>
+                {{ offer.get_coupons_used_count }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    </div>
+    </div>
+{% endblock %}

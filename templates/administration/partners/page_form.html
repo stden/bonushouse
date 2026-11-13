@@ -1,0 +1,38 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_partners_page %}">Страница "Партнеры"</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+        <div class="container">
+            {% include "_form_errors.html" with form=form %}
+            <table class="info-table">
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.title.label_tag }}:</span></td>
+                    <td>{{ form.title }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.logo.label_tag }}:</span></td>
+                    <td>{{ form.logo }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.description.label_tag }}:</span></td>
+                    <td>{{ form.description }}</td>
+                </tr>
+                <tr class="pre-underline">
+                    <td><span class="title-text">{{ form.site_url.label_tag }}:</span></td>
+                    <td>{{ form.site_url }}</td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <div class="btns-holder">
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </div>
+    </form>
+{% endblock %}

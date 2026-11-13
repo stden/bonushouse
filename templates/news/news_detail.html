@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <div class="container">
+        <h2 class="underline">Новости</h2>
+        <span class="container-title">{{ object.title }}</span>
+        <div class="info-box">
+            <em class="date">{{ object.add_date|date:'d.m.Y' }}</em>
+            {% thumbnail object.image "468x289" crop="center" as im %}
+            <img class="img-alignleft" src="{{ im.url }}" width="468" height="289" alt="">
+            {% endthumbnail %}
+            {{ object.text|safe }}
+        </div>
+    </div>
+{% endblock %}

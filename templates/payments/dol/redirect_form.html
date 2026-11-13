@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block content %}
+    <p>Сейчас вы будете перемещены на страницу оплаты. Нажмите кнопку, если у вас отключены автоматические редиректы.</p>
+<form action="https://paymentgateway.ru/" method="post" id="dol_redirect_form">
+    <input type="hidden" name="project" value="{{ DOL_PROJECT_ID }}" />
+    <input type="hidden" name="source" value="{{ DOL_PROJECT_ID }}" />
+    <input type="hidden" name="amount" value="{{ amount }}" />
+    <input type="hidden" name="nickname" value="{{ nickname }}" />
+    <input type="hidden" name="order_id" value="{{ order_id }}" />
+    <input type="submit" class="orange_button" value="Перейти к оплате" />
+</form>
+<script type="text/javascript">
+    document.getElementById('dol_redirect_form').submit();
+</script>
+{% endblock %}

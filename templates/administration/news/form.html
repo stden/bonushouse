@@ -1,0 +1,52 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    {{ news_form.media }}
+    {% if not news_post %}
+        <script type="text/javascript">
+            $(function() {
+                function updatePermalink() {
+                    title = $('input#id_title').val();
+                    title_translit = toTranslit(title);
+                    friendly_url = ('/news/'+title_translit+'/').toLowerCase();
+                    $('input#id_friendly_url').val(friendly_url);
+                }
+                $('input#id_title').keyup(updatePermalink);
+            });
+        </script>
+    {% endif %}
+    <ul class="breadcrumbs" xmlns="http://www.w3.org/1999/html">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_pages_index %}">Страницы</a></li>
+        <li><a href="{% url administration_news_index %}">Новости</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        {% include "_form_errors.html" with form=news_form %}
+        {% include "_form_errors.html" with form=seo_meta_form %}
+        {% include "_form_errors.html" with form=seo_url_form %}
+        <form action="" method="post" enctype="multipart/form-data">{% csrf_token %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ news_form.title.label_tag }}:</span></td>
+                    <td>{{ news_form.title }}</td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ news_form.image.label_tag }}:</span></td>
+                    <td>{{ news_form.image }}</td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ news_form.intro_text.label_tag }}:</span></td>
+                    <td>{{ news_form.intro_text }}</td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ news_form.text.label_tag }}:</span></td>
+                    <td>{{ news_form.text }}</td>
+                </tr>
+                {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
+            </table>
+            <div class="btns-holder">
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </form>
+    </div>
+{% endblock %}

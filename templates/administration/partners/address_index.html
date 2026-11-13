@@ -1,0 +1,67 @@
+{% extends "administration/base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_partners_index %}">Партнеры</a></li>
+        <li><span>{{ partner.title }}</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        <a href="{% url administration_partners_address_add partner.pk %}" class="add-button"><span>Добавить адрес</span></a>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <form action="" method="post" id="bulk_action_form">{% csrf_token %}
+                <table class="list-table banner-table">
+                    <tr class="check-yes">
+                        <th class="check-cell">
+                            <span><em><input id="check-all" class="check" type="checkbox" /></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>название</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>адрес</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>метро</b></strong></em></span>
+                        </th>
+                    </tr>
+                    {% for object in object_list %}
+                        <tr>
+                            <td>
+                                <input id="check-{{ object.pk }}" class="check-bulk" type="checkbox" name="selected_items" value="{{ object.pk }}" />
+                            </td>
+                            <td>
+                                <span class="action-name"><a href="{% url administration_partners_address_edit object.pk %}">
+                                    {{ object.title }}
+                                    {% if object.fitnesshouse_id %}
+                                    (FH ID: {{ object.fitnesshouse_id }})
+                                    {% endif %}
+                                </a></span>
+                            </td>
+                            <td>
+                                {{ object.address }}
+                            </td>
+                            <td>
+                                {{ object.metro.name }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <input type="hidden" name="action" value="" />
+            </form>
+        </div>
+    </div>
+    <div class="footing-area">
+        {% if is_paginated %}
+            {% include "_paginator.html" with page=page_obj paginator=paginator %}
+        {% endif %}
+        <div class="check-action">
+            <select name="actions" id="bulk-actions-select">
+                <option value="">Действия с выбранными</option>
+                <option value="delete">Удалить</option>
+            </select>
+        </div>
+    </div>
+{% endblock %}

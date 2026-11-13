@@ -1,0 +1,13 @@
+syntax: glob
+
+*.pyc
+./bonushouse.iml
+bonushouse.zip
+
+
+syntax: regexp
+
+^static
+^media
+^\.idea
+^search_index.db

@@ -1,0 +1,9 @@
+[tools]
+python = "3.11"
+node = "24.22.2"
+
+[tasks.check]
+run = "git diff --check"
+
+[tasks.syntax]
+run = "python -m compileall -q ."

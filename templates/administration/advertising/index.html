@@ -1,0 +1,75 @@
+{% extends "administration/base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Реклама</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        <div class="search-holder">
+            <form action="#">
+                <fieldset>
+                    <label for="search">Поиск:</label>
+                    <input id="search" class="text" type="text" />
+                    <input class="btn-search" type="submit" value="Submit" />
+                </fieldset>
+            </form>
+        </div>
+        <a href="{% url administration_advertising_add_banner %}" class="add-button"><span>Добавить баннер</span></a>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <form action="" method="post" id="bulk_action_form">{% csrf_token %}
+                <table class="list-table banner-table">
+                    <tr>
+                        <th class="check-cell">
+                            <span><em><input id="check-all" class="check" type="checkbox" /></em></span>
+                        </th>
+                        <th class="post-cell">
+                            <span><em><strong><b>опублик.</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>название</b></strong></em></span>
+                        </th>
+                        <th class="date-cell">
+                            <span><em><strong><b>дата<br /> запуска</b></strong></em></span>
+                        </th>
+                        <th class="date-cell">
+                            <span><em><strong><b>дата<br /> окончания</b></strong></em></span>
+                        </th>
+                        <th class="cost-cell">
+                            <span><em><strong><b>кол-во.<br /> показов</b></strong></em></span>
+                        </th>
+                        <th class="cost-cell last">
+                            <span><em><strong><b>кол-во<br /> кликов</b></strong></em></span>
+                        </th>
+                    </tr>
+                    {% for banner in banners_list %}
+                        <tr class="{% if banner.is_published %}check-yes{% endif %}">
+                            <td>
+                                <input id="check-{{ banner.pk }}" class="check-bulk" type="checkbox" name="selected_items" value="{{ banner.pk }}" />
+                            </td>
+                            <td>
+                                <span class="checked-mark">&nbsp;</span>
+                            </td>
+                            <td>
+                                <span class="action-name"><a href="{{ banner.get_administration_edit_url }}">{{ banner.title }}</a></span>
+                            </td>
+                            <td>{{ banner.show_start_date|date:'d.m.Y' }}</td>
+                            <td>{{ banner.show_end_date|date:'d.m.Y' }}</td>
+                            <td>{{ banner.get_impressions_count }}</td>
+                            <td>{{ banner.get_clicks_count }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <input type="hidden" name="action" value="" />
+            </form>
+        </div>
+    </div>
+    <div class="footing-area">
+        <div class="footing-area">
+            {% include "_paginator.html" with page=banners_list paginator=banners_list.paginator %}
+            {% include "administration/_bulk_action_select.html" %}
+        </div>
+    </div>
+{% endblock %}

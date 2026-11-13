@@ -1,0 +1,26 @@
+{% extends "users/cabinet.html" %}
+{% block content_cabinet %}
+    <div class="content">
+    <h2>Личный счет. История платежей</h2>
+    <table class="info-table deposit-log-table">
+        <thead>
+        <tr>
+            <th><span><em>ID</em></span></th>
+            <th><span><em>Сумма</em></span></th>
+            <th><span><em>Комментарий</em></span></th>
+            <th><span><em>Дата</em></span></th>
+            <th><span><em>Завершено</em></span></th>
+        </tr>
+        </thead>
+    {% for row in deposit_log %}
+        <tr>
+            <td>{{ row.pk }}</td>
+            <td>{{ row.amount }} руб.</td>
+            <td>{{ row.comment }}</td>
+            <td>{{ row.add_date|date:'d.m.Y' }}</td>
+            <td>{% if row.is_completed %}Да{% else %}Нет{% endif %}</td>
+        </tr>
+    {% endfor %}
+    </table>
+    </div>
+{% endblock %}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+    <title>Бонус-Хаус</title>
+    <link rel="shortcut icon" href="http://bonus-house.ru/static/images/favicon.ico" />
+    <link media="all" rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/abonement-print.css" />
+</head>
+<body>
+<div id="bodywrap">
+    <img src="{{ STATIC_URL }}images/abonement_print_header.png" alt="Бонус-Хаус" />
+    <h2>Дополнительное соглашение № {{ agreement_id }}  к договору или карте №{{ additional_info.card_number }} от  {{ add_date|date:'d.m.Y' }}</h2>
+    <h2>Предмет соглашения: {{ offer_title }}</h2>
+    <h2>Клуб: {{ additional_info.address.title }}</h2>
+    <h2 class="user_info">Сведения о посетителе</h2>
+    <dl class="autowrap">
+        <dt>Фамилия:</dt>
+        <dd>{{ additional_info.last_name }}</dd>
+
+        <dt>Имя:</dt>
+        <dd>{{ additional_info.first_name }}</dd>
+
+        {% if additional_info.father_name %}
+        <dt>Отчество:</dt>
+        <dd>{{ additional_info.father_name }}</dd>
+        {% endif %}
+
+        <dt>Дата рождения</dt>
+        <dd>{{ additional_info.birth_date|date:'d.m.Y' }}</dd>
+
+        <dt>Контактный телефон</dt>
+        <dd>{{ additional_info.phone }}</dd>
+
+        <dt>Электронный адрес</dt>
+        <dd>{{ additional_info.email }}</dd>
+    </dl>
+    <h2 class="terms">Условия</h2>
+    {{ terms|safe }}
+
+    <p>
+        Спасибо, что воспользовались сайтом Bonus-House.ru</p>
+        <div>
+            <table>
+                <tr>
+                    <td>Вид абонемента (Пакет услуг):</td>
+                    <td>
+                        {{ offer_title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Срок действия:</td>
+                    <td>
+                        {{ valid_term }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Стоимость:</td>
+                    <td>{{ price }}</td>
+                </tr>
+            </table>
+        </div>
+    <div style="text-align: center; padding-bottom: 20px;"><input type="submit" style="font-size: 28px;" value="Печать" onclick="javascript:(print())"></div>
+<div id="footer" class="autowrap">
+
+    <img src="{{ STATIC_URL }}images/abonement_print_footer.png" alt="Бонус-Хаус" />
+    <div class="left">
+        www.bonus-house.ru
+    </div>
+    <div class="right">
+        Телефон службы поддержкки - (812) 610-06-06
+    </div>
+</div>
+</div>
+</body>
+</html>

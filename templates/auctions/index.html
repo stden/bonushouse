@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="blocks-holder">
+        <div class="blocks-frame">
+            <ul class="blocks">
+                {% for auction in auctions_list %}
+                    {% include "auctions/_auctions_index_item.html" with auction=auction %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

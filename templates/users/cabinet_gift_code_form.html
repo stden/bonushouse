@@ -1,0 +1,20 @@
+{% extends "users/cabinet.html" %}
+                {% block content_cabinet %}
+                <div class="content">
+                    <h2>Ввести код подарочного купона</h2>
+                    <form action="" method="post">{% csrf_token %}
+                        {% include "_form_errors.html" with form=code_form %}
+                        {% include "_form.html" with form=code_form %}
+                        {% if additional_info_form %}
+                            <h2>Для активации подарочного кода введите, пожалуйста, информацию о себе</h2>
+                            {% include "_form_errors.html" with form=additional_info_form %}
+                            {% include "_form.html" with form=additional_info_form %}
+                            <input type="hidden" name="additional_info_form_active" value="1" />
+                        {% endif %}
+                        <div class="align-center">
+                            <input type="submit" value="Продолжить" class="orange_button" />
+                        </div>
+                    </form>
+
+                </div>
+                {% endblock %}

@@ -1,0 +1,195 @@
+{% extends "administration/reports/view.html" %}
+{% block report %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_reports_index %}">Отчетность</a></li>
+        <li><span>Просмотр заявок</span></li>
+    </ul>
+    <div class="link-btn-holder">
+        {% include "_form_errors.html" with form=date_range_form %}
+        <div class="select-date">
+            <span class="select-text">Показать  с:</span>
+            {{ date_range_form.date_from }}
+            <span class="select-text">по:</span>
+            {{ date_range_form.date_to }}
+            <input class="admin-button" type="submit" value="Показать" />
+        </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="autowrap" style="min-width:1920px;padding:10px; background: white; margin-bottom: 15px;margin-top: -170px">
+        <div class="list-table-holder">
+            <table class="list-table">
+                <tr>
+                    <th>
+                        <span><em><strong><b>МетаID заявки</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Дата</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Пользователь</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Акция</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Номер договора</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Клуб</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>ФИО</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Дата начала</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Дата окончания</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Сумма</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Паспорт</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Пол</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Дата рождения</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Контактный телефон</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Электронный адрес</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Оплачено</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Номер транзакции</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Способ оплаты</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>Действия</b></strong></em></span>
+                    </th>
+                </tr>
+                {% for order in orders %}
+                    <tr>
+                        <td>
+                            {{ order.pk }}
+                            ({{ order.order_object.pk }})
+                        </td>
+                        <td>
+                            {{ order.add_date }}
+                        </td>
+                        <td>
+                            {{ order.user.get_profile.get_name }}
+                            (ID: {{ order.user.pk }})
+                        </td>
+                        <td>
+                            {{ order.order_object.offer.title }}
+                        </td>
+                        <td>
+                            {{ order.order_object.get_agreement_id }}
+                        </td>
+                        <td>
+                            {{ order.order_object.additional_info.address.title }}
+                        </td>
+                        <td>
+                            {{ order.order_object.additional_info.last_name }}
+                            {{ order.order_object.additional_info.first_name }}
+                            {{ order.order_object.additional_info.father_name }}
+                        </td>
+                        <td>
+                            {% if order.is_completed %}
+                                {{ order.order_object.get_start_date }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.is_completed %}
+                                {{ order.order_object.get_end_date }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ order.order_object.get_price_display }}
+                        </td>
+                        <td>
+                            {% if order.order_object.offer.is_abonement %}
+                                {{ order.order_object.additional_info.passport_code }}
+                                {{ order.order_object.additional_info.passport_number }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.order_object.offer.is_abonement %}
+                                {{ order.order_object.additional_info.get_gender_display }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ order.order_object.additional_info.birth_date }}
+                        </td>
+                        <td>
+                            {{ order.order_object.additional_info.phone }}
+                        </td>
+                        <td>
+                            {{ order.order_object.additional_info.email }}
+                        </td>
+                        <td>
+                            {% if order.is_gift_suborder %}
+                            Получено в подарок
+                            {% else %}
+                            {{ order.get_payment_date }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.is_gift_suborder %}
+                                Получено в подарок
+                            {% else %}
+                            {{ order.get_payment_id }}
+                            {% if order.paid_via_dol %}
+                                (ДОЛ: {{ order.get_dol_payment_info.paymentid }})
+                            {% endif %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if order.is_gift_suborder %}
+                                Получено в подарок
+                            {% else %}
+                            {{ order.get_paid_source_display }}
+                            {% endif %}
+                        </td>
+                        <td>
+                            <a href="{% url administration_metaorder_resend_notification order.pk %}" class="resend_link">Выслать повторно</a>
+                            <span class="result"></span>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(function() {
+            $('.resend_link').click(function() {
+                var $this = $(this);
+                $.post($(this).attr('href'), {}, function(data) {
+                    if(data.success) {
+                        $this.hide();
+                    }
+                    $this.next().text(data.message);
+                },'json');
+                return false;
+            });
+        });
+    </script>
+    <div class="w1">
+        <div class="w2">
+            <div class="holder">
+                <div id="main">
+{% endblock %}

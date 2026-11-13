@@ -1,0 +1,19 @@
+{% extends 'users/cabinet.html' %}
+{% block content_cabinet %}
+    <div class="content" style="font-size: large">
+        {% if status == 'not_active' %}
+            На ваше имя не зарегистрировано ни одного активного договора.
+        {% elif status == 'not_found' %}
+            Ваш номер договора не найден.
+        {% elif status == 'OK' %}
+            Ваш номер договора: {{ dognumber }} - {{ type }} ({{ sdate }} - {{ edate }})<br>
+            Цена: {{ price }}<br>
+            Паспорт: {{ passport }}<br>
+            Фамилия имя отчество: {{ lname }} {{ fname }} {{ sname }}<br>
+            Дата рождения: {{ bd }} <br>
+            Номер карты: {{ cardnumber }}<br>
+            E-mail: {{ email }}<br>
+            {{ src_club }}
+        {% endif %}
+    </div>
+{% endblock %}

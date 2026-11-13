@@ -1,0 +1,59 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_emails_index %}">Рассылка</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <form action="" method="post">{% csrf_token %}
+        <div class="container">
+            {% include "_form_errors.html" with form=campaign_form %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ campaign_form.title.label_tag }}:</span></td>
+                    <td>
+                        {{ campaign_form.title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ campaign_form.gender.label_tag }}:</span></td>
+                    <td>
+                        {{ campaign_form.gender }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ campaign_form.min_bonuses_ballance.label_tag }}:</span></td>
+                    <td>
+                        {{ campaign_form.min_bonuses_ballance }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ campaign_form.offer_participation.label_tag }}:</span></td>
+                    <td>
+                        {{ campaign_form.offer_participation }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ campaign_form.auction_participation.label_tag }}:</span></td>
+                    <td>
+                        {{ campaign_form.auction_participation }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">Возраст:</span></td>
+                    <td>
+                        От {{ campaign_form.min_age }} лет
+                        До {{ campaign_form.max_age }} лет<br/><br/>
+                        {{ campaign_form.include_users_with_no_age }} {{ campaign_form.include_users_with_no_age.label_tag }}
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-area">
+                {% if campaign %}
+                    <input class="button del" type="button" value="Удалить" onclick="if(confirm('Удалить эту кампанию? Вы уверены?')){window.location='{{ campaign.get_administration_delete_url }}';};return false;" />
+                {% endif %}
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </div>
+    </form>
+{% endblock %}

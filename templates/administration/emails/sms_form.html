@@ -1,0 +1,43 @@
+{% extends "administration/base.html" %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><a href="{% url administration_emails_index %}">Рассылка</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <form action="" method="post">{% csrf_token %}{{ sms_form.media }}
+        <div class="container">
+            {% include "_form_errors.html" with form=sms_form %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ sms_form.campaigns.label_tag }}:</span></td>
+                    <td>
+                        {{ sms_form.campaigns }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ sms_form.text.label_tag }}:</span></td>
+                    <td>
+                        {{ sms_form.text }}
+                    </td>
+                </tr>
+                <tr class="spacing">
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ sms_form.send_date.label_tag }}:</span></td>
+                    <td>
+                        {{ sms_form.send_date }}
+                    </td>
+                </tr>
+            </table>
+            <div class="btns-area">
+                {% if sms %}
+                <input class="button del" type="button" value="Удалить" onclick="if(confirm('Удалить это письмо? Вы уверены?')){window.location='{{ sms.get_administration_delete_url }}';};return false;" />
+                {% endif %}
+                <input class="button save" type="submit" value="Сохранить" />
+            </div>
+        </div>
+    </form>
+{% endblock %}

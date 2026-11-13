@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block content %}
+    <script type="text/javascript">
+    $(function() {
+        $('#price_slider').slider({
+            range: true,
+            min: {{ price_range_min }},
+            max: {{ price_range_max }},
+            values:[{% if form.price_min.value %}{{ form.price_min.value }}{% else %}{{ price_range_min }}{% endif %},
+                {% if form.price_max.value %}{{ form.price_max.value }}{% else %}{{ price_range_max }}{% endif %}
+            ],
+            slide: function( event, ui ) {
+                $( "#id_price_min" ).val( ui.values[ 0 ]);
+                $('#id_price_max').val(ui.values[ 1 ]);
+                $('#price_slider_text_min').text(ui.values[ 0 ]);
+                $('#price_slider_text_max').text(ui.values[ 1 ]);
+            }
+        });
+        $( "#id_price_min" ).val($('#price_slider').slider('values',0));
+        $( "#id_price_max" ).val($('#price_slider').slider('values',1));
+        $('#price_slider_text_min').text($('#price_slider').slider('values',0));
+        $('#price_slider_text_max').text($('#price_slider').slider('values',1));
+    });
+    </script>
+    <div class="container">
+        {% if search_result %}
+            <h2>Результаты поиска</h2>
+            <div class="blocks-holder">
+                <div class="blocks-frame">
+                    <ul class="blocks">
+                        {% for item in search_result %}
+                            {% if item.object %}
+                                {% include "offers/_offers_home_item.html" with offer=item.object %}
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        {% endif %}
+        {% if nothing_found %}
+            <h2>Ничего не найдено</h2>
+        {% endif %}
+        <h2>Расширенный поиск</h2>
+        {% include "_form_errors.html" with form=form %}
+        <form method="post" action="">{% csrf_token %}
+            {% for field in form %}
+                {% if field.is_hidden %}
+                    {{ field }}
+                {% else %}
+                    <div class="form_row">
+                        {{ field.label_tag }}
+                        {{ field }}<br/>
+                        <i>{{ field.help_text }}</i>
+                    </div>
+                {% endif %}
+                {% if field.name == 'price_max' %}
+                    <div class="form_row" style="padding-top: 5px">
+                        <label>Цена купона: </label>
+                        <div id="price_slider"></div>
+                        <span id="price_slider_text_min" class="price_slider_text"></span> -
+                        <span id="price_slider_text_max" class="price_slider_text"></span>
+                        руб.
+                    </div>
+                {% endif %}
+            {% endfor %}
+            <p class="form_row">
+                <input type="submit" value="Искать" class="orange_button" />
+            </p>
+        </form>
+    </div>
+{% endblock %}

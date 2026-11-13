@@ -1,0 +1,42 @@
+{% extends "users/cabinet.html" %}
+{% load thumbnail %}
+{% block content_cabinet %}
+    <div class="content">
+        <h2>Мои аукционы</h2>
+        <table class="info-table">
+            <tr>
+                <th><span><em>дата<br/>покупки</em></span></th>
+                <th><span><em>номер<br/>купона</em></span></th>
+            </tr>
+            {% for auction in my_auctions %}
+                    <tr>
+                        <td>{{ auction.completed_date }}</td>
+                        <td>
+                            {{ auction.get_coupon_code }}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="underline" colspan="3">
+                            {% thumbnail auction.get_photos_list.0.file '215x147' crop='center' as im %}
+                                <img class="alignleft" src="{{ im.url }}" width="215" height="147">
+                            {% endthumbnail %}
+                            <div class="text-holder">
+                                <p>{{ auction.title }}</p>
+                                {% if auction.additional_info_needed %}
+                                    <div class="link-holder">
+                                        <a href="{% url auctions_additional_info auction.pk %}" class="link-button04">Заполнить данные</a>
+                                    </div>
+                                {% endif %}
+                                {% if auction.can_print %}
+                                <div class="link-holder">
+                                    <a href="{% url cabinet_auctions_print auction.pk %}" target="_blank" class="link-button04">Распечатать купон</a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+            {% endfor %}
+            </tr>
+        </table>
+    </div>
+{% endblock %}

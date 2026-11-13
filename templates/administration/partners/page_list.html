@@ -1,0 +1,49 @@
+{% extends "administration/base.html" %}
+{% load thumbnail %}
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li>Страница "Партнеры"</li>
+    </ul>
+    <div class="link-btn-holder">
+        <a href="{% url administration_partners_page_add %}" class="add-button"><span>Добавить партнера</span></a>
+    </div>
+    <div class="container">
+        <div class="list-table-holder">
+            <form action="" method="post" id="bulk_action_form">{% csrf_token %}
+                <table class="list-table banner-table">
+                    <tr class="check-yes">
+                        <th class="check-cell">
+                            <span><em><input id="check-all" class="check" type="checkbox" /></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>заголовок</b></strong></em></span>
+                        </th>
+                    </tr>
+                    {% for object in object_list %}
+                        <tr>
+                            <td>
+                                <input id="check-{{ object.pk }}" class="check-bulk" type="checkbox" name="selected_items" value="{{ object.pk }}" />
+                            </td>
+                            <td>
+                                <span class="action-name"><a href="{% url administration_partners_page_edit object.pk %}">{{ object.title }}</a></span>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <input type="hidden" name="action" value="" />
+            </form>
+        </div>
+    </div>
+    <div class="footing-area">
+        {% if is_paginated %}
+            {% include "_paginator.html" with page=page_obj paginator=paginator %}
+        {% endif %}
+        <div class="check-action">
+            <select name="actions" id="bulk-actions-select">
+                <option value="">Действия с выбранными</option>
+                <option value="delete">Удалить</option>
+            </select>
+        </div>
+    </div>
+{% endblock %}

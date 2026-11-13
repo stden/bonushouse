@@ -1,0 +1,79 @@
+{% extends "administration/base.html" %}
+
+{% block content %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url administration_index %}">Главная</a></li>
+        <li><span>Бизнес-идеи</span></li>
+    </ul>
+    <div class="container">
+        <h2>Новые идеи</h2>
+        <div class="list-table-holder">
+            <form action="" method="post" id="bulk_action_form">{% csrf_token %}
+                <table class="list-table banner-table">
+                    <tr>
+                        <th>
+                            <span><em><strong><b>заголовок</b></strong></em></span>
+                        </th>
+                        <th>
+                            <span><em><strong><b>пользователь</b></strong></em></span>
+                        </th>
+                        <th class="date-cell">
+                            <span><em><strong><b>дата</b></strong></em></span>
+                        </th>
+                    </tr>
+                    {% for idea in new_ideas %}
+                        <tr>
+                            <td>
+                            <span class="action-name">
+                                <a href="{{ idea.get_administration_edit_url }}">
+                                    {{ idea.title }}
+                                </a>
+                            </span>
+                            </td>
+                            <td>{{ idea.user.get_profile.get_name }}</td>
+                            <td>{{ idea.add_date }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </form>
+        </div>
+        <h2>Просмотренные идеи</h2>
+        <div class="list-table-holder">
+            <table class="list-table banner-table">
+                <tr>
+                    <th>
+                        <span><em><strong><b>заголовок</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>пользователь</b></strong></em></span>
+                    </th>
+                    <th>
+                        <span><em><strong><b>награда</b></strong></em></span>
+                    </th>
+                    <th class="date-cell">
+                        <span><em><strong><b>дата</b></strong></em></span>
+                    </th>
+                </tr>
+                {% for idea in ideas %}
+                    <tr>
+                        <td>
+                            <span class="action-name">
+                                <a href="{{ idea.get_administration_edit_url }}">
+                                    {{ idea.title }}
+                                </a>
+                            </span>
+                        </td>
+                        <td>{{ idea.user.get_profile.get_name }}</td>
+                        <td>{{ idea.bonus_reward }} Бонусов</td>
+                        <td>{{ idea.add_date }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <div class="footing-area">
+        <div class="footing-area">
+            {% include "_paginator.html" with page=ideas paginator=ideas.paginator %}
+        </div>
+    </div>
+{% endblock %}

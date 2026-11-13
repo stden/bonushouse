@@ -1,0 +1,5 @@
+{{ object.title }}
+{{ object.partner.title }}
+{{ object.short_description }}
+{{ object.description }}
+{{ object.terms }}

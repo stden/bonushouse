@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="blocks-holder">
+        <div class="blocks-frame">
+            <ul class="blocks">
+                {% for category in categories_list %}
+                    {% include "common/_categories_index_item.html" with category=category %}
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+{% endblock %}

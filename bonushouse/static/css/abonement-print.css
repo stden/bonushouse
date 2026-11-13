@@ -1,0 +1,58 @@
+body {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    color: #292b2d;
+}
+#bodywrap {
+    width: 1000px;
+    margin: 0 auto;
+}
+.autowrap {
+    overflow: hidden;
+}
+div.left {
+    float: left;
+}
+div.right {
+    float: right;
+}
+.barcode_wrap {
+    padding-top: 70px;
+}
+.barcode_wrap .left {
+    font-size: 71px;
+}
+.barcode_wrap h2 {
+    font-size: 39px;
+    font-weight: normal;
+    padding: 0;
+    margin: 0;
+}
+
+dl {
+    width: 410px;
+    display: block;
+}
+dt, dd {
+    display: block;
+    float: left;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #e5e5e5;
+}
+dt {
+    width: 200px;
+    clear: left;
+}
+dd {
+    width: 205px;
+    text-align: right;
+}
+#footer {
+    color: #5f6a74;
+    font-weight: bold;
+}
+
+#footer .left, #footer .right {
+    padding-top: 35px;
+}

@@ -1,0 +1,174 @@
+{% extends "partners/menu_base.html" %}
+{% block content %}
+    {% if not offer %}
+    <script type="text/javascript">
+        $(function() {
+            function updatePermalink() {
+                title = $('input#id_title').val();
+                title_translit = toTranslit(title);
+                friendly_url = ('/offers/'+title_translit+'/').toLowerCase();
+                $('input#id_friendly_url').val(friendly_url);
+            }
+            function updateBonusesCount() {
+                price = $('#id_coupon_price_money').val();
+                if(price) {
+                    $.get('{% url get_auto_bonus_count %}', {'price':price}, function(data){
+                        $('#id_money_bonuses_count').val(data.bonuses_count);
+                    },'json');
+                }
+            }
+            $('input#id_title').keyup(updatePermalink);
+            $('#id_coupon_price_money').keyup(updateBonusesCount);
+        });
+    </script>
+    {% endif %}
+    <ul class="breadcrumbs">
+        <li><a href="{% url partner_menu %}">Главная</a></li>
+        <li><a href="{% url partner_menu_offers_index %}">Акции</a></li>
+        <li><span>{{ page_title }}</span></li>
+    </ul>
+    <div class="container">
+        {% include "_form_errors.html" with form=offers_form %}
+        {% include "_form_errors.html" with form=seo_meta_form %}
+        {% include "_form_errors.html" with form=seo_url_form %}
+        {{ offers_form.media }}
+        <form action="" method="post" enctype="multipart/form-data" id="offer_form">{% csrf_token %}
+            <table class="info-table">
+                <tr>
+                    <td><span class="title-text">{{ offers_form.title.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.title }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.partner.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.partner }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.addresses.label_tag }}:</span></td>
+                    <td id="addresses_wraper">
+                        {{ offers_form.addresses }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.categories.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.categories }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">Фотографии:</span></td>
+                    <td>
+                        {% include "administration/_plupload_widget.html" with object=offer %}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ offers_form.short_description.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.short_description }}
+                    </td>
+                </tr>
+                <tr class="underline">
+                    <td><span class="title-text">{{ offers_form.description.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.description }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.terms.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.terms }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">Цена товара услуги:</span></td>
+                    <td>
+                        без купона:
+                        {{ offers_form.initial_price }}
+                        с купоном:
+                        {{ offers_form.discount_price }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">Стоимость:</span></td>
+                    <td>
+                        <div class="price">
+										<span class="number-coupon">
+											<span class="text-coupon">Кол-во купонов:</span>
+											{{ offers_form.quantity }}
+										</span>
+										<span class="price-frame">
+											{{ offers_form.coupon_price_money }}
+											<span class="price-text">руб.</span>
+										</span>
+										<span class="price-frame">
+											{{ offers_form.coupon_price_bonuses }}
+											<span class="price-text">бонусов</span>
+										</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.money_bonuses_count.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.money_bonuses_count }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.start_date.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.start_date }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><span class="title-text">{{ offers_form.end_date.label_tag }}:</span></td>
+                    <td>
+                        {{ offers_form.end_date }}
+                    </td>
+                </tr>
+                {% include "seo/_seo_form.html" with meta_form=seo_meta_form url_form=seo_url_form %}
+            </table>
+            <div class="btns-area">
+                <input class="button save" type="submit" value="Сохранить" />
+                {% if offer %}
+                    <input class="button del" type="submit" name="delete" onclick="return confirm('Удалить эту акцию? Вы уверены?');" value="Удалить" />
+                {% endif %}
+                <input class="button preview" onclick="$(this).parents('form:first').attr('action','{% url administration_offers_preview %}').attr('target','_blank').submit().removeAttr('target').attr('action','');return false" type="submit" value="Предварительный просмотр" />
+            </div>
+        </form>
+    </div>
+    </form>
+<script type="text/javascript">
+$(function() {
+    $('.button.save').click(function() {
+        data = $('#offer_form').serialize();
+        {% if offer %}
+        data+='&offer_id={{ offer.pk }}';
+        {% endif %}
+        $.post('{% url administration_offers_ajax_validate %}', data, function(data) {
+            if(data.success) {
+                $('#offer_form').submit();
+            }
+            else {
+                alert(data.messages)
+            }
+        },'json');
+        return false;
+    });
+    $('#id_partner').change(function() {
+        $('#addresses_wraper').html('');
+        $('#addresses_wraper').load('/administration/partners/address/ajax/'+$(this).val()+'/', function() {
+            {% if offer %}
+                {% for address in offer.addresses.all %}
+                    $('#addresses_wraper input[value={{ address.pk }}]').attr('checked', 'checked');
+                {% endfor %}
+            {% endif %}
+            $('#addresses_wraper').customRadioCheckbox();
+        });
+    });
+    $('#id_partner').change();
+});
+</script>
+{% endblock %}

@@ -1,0 +1,13 @@
+{
+"success":"{{ success }}",
+"messages":"{% for form in forms %}
+{% for error in form.non_field_errors %}
+{{ error }}
+{% endfor %}
+{% for field in form %}
+{% for error in field.errors %}
+    {{ field.label }} - {{ error }}
+{% endfor %}
+{% endfor %}
+{% endfor %}"
+}

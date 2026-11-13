@@ -1,0 +1,216 @@
+paymode:348;orderid:48;amount:1.00;userid:andrschwartz@gmail.com;key:1025f59e92a804559cd61d50be709ea2;<?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>None</id>
+    <code>NO</code>
+    <comment>Отсутствуют необходимые параметры</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>99</id>
+    <code>YES</code>
+    <comment>Платеж найден в базе. Оплата уже осуществлялась ранее.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>103</id>
+    <code>YES</code>
+    <comment>Платеж найден в базе. Оплата уже осуществлялась ранее.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>None</id>
+    <code>NO</code>
+    <comment>Отсутствуют необходимые параметры</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>111</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>115</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>117</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>119</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>126</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>128</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>116</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>143</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>144</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>145</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>147</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>150</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>152</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>153</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>154</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>155</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>156</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>159</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>160</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>163</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>162</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>164</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>170</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>172</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>176</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>179</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>180</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>181</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>182</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>183</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>185</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>187</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>188</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>190</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>189</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>192</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>194</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>201</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result><?xml version="1.0" encoding="UTF-8"?>
+<result>
+    <id>198</id>
+    <code>YES</code>
+    <comment>Платеж найден. Оплата произведена успешно.</comment>
+</result>
